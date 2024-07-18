@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Function Name="DepositPlayerAPI">
+	<Function Name="Player">
+		<Setting Key="API_CustomerIns_CheckAff" SpName="API_CustomerIns_CheckAff" DbName="DBAFF12BET.Affiliate_12Bet.asv_cust" />
+		<Setting Key="API_CustomerIns_Validate" SpName="API_CustomerIns_Validate" DbName="ShardCustDB.CustDB.asv_cust" />
+		<Setting Key="Acc_Dep_GetPlayerCommProducts" SpName="Acc_Dep_GetPlayerCommProducts" DbName="ShardCustDB.CustDB.asv_cust" />
+		<Setting Key="API_CustomerIns_GetDefaultGroupComm" SpName="API_CustomerIns_GetDefaultGroupComm" DbName="DBCUST.bodb_Licensee.asv_cust" />
+		<Setting Key="API_CustomerIns_Generate" SpName="API_CustomerIns_Generate" DbName="DBGLOB.GlobCustDB.asv_cust" />
+		<Setting Key="API_CustomerIns_CheckExists" SpName="API_CustomerIns_CheckExists" DbName="ShardCustDB.CustDB.asv_cust" />
+		<Setting Key="API_CustomerIns_Member" SpName="API_CustomerIns_Member" DbName="ShardCustDB.CustDB.asv_cust" />
+		<Setting Key="Aff_CustomerInsMember" SpName="Aff_CustomerInsMember" DbName="DBAFF12BET.Affiliate_12Bet.asv_cust" />
+		<Setting Key="API_CustomerIns_DefaultComm_LicenseeDB" SpName="API_CustomerIns_DefaultComm_LicenseeDB" DbName="DBCUST.bodb_Licensee.asv_cust" />
+		<Setting Key="Dot_BalanceCreditInitialize" SpName="Dot_BalanceCreditInitialize" DbName="ShardSiteDB.bodb02.asv_cust" />
+		<Setting Key="Dot_BalanceDebitInitialize" SpName="Dot_BalanceDebitInitialize" DbName="ShardSiteDB.bodb02.asv_cust" />
+		<Setting Key="Acc_CustomerIns_Rollback" SpName="Acc_CustomerIns_Rollback" DbName="DBGLOB.GlobCustDB.asv_cust" />
+		<Setting Key="Acc_Dep_CustomerInsSetting_Rollback" SpName="Acc_Dep_CustomerInsSetting_Rollback" DbName="ShardCustDB.CustDB.asv_cust" />
+		<Setting Key="Acc_Dep_CustomerInsUserInfo_Rollback" SpName="Acc_Dep_CustomerInsUserInfo_Rollback" DbName="ShardCustDB.CustDB.asv_cust" />
+		<Setting Key="Writelog_Dep_Cust_Archive" SpName="Writelog_Dep_Cust_Archive" DbName="DBLOG.bodb_CustomerLog.asv_cust" />
+		<Setting Key="API_CustomerReactive_GetArchivedInfo" SpName="API_CustomerReactive_GetArchivedInfo" DbName="DBARCCUST.Bodb_Archive_Customer_Licensee.asv_cust" />
+		<Setting Key="API_CustomerReactive_Insert" SpName="API_CustomerReactive_Insert" DbName="ShardCustDB.CustDB.asv_cust" />
+		<Setting Key="Dot_Dep_Customer_Archive_ReactiveCustomer_Trans" SpName="Dot_Dep_Customer_Archive_ReactiveCustomer_Trans" DbName="ShardSiteDB.bodb02.asv_cust" />
+		<Setting Key="API_CustomerIns_Shadow_Register" SpName="API_CustomerIns_Shadow_Register" DbName="DBGLOB.GlobCustDB.asv_cust" />
+		<Setting Key="Dot_Dep_CustomerInsMember_Ag_Cust_Shadow" SpName="Dot_Dep_CustomerInsMember_Ag_Cust_Shadow" DbName="ShardCustDB.CustDB.asv_cust" />
+	</Function>
+	<Function Name="WriteLogDB">
+		<Setting Key="WriteLog_UserLog_RunSP" SpName="WriteLog_UserLog_RunSP" DbName="DBLOG.bodb_CustomerLog.asv_cust" />
+		<Setting Key="WriteLog_UserLog_RunSP" SpName="WriteLog_UserLog_RunSP" DbName="ShardCustDB.bodb_CustomerLog.asv_cust" />
+	</Function>
+	<Function Name="DBServerConfig">
+		<Setting Key="Acc_Dep_ServerDBConfigSelByCust" SpName="Acc_Dep_ServerDBConfigSelByCust" DbName="DBGLOB.GlobCustDB.asv_cust" />
+		<Setting Key="Acc_Dep_ServerDBConfigSel" SpName="Acc_Dep_ServerDBConfigSel" DbName="DBACC.bodb02.asv_cust" />
+	</Function>
+</Function>

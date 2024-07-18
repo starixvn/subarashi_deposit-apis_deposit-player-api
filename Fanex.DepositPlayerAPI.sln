@@ -1,0 +1,97 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.Application", "src\Fanex.DepositPlayerAPI.Application\Fanex.DepositPlayerAPI.Application.csproj", "{6E8F0647-DCD4-4B43-8C65-7ACB8DDA5301}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{147B6574-1094-4203-9137-AEAF199BAD49}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.Domain", "src\Fanex.DepositPlayerAPI.Domain\Fanex.DepositPlayerAPI.Domain.csproj", "{20958347-EE99-4BE4-89CF-FEFE0F64B7EB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.Infrastructure", "src\Fanex.DepositPlayerAPI.Infrastructure\Fanex.DepositPlayerAPI.Infrastructure.csproj", "{490E967B-508F-405A-B0B6-7EAFBEAACF38}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.Presentation", "src\Fanex.DepositPlayerAPI.Presentation\Fanex.DepositPlayerAPI.Presentation.csproj", "{BDA424A4-B9BB-48DF-8B14-7D97115DE212}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.WebApi", "src\Fanex.DepositPlayerAPI.WebApi\Fanex.DepositPlayerAPI.WebApi.csproj", "{B576FAD8-95FD-4265-BC11-54B610652145}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{84A9C120-0F67-4824-B484-1E59F8C29238}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.Architecture.Tests", "test\Fanex.DepositPlayerAPI.Architecture.Tests\Fanex.DepositPlayerAPI.Architecture.Tests.csproj", "{4C7EB5FE-FCEB-4E5E-900C-15ED758AF198}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.Application.UnitTests", "test\Fanex.DepositPlayerAPI.Application.UnitTests\Fanex.DepositPlayerAPI.Application.UnitTests.csproj", "{03148D54-4661-4382-8A31-11ECCA8BC645}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{6BAB5577-72F6-4C64-B7E2-8E0CAFC1F514}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchitectureTests", "ArchitectureTests", "{D0C9C5B2-EC3C-499B-9B4E-3000201D9403}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.Infrastructure.UnitTests", "test\Fanex.DepositPlayerAPI.Infrastructure.UnitTests\Fanex.DepositPlayerAPI.Infrastructure.UnitTests.csproj", "{E4265752-6AEE-4DDA-9398-844730F7EDF1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.LoadTests", "test\Fanex.DepositPlayerAPI.LoadTests\Fanex.DepositPlayerAPI.LoadTests.csproj", "{FE2250EA-9D27-475A-A82C-A9971A5C8743}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LoadTests", "LoadTests", "{C31F33DC-1978-409C-8901-A7625D86A37F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E8F0647-DCD4-4B43-8C65-7ACB8DDA5301}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E8F0647-DCD4-4B43-8C65-7ACB8DDA5301}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E8F0647-DCD4-4B43-8C65-7ACB8DDA5301}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E8F0647-DCD4-4B43-8C65-7ACB8DDA5301}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20958347-EE99-4BE4-89CF-FEFE0F64B7EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20958347-EE99-4BE4-89CF-FEFE0F64B7EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20958347-EE99-4BE4-89CF-FEFE0F64B7EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20958347-EE99-4BE4-89CF-FEFE0F64B7EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{490E967B-508F-405A-B0B6-7EAFBEAACF38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{490E967B-508F-405A-B0B6-7EAFBEAACF38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{490E967B-508F-405A-B0B6-7EAFBEAACF38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{490E967B-508F-405A-B0B6-7EAFBEAACF38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDA424A4-B9BB-48DF-8B14-7D97115DE212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDA424A4-B9BB-48DF-8B14-7D97115DE212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDA424A4-B9BB-48DF-8B14-7D97115DE212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDA424A4-B9BB-48DF-8B14-7D97115DE212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B576FAD8-95FD-4265-BC11-54B610652145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B576FAD8-95FD-4265-BC11-54B610652145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B576FAD8-95FD-4265-BC11-54B610652145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B576FAD8-95FD-4265-BC11-54B610652145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C7EB5FE-FCEB-4E5E-900C-15ED758AF198}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C7EB5FE-FCEB-4E5E-900C-15ED758AF198}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C7EB5FE-FCEB-4E5E-900C-15ED758AF198}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C7EB5FE-FCEB-4E5E-900C-15ED758AF198}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03148D54-4661-4382-8A31-11ECCA8BC645}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03148D54-4661-4382-8A31-11ECCA8BC645}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03148D54-4661-4382-8A31-11ECCA8BC645}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03148D54-4661-4382-8A31-11ECCA8BC645}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4265752-6AEE-4DDA-9398-844730F7EDF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4265752-6AEE-4DDA-9398-844730F7EDF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4265752-6AEE-4DDA-9398-844730F7EDF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4265752-6AEE-4DDA-9398-844730F7EDF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE2250EA-9D27-475A-A82C-A9971A5C8743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE2250EA-9D27-475A-A82C-A9971A5C8743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE2250EA-9D27-475A-A82C-A9971A5C8743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE2250EA-9D27-475A-A82C-A9971A5C8743}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E8F0647-DCD4-4B43-8C65-7ACB8DDA5301} = {147B6574-1094-4203-9137-AEAF199BAD49}
+		{20958347-EE99-4BE4-89CF-FEFE0F64B7EB} = {147B6574-1094-4203-9137-AEAF199BAD49}
+		{490E967B-508F-405A-B0B6-7EAFBEAACF38} = {147B6574-1094-4203-9137-AEAF199BAD49}
+		{BDA424A4-B9BB-48DF-8B14-7D97115DE212} = {147B6574-1094-4203-9137-AEAF199BAD49}
+		{B576FAD8-95FD-4265-BC11-54B610652145} = {147B6574-1094-4203-9137-AEAF199BAD49}
+		{4C7EB5FE-FCEB-4E5E-900C-15ED758AF198} = {D0C9C5B2-EC3C-499B-9B4E-3000201D9403}
+		{03148D54-4661-4382-8A31-11ECCA8BC645} = {6BAB5577-72F6-4C64-B7E2-8E0CAFC1F514}
+		{6BAB5577-72F6-4C64-B7E2-8E0CAFC1F514} = {84A9C120-0F67-4824-B484-1E59F8C29238}
+		{D0C9C5B2-EC3C-499B-9B4E-3000201D9403} = {84A9C120-0F67-4824-B484-1E59F8C29238}
+		{E4265752-6AEE-4DDA-9398-844730F7EDF1} = {6BAB5577-72F6-4C64-B7E2-8E0CAFC1F514}
+		{FE2250EA-9D27-475A-A82C-A9971A5C8743} = {C31F33DC-1978-409C-8901-A7625D86A37F}
+		{C31F33DC-1978-409C-8901-A7625D86A37F} = {84A9C120-0F67-4824-B484-1E59F8C29238}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2DCBFC3A-41DE-43C2-AE51-70E51FE7E34F}
+	EndGlobalSection
+EndGlobal
