@@ -1,15 +1,15 @@
 ARG TRANSFORM_CONFIG \
     CI_REGISTRY_IMAGE
 
-FROM $CI_REGISTRY_IMAGE:builder as deps
-
-RUN mkdir -p /src/packages
+#FROM $CI_REGISTRY_IMAGE:builder as deps
+#
+#RUN mkdir -p /src/packages
 
 FROM hub.nexdev.net/base/dotnet/core/sdk:8.0 AS builder
 
-ENV NUGET_PACKAGES=/src/packages
-
-COPY --from=deps $NUGET_PACKAGES/. $NUGET_PACKAGES/
+#ENV NUGET_PACKAGES=/src/packages
+#
+#COPY --from=deps $NUGET_PACKAGES/. $NUGET_PACKAGES/
 
 WORKDIR /src
 
