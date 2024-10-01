@@ -28,9 +28,8 @@ public class NewPlayerInsertInfoChainHandler(
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {
         ServiceResult<InsertPlayerInfoOutputParam> result = null;
-        List<string> triedUsernames = [];
         var extraInfo = new StringBuilder();
-        var retryCount = 0;
+        var canRetry = true;
 
         var param = new InsertPlayerInfoParam
         {
@@ -39,47 +38,13 @@ public class NewPlayerInsertInfoChainHandler(
             SiteDbGroupId = request.SiteDbGroupId,
             Site = request.Site,
             CurrencyName = request.CurrencyName,
-            RetryNumber = retryCount
+            RetryNumber = 0
         };
 
-        while (retryCount++ < RetryLimit)
+        while (canRetry)
         {
-            result = await playerRepository.InsertPlayerInfoAsync(param);
-
-            // Add extra info
-            extraInfo.AppendLine($"\n- RetryNumber {param.RetryNumber}:\n");
-            extraInfo.AppendLine($"Generate:\n{result.ExtraInfo}");
-
-            if (result.IsFailure)
-            {
-                break;
-            }
-
-            var verifyResult = await playerRepository.VerifyUsernameExistence(result.Result.Username);
-
-            // Add extra info
-            extraInfo.AppendLine($"Verify:\n{verifyResult.ExtraInfo}");
-
-            if (verifyResult.IsSuccess)
-            {
-                break;
-            }
-
-            // Log error
-            var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine(
-                $"ERROR: Username \"{result.Result.Username}\" already exists at attempt {param.RetryNumber} in the {ChainName} process.");
-            messageBuilder.AppendLine($"\nEXTRA INFO: {verifyResult.ExtraInfo}");
-            await Logger.ErrorAsync(messageBuilder.ToString());
-
-            // Assign result to create player failed when Username already exists
-            triedUsernames.Add(result.Result.Username);
-            result = ServiceResult<InsertPlayerInfoOutputParam>.Failure(
-                PlayerError.CreateCustomerFailed,
-                $"Username already exists after all attempts.\nList all tried usernames: [{string.Join(",", triedUsernames)}]");
-
-            // Update RetryNumber
-            param.RetryNumber = retryCount;
+            (canRetry, result) = await InsertNewPlayerInfo(param, extraInfo);
+            param.RetryNumber++;
         }
 
         if (result?.Result is not null)
@@ -96,5 +61,44 @@ public class NewPlayerInsertInfoChainHandler(
     {
         request.Username = output.Username;
         request.CustId = output.CustId;
+    }
+
+    private async Task<(bool canRetry, ServiceResult<InsertPlayerInfoOutputParam> result)> InsertNewPlayerInfo(
+        InsertPlayerInfoParam param,
+        StringBuilder extraInfo)
+    {
+        if (param.RetryNumber > RetryLimit)
+        {
+            return (false, ServiceResult<InsertPlayerInfoOutputParam>.Failure(PlayerError.CreateCustomerFailed, extraInfo.ToString()));
+        }
+
+        var result = await playerRepository.InsertPlayerInfoAsync(param);
+        // Add extra info
+        extraInfo.AppendLine($"\n--- Retry {param.RetryNumber} ---\n");
+        extraInfo.AppendLine($"1. Generate:\n{result.ExtraInfo}");
+
+        if (result.IsFailure)
+        {
+            return (false, ServiceResult<InsertPlayerInfoOutputParam>.Failure(result.Error, extraInfo.ToString()));
+        }
+
+        var verifyResult = await playerRepository.VerifyUsernameExistence(result.Result.Username);
+
+        // Add extra info
+        extraInfo.AppendLine($"2. Verify:\n{verifyResult.ExtraInfo}");
+
+        if (verifyResult.IsSuccess)
+        {
+            return (false, ServiceResult<InsertPlayerInfoOutputParam>.Success(result.Result, extraInfo.ToString()));
+        }
+
+        // Log error
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine(
+            $"ERROR: Username \"{result.Result.Username}\" already exists at attempt {param.RetryNumber} in the {ChainName} process.");
+        messageBuilder.AppendLine($"\nEXTRA INFO: {verifyResult.ExtraInfo}");
+        await Logger.ErrorAsync(messageBuilder.ToString());
+
+        return (true, ServiceResult<InsertPlayerInfoOutputParam>.Failure(PlayerError.CreateCustomerFailed, extraInfo.ToString()));
     }
 }
