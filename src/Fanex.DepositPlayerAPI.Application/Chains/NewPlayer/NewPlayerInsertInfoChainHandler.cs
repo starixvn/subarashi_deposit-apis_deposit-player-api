@@ -17,7 +17,7 @@ public class NewPlayerInsertInfoChainHandler(
     IPlayerRepository playerRepository)
     : ChainBaseHandler<NewPlayerChainParam, Player>(logger, logAggregate)
 {
-    private const int MaxRetry = 3;
+    private const int RetryLimit = 3;
 
     public override bool IsBreakOnError => true;
 
@@ -30,6 +30,7 @@ public class NewPlayerInsertInfoChainHandler(
         ServiceResult<InsertPlayerInfoOutputParam> result = null;
         List<string> triedUsernames = [];
         var extraInfo = new StringBuilder();
+        var retryCount = 0;
 
         var param = new InsertPlayerInfoParam
         {
@@ -38,12 +39,16 @@ public class NewPlayerInsertInfoChainHandler(
             SiteDbGroupId = request.SiteDbGroupId,
             Site = request.Site,
             CurrencyName = request.CurrencyName,
-            RetryNumber = 0
+            RetryNumber = retryCount
         };
 
-        while (param.RetryNumber < MaxRetry)
+        while (retryCount++ < RetryLimit)
         {
             result = await playerRepository.InsertPlayerInfoAsync(param);
+
+            // Add extra info
+            extraInfo.AppendLine($"\n- RetryNumber {param.RetryNumber}:\n");
+            extraInfo.AppendLine($"Generate:\n{result.ExtraInfo}");
 
             if (result.IsFailure)
             {
@@ -52,9 +57,7 @@ public class NewPlayerInsertInfoChainHandler(
 
             var verifyResult = await playerRepository.VerifyUsernameExistence(result.Result.Username);
 
-            // Add Extra Info
-            extraInfo.AppendLine($"\n- RetryNumber {param.RetryNumber}:\n");
-            extraInfo.AppendLine($"Generate:\n{result.ExtraInfo}");
+            // Add extra info
             extraInfo.AppendLine($"Verify:\n{verifyResult.ExtraInfo}");
 
             if (verifyResult.IsSuccess)
@@ -75,8 +78,8 @@ public class NewPlayerInsertInfoChainHandler(
                 PlayerError.CreateCustomerFailed,
                 $"Username already exists after all attempts.\nList all tried usernames: [{string.Join(",", triedUsernames)}]");
 
-            // Increase RetryNumber
-            param.RetryNumber++;
+            // Update RetryNumber
+            param.RetryNumber = retryCount;
         }
 
         if (result?.Result is not null)
@@ -86,7 +89,7 @@ public class NewPlayerInsertInfoChainHandler(
 
         return result.Match(
             _ => ServiceResult<Player>.Success(null, extraInfo.ToString()),
-            ServiceResult<Player>.Failure);
+            (error, _) => ServiceResult<Player>.Failure(error, extraInfo.ToString()));
     }
 
     private static void UpdateRequest(InsertPlayerInfoOutputParam output, NewPlayerChainParam request)
