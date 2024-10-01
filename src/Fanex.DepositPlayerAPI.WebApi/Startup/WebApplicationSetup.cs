@@ -34,7 +34,7 @@ public static class WebApplicationSetup
             app.UseSwaggerUI(options =>
             {
                 options.EnableTryItOutByDefault();
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Deposit API v1");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", $"Deposit Player API v{appSetting.Version}");
             });
         }
 

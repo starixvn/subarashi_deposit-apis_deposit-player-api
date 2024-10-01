@@ -27,7 +27,7 @@ app.UseCors();
 
 app.UseRequestLocalization();
 
-app.MapGet("/", () => "Deposit API is running ...").ExcludeFromDescription();
+app.MapGet("/", () => "Deposit Player API is running ...").ExcludeFromDescription();
 
 app.MapEndpoints();
 

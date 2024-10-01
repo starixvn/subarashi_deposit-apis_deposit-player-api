@@ -12,7 +12,7 @@ public class SwaggerServiceInstaller : IServiceInstaller
             options.SwaggerDoc("v1", new OpenApiInfo
             {
                 Version = "v1",
-                Title = "Deposit API"
+                Title = "Deposit Player API"
             });
         });
     }
