@@ -95,7 +95,10 @@ public class NewPlayerInsertInfoChainHandler(
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(
             $"ERROR: Username \"{result.Result.Username}\" already exists at attempt {param.RetryNumber} in the {ChainName} process.");
-        messageBuilder.AppendLine($"\nEXTRA INFO: {verifyResult.ExtraInfo}");
+        messageBuilder.AppendLine($"\nEXTRA INFO:\n--- Retry {param.RetryNumber} ---\n");
+        messageBuilder.AppendLine($"1. Generate:\n{result.ExtraInfo}");
+        messageBuilder.AppendLine($"2. Verify:\n{verifyResult.ExtraInfo}");
+
         await Logger.ErrorAsync(messageBuilder.ToString());
 
         // Update param
