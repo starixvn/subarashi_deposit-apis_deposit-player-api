@@ -13,6 +13,8 @@ public class InsertPlayerInfoParam
     public string CurrencyName { get; set; }
 
     public int RetryNumber { get; set; }
+
+    public int? CustId { get; set; }
 }
 
 public class InsertPlayerInfoOutputParam

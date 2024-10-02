@@ -58,6 +58,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
         objectDb.SetParameterValue(DbParam.Site, param.Site);
         objectDb.SetParameterValue(DbParam.CurrencyName, param.CurrencyName);
         objectDb.SetParameterValue(DbParam.RetryNumber, param.RetryNumber);
+        objectDb.SetParameterValue(DbParam.CustId, param.CustId);
 
         await objectDb.ExecuteNonQueryAsync();
 

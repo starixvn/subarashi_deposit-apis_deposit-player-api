@@ -44,7 +44,6 @@ public class NewPlayerInsertInfoChainHandler(
         while (canRetry)
         {
             (canRetry, result) = await InsertNewPlayerInfo(param, extraInfo);
-            param.RetryNumber++;
         }
 
         if (result?.Result is not null)
@@ -98,6 +97,10 @@ public class NewPlayerInsertInfoChainHandler(
             $"ERROR: Username \"{result.Result.Username}\" already exists at attempt {param.RetryNumber} in the {ChainName} process.");
         messageBuilder.AppendLine($"\nEXTRA INFO: {verifyResult.ExtraInfo}");
         await Logger.ErrorAsync(messageBuilder.ToString());
+
+        // Update param
+        param.CustId = result.Result.CustId;
+        param.RetryNumber++;
 
         return (true, ServiceResult<InsertPlayerInfoOutputParam>.Failure(PlayerError.CreateCustomerFailed, extraInfo.ToString()));
     }

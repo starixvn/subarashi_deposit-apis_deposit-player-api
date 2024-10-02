@@ -553,6 +553,8 @@ public class PlayerRepositoryTest : RepositoryBaseTest
         ObjectDb.Received(1).SetParameterValue(DbParam.SiteDbGroupId, param.SiteDbGroupId);
         ObjectDb.Received(1).SetParameterValue(DbParam.Site, param.Site);
         ObjectDb.Received(1).SetParameterValue(DbParam.CurrencyName, param.CurrencyName);
+        ObjectDb.Received(1).SetParameterValue(DbParam.RetryNumber, param.RetryNumber);
+        ObjectDb.Received(1).SetParameterValue(DbParam.CustId, param.CustId);
     }
 
     [Theory]
