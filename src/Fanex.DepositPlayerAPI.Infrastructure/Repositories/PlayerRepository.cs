@@ -60,6 +60,8 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
         objectDb.SetParameterValue(DbParam.RetryNumber, param.RetryNumber);
         objectDb.SetParameterValue(DbParam.CustId, param.CustId);
 
+        var capturedInputOutputParams = DbUtils.CaptureInputOutputParams(objectDb, [DbParam.CustId]);
+
         await objectDb.ExecuteNonQueryAsync();
 
         var output = objectDb.GetOutputParams();
@@ -73,7 +75,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             Username = Converter.ToString(output[DbParam.Username])
         };
 
-        var dbInfo = DbUtils.GetDatabaseInfo(objectDb, result);
+        var dbInfo = DbUtils.GetDatabaseInfo(objectDb, result, capturedInputOutputParams);
 
         if (code == 0)
         {

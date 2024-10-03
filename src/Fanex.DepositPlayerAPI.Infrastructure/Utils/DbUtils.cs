@@ -20,25 +20,60 @@ public static class DbUtils
         return (errorCode, errorMessage);
     }
 
-    public static string GetDatabaseInfo(IObjectDb objectDb, object output = null)
+    public static string GetDatabaseInfo(IObjectDb objectDb, object output = null, DbParameter[] otherAddedParameters = null)
     {
         var stringBuilder = new StringBuilder();
         var connString = new SqlConnectionStringBuilder(objectDb.DbSetting.ConnectionString);
         stringBuilder.AppendLine($"Server: {connString.DataSource}");
         stringBuilder.AppendLine($"DbName: {objectDb.DbSetting.DbName}");
         stringBuilder.AppendLine($"SpName: {objectDb.DbSetting.SpName}");
-        stringBuilder.AppendLine($"Parameters: {GetParameters(objectDb.GetAddedParameters())}");
+        stringBuilder.AppendLine($"Parameters: {GetParameters(objectDb.GetAddedParameters(), otherAddedParameters)}");
         stringBuilder.AppendLine($"OutputParameters: {GetOutputParameters(objectDb.GetOutputParams(), output)}");
         return stringBuilder.ToString();
     }
 
-    private static string GetParameters(DbParameter[] parameters)
-        => parameters?.Length > 0
-            ? parameters
+    public static DbParameter[] CaptureInputOutputParams(IObjectDb objectDb, string[] parameterNames)
+    {
+        if (parameterNames.Length == 0)
+        {
+            return [];
+        }
+
+        var addedParameter = objectDb.GetAddedParameters();
+
+        return addedParameter
+            .Where(x => x.Direction == ParameterDirection.InputOutput)
+            .Where(x => Array.Exists(parameterNames, name => x.ParameterName.Contains(name, StringComparison.OrdinalIgnoreCase)))
+            .Select(x => new SqlParameter
+            {
+                Direction = ParameterDirection.Input,
+                ParameterName = x.ParameterName,
+                Value = x.Value
+            })
+            .ToArray<DbParameter>();
+    }
+
+    private static string GetParameters(DbParameter[] parameters, DbParameter[] otherParameters)
+    {
+        List<DbParameter> allParameters = [];
+
+        if (parameters is not null && parameters.Length > 0)
+        {
+            allParameters.AddRange(parameters);
+        }
+
+        if (otherParameters is not null && otherParameters.Length > 0)
+        {
+            allParameters.AddRange(otherParameters);
+        }
+
+        return allParameters.Count > 0
+            ? allParameters
                 .Where(param => param.Direction == ParameterDirection.Input)
                 .Select(parameter => $"{parameter.ParameterName}={parameter.Value}")
                 .Aggregate((firstPair, secondPair) => $"{firstPair};{secondPair}")
             : string.Empty;
+    }
 
     private static string GetOutputParameters(Hashtable parameters, object output)
     {
