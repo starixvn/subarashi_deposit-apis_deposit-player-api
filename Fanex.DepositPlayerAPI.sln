@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LoadTests", "LoadTests", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fanex.DepositPlayerAPI.WebApi.UnitTests", "test\Fanex.DepositPlayerAPI.WebApi.UnitTests\Fanex.DepositPlayerAPI.WebApi.UnitTests.csproj", "{22AEF985-34D4-4DB8-81AD-041CDE12252D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fanex.DepositPlayerAPI.Presentation.UnitTests", "test\Fanex.DepositPlayerAPI.Presentation.UnitTests\Fanex.DepositPlayerAPI.Presentation.UnitTests.csproj", "{00526466-6853-44AE-99C0-0677AD4D0EFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{22AEF985-34D4-4DB8-81AD-041CDE12252D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22AEF985-34D4-4DB8-81AD-041CDE12252D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22AEF985-34D4-4DB8-81AD-041CDE12252D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00526466-6853-44AE-99C0-0677AD4D0EFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00526466-6853-44AE-99C0-0677AD4D0EFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00526466-6853-44AE-99C0-0677AD4D0EFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00526466-6853-44AE-99C0-0677AD4D0EFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +103,7 @@ Global
 		{FE2250EA-9D27-475A-A82C-A9971A5C8743} = {C31F33DC-1978-409C-8901-A7625D86A37F}
 		{C31F33DC-1978-409C-8901-A7625D86A37F} = {84A9C120-0F67-4824-B484-1E59F8C29238}
 		{22AEF985-34D4-4DB8-81AD-041CDE12252D} = {6BAB5577-72F6-4C64-B7E2-8E0CAFC1F514}
+		{00526466-6853-44AE-99C0-0677AD4D0EFA} = {6BAB5577-72F6-4C64-B7E2-8E0CAFC1F514}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2DCBFC3A-41DE-43C2-AE51-70E51FE7E34F}
