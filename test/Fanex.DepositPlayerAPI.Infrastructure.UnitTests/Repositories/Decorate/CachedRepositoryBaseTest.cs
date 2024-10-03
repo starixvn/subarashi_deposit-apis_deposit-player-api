@@ -15,14 +15,14 @@ public abstract class CachedRepositoryBaseTest : IDisposable
         MemoryCache.ClearSubstitute();
     }
 
-    protected void SetupCacheData(string key, object data)
+    protected void SetupCacheData(string key, object data, Func<bool>? func = null)
     {
         MemoryCache
             .TryGetValue(Arg.Is<object>(k => k.ToString() == key), out _)
             .Returns(x =>
             {
                 x[1] = data;
-                return true;
+                return func is null || func();
             });
     }
 

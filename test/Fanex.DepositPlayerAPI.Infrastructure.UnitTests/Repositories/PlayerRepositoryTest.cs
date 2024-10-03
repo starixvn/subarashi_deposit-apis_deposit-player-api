@@ -575,7 +575,8 @@ public class PlayerRepositoryTest : RepositoryBaseTest
             { DbParam.CustId, data.CustId },
             { DbParam.Username, data.Username }
         });
-        var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data);
+        var capturedParams = DbUtils.CaptureInputOutputParams(ObjectDb, [DbParam.CustId]);
+        var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data, capturedParams);
 
         // Action
         var result = await _playerRepository.InsertPlayerInfoAsync(param);
@@ -601,7 +602,8 @@ public class PlayerRepositoryTest : RepositoryBaseTest
             { DbParam.CustId, data.CustId },
             { DbParam.Username, data.Username }
         });
-        var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data);
+        var capturedParams = DbUtils.CaptureInputOutputParams(ObjectDb, [DbParam.CustId]);
+        var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data, capturedParams);
 
         // Action
         var result = await _playerRepository.InsertPlayerInfoAsync(param);

@@ -42,4 +42,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+	<SonarQubeSetting Include="sonar.coverage.exclusions">
+	  <Value>**/Program.cs, Startup/*.cs, Configurations/*.cs</Value>
+	</SonarQubeSetting>
+  </ItemGroup>
+
 </Project>

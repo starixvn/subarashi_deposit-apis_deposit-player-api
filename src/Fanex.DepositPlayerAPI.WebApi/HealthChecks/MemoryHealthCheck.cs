@@ -5,7 +5,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 public class MemoryHealthCheck(IMemoryCache memoryCache) : IHealthCheck
 {
-    private readonly long Threshold = 1024L;
+    private const long Threshold = 1024L;
 
     public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
