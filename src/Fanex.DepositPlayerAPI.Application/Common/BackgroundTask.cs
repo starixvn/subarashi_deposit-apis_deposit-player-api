@@ -63,6 +63,11 @@ public class BackgroundTask(
 
     public void RollbackFullNewPlayer(string processName, int custId)
     {
+        if (!IsValidCustId(custId))
+        {
+            return;
+        }
+
         async Task Func()
         {
             var isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerSettingAsync(custId),
@@ -79,6 +84,22 @@ public class BackgroundTask(
                 await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerAsync(custId),
                     "RollbackNewPlayerAsync", processName, logger, true);
             }
+        }
+
+        DoWork(ServerDbConfig, processName, Func);
+    }
+
+    public void RollbackInfoNewPlayer(string processName, int custId)
+    {
+        if (!IsValidCustId(custId))
+        {
+            return;
+        }
+
+        async Task Func()
+        {
+            await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerAsync(custId),
+                "RollbackNewPlayerAsync", processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -137,4 +158,6 @@ public class BackgroundTask(
             });
         }
     }
+
+    private static bool IsValidCustId(int custId) => custId > 0;
 }

@@ -14,7 +14,8 @@ using Logging;
 public class NewPlayerInsertInfoChainHandler(
     ILogger logger,
     ILogAggregate logAggregate,
-    IPlayerRepository playerRepository)
+    IPlayerRepository playerRepository,
+    IBackgroundTask backgroundTask)
     : ChainBaseHandler<NewPlayerChainParam, Player>(logger, logAggregate)
 {
     private const int RetryLimit = 3;
@@ -56,6 +57,13 @@ public class NewPlayerInsertInfoChainHandler(
             (error, _) => ServiceResult<Player>.Failure(error, extraInfo.ToString()));
     }
 
+    public override void HandleError(NewPlayerChainParam request)
+    {
+        LogAggregate.AppendLog("[NewPlayer] - Run Error Handler Task: RollbackInfoNewPlayer");
+
+        backgroundTask.RollbackInfoNewPlayer(ChainName, request.CustId);
+    }
+
     private static void UpdateRequest(InsertPlayerInfoOutputParam output, NewPlayerChainParam request)
     {
         request.Username = output.Username;
@@ -66,11 +74,6 @@ public class NewPlayerInsertInfoChainHandler(
         InsertPlayerInfoParam param,
         StringBuilder extraInfo)
     {
-        if (param.RetryNumber > RetryLimit)
-        {
-            return (false, ServiceResult<InsertPlayerInfoOutputParam>.Failure(PlayerError.CreateCustomerFailed, extraInfo.ToString()));
-        }
-
         var result = await playerRepository.InsertPlayerInfoAsync(param);
         // Add extra info
         extraInfo.AppendLine($"\n--- Retry {param.RetryNumber} ---\n");
@@ -78,7 +81,7 @@ public class NewPlayerInsertInfoChainHandler(
 
         if (result.IsFailure)
         {
-            return (false, ServiceResult<InsertPlayerInfoOutputParam>.Failure(result.Error, extraInfo.ToString()));
+            return (false, ServiceResult<InsertPlayerInfoOutputParam>.FailureWithData(result.Error, result.Result, extraInfo.ToString()));
         }
 
         var verifyResult = await playerRepository.VerifyUsernameExistence(result.Result.Username);
@@ -105,6 +108,17 @@ public class NewPlayerInsertInfoChainHandler(
         param.CustId = result.Result.CustId;
         param.RetryNumber++;
 
-        return (true, ServiceResult<InsertPlayerInfoOutputParam>.Failure(PlayerError.CreateCustomerFailed, extraInfo.ToString()));
+        if (param.RetryNumber > RetryLimit)
+        {
+            return (false, ServiceResult<InsertPlayerInfoOutputParam>.FailureWithData(
+                PlayerError.CreateCustomerFailed,
+                result.Result,
+                extraInfo.ToString()));
+        }
+
+        return (true, ServiceResult<InsertPlayerInfoOutputParam>.FailureWithData(
+            PlayerError.CreateCustomerFailed,
+            result.Result,
+            extraInfo.ToString()));
     }
 }
