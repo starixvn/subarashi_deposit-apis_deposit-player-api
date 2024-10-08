@@ -11,7 +11,7 @@ public class CachedServerDbConfigRepository(
     IMemoryCache cache)
     : IServerDbConfigRepository
 {
-    public async Task<List<ServerDbConfig>> GetAllServerDbConfigAsync()
+    public async Task<Dictionary<int, ServerDbConfig>> GetAllServerDbConfigAsync()
     {
         var result = await cache.GetOrCreateFromCacheWithoutExpired(
             CacheKeys.ServerDbConfigAll,

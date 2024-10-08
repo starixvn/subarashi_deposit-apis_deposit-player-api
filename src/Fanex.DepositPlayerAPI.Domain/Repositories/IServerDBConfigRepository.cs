@@ -4,7 +4,7 @@ using Entities;
 
 public interface IServerDbConfigRepository
 {
-    Task<List<ServerDbConfig>> GetAllServerDbConfigAsync();
+    Task<Dictionary<int, ServerDbConfig>> GetAllServerDbConfigAsync();
 
     Task<ServerDbConfig> GetServerDbConfigByAgentIdAsync(int agentId);
 }

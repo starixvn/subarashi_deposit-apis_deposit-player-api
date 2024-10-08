@@ -27,7 +27,7 @@ public class ReactivatePlayerGetServerDbConfigChainHandler(
 
     public override async Task<ServiceResult> HandleInternal(ReactivatePlayerChainParam request)
     {
-        var allServerDbConfig = new List<ServerDbConfig>();
+        var allServerDbConfig = new Dictionary<int, ServerDbConfig>();
         try
         {
             allServerDbConfig = await serverDbConfigRepository.GetAllServerDbConfigAsync();
@@ -37,8 +37,9 @@ public class ReactivatePlayerGetServerDbConfigChainHandler(
             await Logger.ErrorAsync(ErrorMessageUtils.GenerateMessage(ex));
         }
 
-        var result = allServerDbConfig.Find(x => x.CustId == request.Recommend) ??
-                     await serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.Recommend);
+        var result = allServerDbConfig.TryGetValue(request.Recommend, out var dbConfig)
+            ? dbConfig
+            : await serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.Recommend);
 
         if (result is null)
         {

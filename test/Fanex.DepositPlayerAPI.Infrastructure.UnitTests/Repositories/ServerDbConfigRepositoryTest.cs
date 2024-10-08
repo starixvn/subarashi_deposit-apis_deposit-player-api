@@ -56,7 +56,7 @@ public class ServerDbConfigRepositoryTest : RepositoryBaseTest
         var result = await _serverDbConfigRepository.GetAllServerDbConfigAsync();
 
         // Asserts
-        result.Should().BeEquivalentTo(data);
+        result.Should().BeEquivalentTo(data.ToDictionary(x => x.CustId, x => x));
     }
 
     [Fact]

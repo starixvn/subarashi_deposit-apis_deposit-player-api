@@ -4,7 +4,7 @@ public class ServerDbConfig
 {
     public string Site { get; set; }
 
-    public long CustId { get; set; }
+    public int CustId { get; set; }
 
     public int CustDbGroupId { get; set; }
 

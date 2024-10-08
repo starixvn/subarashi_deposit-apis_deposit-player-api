@@ -25,7 +25,7 @@ public class NewPlayerGetServerDbConfigChainHandler(
 
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {
-        var allServerDbConfig = new List<ServerDbConfig>();
+        var allServerDbConfig = new Dictionary<int, ServerDbConfig>();
         try
         {
             allServerDbConfig = await serverDbConfigRepository.GetAllServerDbConfigAsync();
@@ -35,8 +35,9 @@ public class NewPlayerGetServerDbConfigChainHandler(
             await Logger.ErrorAsync(ErrorMessageUtils.GenerateMessage(ex));
         }
 
-        var result = allServerDbConfig.Find(x => x.CustId == request.AgentId) ??
-                     await serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.AgentId);
+        var result = allServerDbConfig.TryGetValue(request.AgentId, out var dbConfig)
+            ? dbConfig
+            : await serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.AgentId);
 
         if (result is null)
         {

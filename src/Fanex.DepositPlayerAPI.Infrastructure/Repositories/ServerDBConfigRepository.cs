@@ -7,21 +7,22 @@ using Utils;
 
 public class ServerDbConfigRepository(IDbFactory dbFactory) : IServerDbConfigRepository
 {
-    public async Task<List<ServerDbConfig>> GetAllServerDbConfigAsync()
+    public async Task<Dictionary<int, ServerDbConfig>> GetAllServerDbConfigAsync()
     {
         const string SpKey = "Acc_Dep_ServerDBConfigSel";
 
-        var result = new List<ServerDbConfig>();
+        var result = new Dictionary<int, ServerDbConfig>();
 
         using var objectDb = dbFactory.GetObjectDb(SpKey);
         using var reader = await objectDb.ExecuteReaderAsync();
 
         while (reader.Read())
         {
-            result.Add(new ServerDbConfig
+            var custId = Converter.ToInt(reader[DbParam.CustId]);
+            result.Add(custId, new ServerDbConfig
             {
+                CustId = custId,
                 Site = Converter.ToString(reader[DbParam.Site]),
-                CustId = Converter.ToInt(reader[DbParam.CustId]),
                 CustDbGroupId = Converter.ToInt(reader[DbParam.CustDbGroupId]),
                 SiteDbGroupId = Converter.ToInt(reader[DbParam.SiteDbGroupId]),
                 SiteDbServer = Converter.ToString(reader[DbParam.SiteDbServer]),

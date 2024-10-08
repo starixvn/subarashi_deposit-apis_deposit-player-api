@@ -114,7 +114,7 @@ public class CachedServerDbConfigRepositoryTest : CachedRepositoryBaseTest
     public async Task GetAllServerDbConfigAsync_Should_ReturnCachedDataWhenAvailable()
     {
         // Arrange
-        var serverDbConfigList = Fixture.CreateMany<ServerDbConfig>().ToList();
+        var serverDbConfigList = Fixture.CreateMany<ServerDbConfig>().ToDictionary(x => x.CustId, x => x);
         _serverDbConfigRepository.GetAllServerDbConfigAsync().Returns(serverDbConfigList);
         SetupCacheData(CacheKeys.ServerDbConfigAll, serverDbConfigList);
 
@@ -130,7 +130,7 @@ public class CachedServerDbConfigRepositoryTest : CachedRepositoryBaseTest
     public async Task GetAllServerDbConfigAsync_Should_FetchDataFromRepositoryWhenCacheIsEmpty()
     {
         // Arrange
-        var serverDbConfigList = Fixture.CreateMany<ServerDbConfig>().ToList();
+        var serverDbConfigList = Fixture.CreateMany<ServerDbConfig>().ToDictionary(x => x.CustId, x => x);
         _serverDbConfigRepository.GetAllServerDbConfigAsync().Returns(serverDbConfigList);
         SetupNoCacheData(CacheKeys.ServerDbConfigAll);
 
@@ -146,7 +146,7 @@ public class CachedServerDbConfigRepositoryTest : CachedRepositoryBaseTest
     public async Task GetAllServerDbConfigAsync_Should_ReturnEmptyWhenDataIsNullFromRepository()
     {
         // Arrange
-        var emptyServerDbConfigList = new List<ServerDbConfig>();
+        var emptyServerDbConfigList = new Dictionary<int, ServerDbConfig>();
         _serverDbConfigRepository.GetAllServerDbConfigAsync().Returns(emptyServerDbConfigList);
         SetupNoCacheData(CacheKeys.ServerDbConfigAll);
 
@@ -162,12 +162,12 @@ public class CachedServerDbConfigRepositoryTest : CachedRepositoryBaseTest
     public async Task GetAllServerDbConfigAsync_Should_HandleConcurrentRequestsByReturningCachedDataUntilNewDataIsFetched()
     {
         // Arrange
-        var serverDbConfigList = Fixture.CreateMany<ServerDbConfig>().ToList();
+        var serverDbConfigList = Fixture.CreateMany<ServerDbConfig>().ToDictionary(x => x.CustId, x => x);
         _serverDbConfigRepository.GetAllServerDbConfigAsync().Returns(serverDbConfigList);
         var count = 0;
         SetupCacheData(CacheKeys.ServerDbConfigAll, serverDbConfigList, () => count++ > 0);
 
-        var tasks = new List<Task<List<ServerDbConfig>>>();
+        var tasks = new List<Task<Dictionary<int, ServerDbConfig>>>();
         for (var i = 0; i < 10; i++)
         {
             tasks.Add(_decorateRepository.GetAllServerDbConfigAsync());
