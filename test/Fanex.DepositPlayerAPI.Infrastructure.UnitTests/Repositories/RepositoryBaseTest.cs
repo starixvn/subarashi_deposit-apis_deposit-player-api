@@ -2,7 +2,7 @@
 
 using AutoFixture;
 using Data;
-using DbSettingConfig;
+using Infrastructure.DbSettingConfig;
 using NSubstitute;
 using NSubstitute.ClearExtensions;
 
