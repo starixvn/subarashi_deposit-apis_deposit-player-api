@@ -33,7 +33,7 @@ public class PlayerEndpoints : IEndpoints
 
     [Produces("application/json")]
     [ProducesResponseType(typeof(CreatePlayerResponse), (int)HttpStatusCode.OK)]
-    private static async Task<IResult> CreatePlayer(
+    internal static async Task<IResult> CreatePlayer(
         CreatePlayerRequest request,
         IHttpContextAccessor contextAccessor,
         IMediator mediator,
@@ -66,7 +66,7 @@ public class PlayerEndpoints : IEndpoints
 
     [Produces("application/json")]
     [ProducesResponseType(typeof(ReactivatePlayerResponse), (int)HttpStatusCode.OK)]
-    private static async Task<IResult> ReactivatePlayer(
+    internal static async Task<IResult> ReactivatePlayer(
         int custId,
         ReactivatePlayerRequest request,
         IHttpContextAccessor contextAccessor,

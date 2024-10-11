@@ -111,13 +111,11 @@ public static class ErrorMessageUtils
     private static IDictionary<string, object> GetRequestInfo(HttpContext context)
     {
         var request = context.Request;
-        return request is null
-            ? []
-            : new Dictionary<string, object>
-            {
-                [nameof(request.Host)] = request.Host,
-                [nameof(request.Path)] = request.Path,
-                ["Remote IP"] = context.Connection?.RemoteIpAddress
-            };
+        return new Dictionary<string, object>
+        {
+            [nameof(request.Host)] = request.Host,
+            [nameof(request.Path)] = request.Path,
+            ["Remote IP"] = context.Connection.RemoteIpAddress
+        };
     }
 }

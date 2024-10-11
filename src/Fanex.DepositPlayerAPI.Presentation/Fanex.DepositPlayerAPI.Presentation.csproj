@@ -25,4 +25,8 @@
 	</SonarQubeSetting>
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Fanex.DepositPlayerAPI.Presentation.UnitTests" />
+  </ItemGroup>
+
 </Project>

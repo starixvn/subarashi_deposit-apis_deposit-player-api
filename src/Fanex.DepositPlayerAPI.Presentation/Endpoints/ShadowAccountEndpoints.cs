@@ -29,7 +29,7 @@ public class ShadowAccountEndpoints : IEndpoints
 
     [Produces("application/json")]
     [ProducesResponseType(typeof(CreateShadowAccountResponse), (int)HttpStatusCode.OK)]
-    private static async Task<IResult> CreateShadowAccount(
+    internal static async Task<IResult> CreateShadowAccount(
         CreateShadowAccountRequest request,
         IHttpContextAccessor contextAccessor,
         IMediator mediator,

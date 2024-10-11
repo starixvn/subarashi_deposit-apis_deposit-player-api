@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 public static class HttpContextExtension
 {
-    private const string SiteKey = "Site";
+    private const string SiteKey = "SiteKey";
     private const string SiteDbServerKey = "SiteDbServerKey";
     private const string SiteDbGroupIdKey = "SiteDbGroupIdKey";
     private const string CustDbServerKey = "CustDbServerKey";
