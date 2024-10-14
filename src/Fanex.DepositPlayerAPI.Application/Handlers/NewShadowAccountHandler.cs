@@ -9,8 +9,8 @@ using MediatR;
 using Utils;
 
 public class NewShadowAccountHandler(
-    IChainHandlerFactory chainHandlerFactory,
-    ILogAggregate logAggregate) : IRequestHandler<NewShadowAccountCommand, ServiceResult<ShadowAccount>>
+    ILogAggregate logAggregate,
+    IChainHandlerFactory chainHandlerFactory) : IRequestHandler<NewShadowAccountCommand, ServiceResult<ShadowAccount>>
 {
     public async Task<ServiceResult<ShadowAccount>> Handle(
         NewShadowAccountCommand command,

@@ -3,7 +3,6 @@
 using Chains;
 using Commands;
 using Common.Interfaces;
-using Domain.Extensions;
 using Domain.Results;
 using MediatR;
 using Utils;
@@ -23,8 +22,6 @@ public class ReactivatePlayerHandler(
 
         logAggregate.AppendLog("Finished processing...");
 
-        return result.Match(
-            ServiceResult.Success,
-            ServiceResult.Failure);
+        return result;
     }
 }

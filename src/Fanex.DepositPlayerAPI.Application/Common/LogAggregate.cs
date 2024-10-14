@@ -9,31 +9,30 @@ public class LogAggregate(
     ILogger logger,
     IDateTimeProvider dateTimeProvider) : ILogAggregate
 {
+    private StringBuilder _builder = new();
     private int _step;
 
-    private StringBuilder Builder { get; set; } = new();
-
     public void AppendHeader(string message)
-        => Builder.AppendLine($"{message.ToUpperInvariant()}");
+        => _builder.AppendLine($"{message.ToUpperInvariant()}");
 
     public void AppendLog(string message)
-        => Builder.AppendLine($"{dateTimeProvider.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")}: {message}");
+        => _builder.AppendLine($"{dateTimeProvider.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff")}: {message}");
 
     public void AppendStepLog(string message)
     {
-        Builder.AppendLine($"\n- STEP {_step}: {message}");
+        _builder.AppendLine($"\n- STEP {_step}: {message}");
         _step++;
     }
 
     public string GetAggregateMsg()
     {
-        var logMsg = Builder.ToString();
+        var logMsg = _builder.ToString();
         return logMsg;
     }
 
     public void SendLog(LogLevel logLevel)
     {
-        if (Builder.Length == 0)
+        if (_builder.Length == 0)
         {
             return;
         }
@@ -41,18 +40,19 @@ public class LogAggregate(
         switch (logLevel)
         {
             case LogLevel.Critical:
-                logger.Critical(Builder.ToString());
+                logger.Critical(_builder.ToString());
                 break;
 
             case LogLevel.Error:
-                logger.Error(Builder.ToString());
+                logger.Error(_builder.ToString());
                 break;
 
             default: // Log Information
-                logger.Info(Builder.ToString());
+                logger.Info(_builder.ToString());
                 break;
         }
 
-        Builder = new StringBuilder();
+        _builder = new StringBuilder();
+        _step = 0;
     }
 }
