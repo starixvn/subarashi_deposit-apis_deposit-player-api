@@ -22,25 +22,6 @@ public static class IEndpointRouteBuilderExtensions
         return routeHandler;
     }
 
-    public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
-    {
-        var endpointType = typeof(IEndpoints);
-        var assembly = endpointType.Assembly;
-
-        var endpointTypes = assembly.GetExportedTypes()
-            .Where(t => t.IsClass && endpointType.IsAssignableFrom(t));
-
-        foreach (var type in endpointTypes)
-        {
-            if (Activator.CreateInstance(type) is IEndpoints instance)
-            {
-                instance.Map(app);
-            }
-        }
-
-        return app;
-    }
-
     public static RouteHandlerBuilder MapGet(this IEndpointRouteBuilder builder, Delegate handler, [StringSyntax("Route")] string pattern = "")
     {
         return builder.MapGet(pattern, handler)

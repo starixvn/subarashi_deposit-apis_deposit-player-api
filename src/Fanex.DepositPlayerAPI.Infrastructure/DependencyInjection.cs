@@ -2,20 +2,15 @@
 
 using DbSettingConfig;
 using Domain.Repositories;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Repositories;
 using Repositories.Decorate;
-using Settings;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.Configure<AppSetting>(configuration.GetSection(AppSetting.SettingName));
-        services.Configure<SentrySetting>(configuration.GetSection(SentrySetting.SettingName));
-
         services.TryAddSingleton<IShardDbInfoAccessor, ShardDbInfoAccessor>();
 
         services.AddMemoryCache(options => { options.TrackStatistics = true; });

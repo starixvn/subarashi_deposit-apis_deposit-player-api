@@ -1,10 +1,11 @@
-﻿namespace Fanex.DepositPlayerAPI.WebApi.HealthChecks;
+﻿namespace Fanex.DepositPlayerAPI.WebApi.UnitTests.HealthChecks;
 
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NSubstitute;
+using WebApi.HealthChecks;
 
 public class MemoryHealthCheckTest
 {

@@ -1,6 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.WebApi.Configurations;
 
-using Infrastructure.Settings;
+using Domain.Options;
 using Logging;
 using Logging.Sentry;
 using Microsoft.AspNetCore.HttpLogging;

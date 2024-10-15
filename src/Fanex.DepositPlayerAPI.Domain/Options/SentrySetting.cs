@@ -1,4 +1,4 @@
-﻿namespace Fanex.DepositPlayerAPI.Infrastructure.Settings;
+﻿namespace Fanex.DepositPlayerAPI.Domain.Options;
 
 public class SentrySetting
 {

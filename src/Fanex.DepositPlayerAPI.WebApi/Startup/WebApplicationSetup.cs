@@ -1,7 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.WebApi.Startup;
 
 using System.Net.Mime;
-using Infrastructure.Settings;
+using Domain.Options;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;

@@ -3,6 +3,7 @@
 using System.Net;
 using Application.Common.Interfaces;
 using Domain.Extensions;
+using Domain.Options;
 using DTOs.Request;
 using DTOs.Response;
 using Extensions;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Utils;
 
 public class ShadowAccountEndpoints : IEndpoints
@@ -33,13 +35,14 @@ public class ShadowAccountEndpoints : IEndpoints
         CreateShadowAccountRequest request,
         IHttpContextAccessor contextAccessor,
         IMediator mediator,
-        ILogAggregate logAggregate)
+        ILogAggregate logAggregate,
+        IOptions<AppSetting> appSetting)
     {
         logAggregate.AppendHeader("Log Aggregate: Licensee Create Shadow Account");
         var command = ObjectMapper.MapShadowAccountCommand(request);
         var result = await mediator.Send(command);
 
-        if (request.IsDebug)
+        if (request.IsDebug || appSetting.Value.DebugMode)
         {
             logAggregate.SendLog(LogLevel.Information);
         }

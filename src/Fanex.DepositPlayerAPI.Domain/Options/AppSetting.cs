@@ -1,4 +1,4 @@
-﻿namespace Fanex.DepositPlayerAPI.Infrastructure.Settings;
+﻿namespace Fanex.DepositPlayerAPI.Domain.Options;
 
 public class AppSetting
 {
@@ -11,4 +11,6 @@ public class AppSetting
     public string Version { get; set; }
 
     public string Environment { get; set; }
+
+    public bool DebugMode { get; set; }
 }

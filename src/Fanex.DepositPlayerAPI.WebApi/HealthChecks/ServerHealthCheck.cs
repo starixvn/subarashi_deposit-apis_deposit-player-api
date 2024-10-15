@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
-using Infrastructure.Settings;
+using Domain.Options;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 

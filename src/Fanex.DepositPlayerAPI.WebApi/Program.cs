@@ -1,4 +1,4 @@
-using Fanex.DepositPlayerAPI.Presentation.Extensions;
+using Fanex.DepositPlayerAPI.Presentation;
 using Fanex.DepositPlayerAPI.WebApi.Startup;
 using Serilog;
 
