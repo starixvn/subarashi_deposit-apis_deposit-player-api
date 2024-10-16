@@ -1,10 +1,10 @@
-﻿namespace Fanex.DepositPlayerAPI.Application.UnitTests.Common;
+﻿namespace Fanex.DepositPlayerAPI.Infrastructure.UnitTests.Services;
 
 using System.Text;
-using Application.Common;
-using Application.Common.Interfaces;
+using Application.Services;
 using AutoFixture;
 using FluentAssertions;
+using Infrastructure.Services;
 using Logging;
 using NSubstitute;
 

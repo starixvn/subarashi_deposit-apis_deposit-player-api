@@ -1,14 +1,14 @@
-﻿namespace Fanex.DepositPlayerAPI.Application.Common;
+﻿namespace Fanex.DepositPlayerAPI.Infrastructure.Services;
 
 using System.Text;
+using Application.Services;
+using Application.Utils;
 using Domain.Entities;
 using Domain.Params;
 using Domain.Repositories;
-using Interfaces;
 using Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Utils;
 
 public class BackgroundTask(
     IRollbackRepository rollbackRepository,

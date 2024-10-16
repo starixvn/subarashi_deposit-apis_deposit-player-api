@@ -1,7 +1,7 @@
-﻿namespace Fanex.DepositPlayerAPI.Application.Common;
+﻿namespace Fanex.DepositPlayerAPI.Infrastructure.Services;
 
 using System.Text;
-using Interfaces;
+using Application.Services;
 using Microsoft.Extensions.Logging;
 using ILogger = Logging.ILogger;
 

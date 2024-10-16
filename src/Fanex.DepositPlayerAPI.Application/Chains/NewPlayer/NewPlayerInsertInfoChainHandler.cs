@@ -1,7 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewPlayer;
 
 using System.Text;
-using Common.Interfaces;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Extensions;
@@ -10,6 +9,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using Logging;
+using Services;
 
 public class NewPlayerInsertInfoChainHandler(
     ILogger logger,

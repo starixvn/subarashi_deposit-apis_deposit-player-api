@@ -4,8 +4,6 @@ using Chains;
 using Chains.NewPlayer;
 using Chains.NewShadowAccount;
 using Chains.ReactivatePlayer;
-using Common;
-using Common.Interfaces;
 using Domain.Entities;
 using Domain.Params.Chains;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +14,6 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddMediatR(config => config.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
-
-        services.TryAddScoped<ILogAggregate, LogAggregate>();
-        services.TryAddScoped<IDateTimeProvider, SystemDateTimeProvider>();
-        services.TryAddScoped<IBackgroundTask, BackgroundTask>();
 
         services.TryAddTransient<IChainHandlerFactory, ChainHandlerFactory>();
         // new player chain

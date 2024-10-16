@@ -1,4 +1,4 @@
-﻿namespace Fanex.DepositPlayerAPI.Infrastructure.Constants;
+﻿namespace Fanex.DepositPlayerAPI.Application.Constants;
 
 public static class CacheKeys
 {

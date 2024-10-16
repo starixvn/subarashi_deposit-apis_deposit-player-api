@@ -1,7 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.Presentation.UnitTests.Endpoints;
 
 using Application.Commands;
-using Application.Common.Interfaces;
+using Application.Services;
 using AutoFixture;
 using Domain.Entities;
 using Domain.Errors;

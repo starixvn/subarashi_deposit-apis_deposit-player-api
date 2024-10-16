@@ -1,7 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.ReactivatePlayer;
 
 using System.Text;
-using Common.Interfaces;
+using Constants;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Params.Chains;
@@ -10,13 +10,15 @@ using Domain.Results;
 using Logging;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Services;
 using Utils;
 
 public class ReactivatePlayerGetServerDbConfigChainHandler(
     ILogger logger,
     ILogAggregate logAggregate,
     IHttpContextAccessor httpContextAccessor,
-    IServerDbConfigRepository serverDbConfigRepository)
+    IServerDbConfigRepository serverDbConfigRepository,
+    ICacheProvider cacheProvider)
     : ChainBaseNonResultHandler<ReactivatePlayerChainParam>(logger, logAggregate)
 {
     public override bool IsBreakOnError => true;
@@ -27,19 +29,13 @@ public class ReactivatePlayerGetServerDbConfigChainHandler(
 
     public override async Task<ServiceResult> HandleInternal(ReactivatePlayerChainParam request)
     {
-        var allServerDbConfig = new Dictionary<int, ServerDbConfig>();
-        try
-        {
-            allServerDbConfig = await serverDbConfigRepository.GetAllServerDbConfigAsync();
-        }
-        catch (Exception ex)
-        {
-            await Logger.ErrorAsync(ErrorMessageUtils.GenerateMessage(ex));
-        }
+        var allServerDbConfig = cacheProvider.GetValueFromCache(CacheKeys.ServerDbConfigAll, new Dictionary<int, ServerDbConfig>());
 
         var result = allServerDbConfig.TryGetValue(request.Recommend, out var dbConfig)
             ? dbConfig
-            : await serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.Recommend);
+            : await cacheProvider.GetOrCreateFromCacheWithoutExpiredAsync(
+                CacheKeys.ServerDbConfigByAgentId(request.Recommend),
+                () => serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.Recommend));
 
         if (result is null)
         {

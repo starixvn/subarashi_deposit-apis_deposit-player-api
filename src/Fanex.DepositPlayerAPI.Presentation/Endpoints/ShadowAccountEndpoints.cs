@@ -1,7 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.Presentation.Endpoints;
 
 using System.Net;
-using Application.Common.Interfaces;
+using Application.Services;
 using Domain.Extensions;
 using Domain.Options;
 using DTOs.Request;

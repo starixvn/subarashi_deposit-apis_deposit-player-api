@@ -1,12 +1,12 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewPlayer;
 
-using Common.Interfaces;
 using Domain.Entities;
 using Domain.Extensions;
 using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using Logging;
+using Services;
 
 public class NewPlayerBalanceDebitInitializeChainHandler(
     ILogger logger,

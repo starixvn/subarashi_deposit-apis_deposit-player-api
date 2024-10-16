@@ -1,6 +1,5 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.UnitTests.Handlers;
 
-using Application.Common.Interfaces;
 using Application.Handlers;
 using AutoFixture;
 using Chains;
@@ -13,6 +12,7 @@ using FluentAssertions;
 using Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using Services;
 
 public class NewShadowAccountHandlerTest
 {

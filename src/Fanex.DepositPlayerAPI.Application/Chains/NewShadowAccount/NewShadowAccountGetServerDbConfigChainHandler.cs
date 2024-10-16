@@ -1,7 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewShadowAccount;
 
 using System.Text;
-using Common.Interfaces;
+using Constants;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Params.Chains;
@@ -10,13 +10,15 @@ using Domain.Results;
 using Logging;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using Services;
 using Utils;
 
 public class NewShadowAccountGetServerDbConfigChainHandler(
     ILogger logger,
     ILogAggregate logAggregate,
     IServerDbConfigRepository serverDbConfigRepository,
-    IHttpContextAccessor httpContextAccessor)
+    IHttpContextAccessor httpContextAccessor,
+    ICacheProvider cacheProvider)
     : ChainBaseHandler<NewShadowAccountChainParam, ShadowAccount>(logger, logAggregate)
 {
     public override bool IsBreakOnError => true;
@@ -25,19 +27,13 @@ public class NewShadowAccountGetServerDbConfigChainHandler(
 
     public override async Task<ServiceResult<ShadowAccount>> HandleInternal(NewShadowAccountChainParam request)
     {
-        var allServerDbConfig = new Dictionary<int, ServerDbConfig>();
-        try
-        {
-            allServerDbConfig = await serverDbConfigRepository.GetAllServerDbConfigAsync();
-        }
-        catch (Exception ex)
-        {
-            await Logger.ErrorAsync(ErrorMessageUtils.GenerateMessage(ex));
-        }
+        var allServerDbConfig = cacheProvider.GetValueFromCache(CacheKeys.ServerDbConfigAll, new Dictionary<int, ServerDbConfig>());
 
         var result = allServerDbConfig.TryGetValue(request.AgentId, out var dbConfig)
             ? dbConfig
-            : await serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.AgentId);
+            : await cacheProvider.GetOrCreateFromCacheWithoutExpiredAsync(
+                CacheKeys.ServerDbConfigByAgentId(request.AgentId),
+                () => serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(request.AgentId));
 
         if (result is null)
         {

@@ -15,7 +15,6 @@
 	<PackageReference Include="Fanex.Data.Repository" Version="4.2.5.3" />
 	<PackageReference Include="Fanex.Data.SqlServer" Version="4.2.5.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
-    <PackageReference Include="Scrutor" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>

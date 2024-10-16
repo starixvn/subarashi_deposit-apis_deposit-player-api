@@ -1,11 +1,11 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.ReactivatePlayer;
 
-using Common.Interfaces;
 using Domain.Entities;
 using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using Logging;
+using Services;
 
 public class ReactivatePlayerWriteLogDataChainHandler(
     ILogger logger,

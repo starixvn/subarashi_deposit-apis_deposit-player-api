@@ -1,11 +1,11 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains;
 
 using System.Text;
-using Common.Interfaces;
 using Domain.Errors;
 using Domain.Results;
 using Logging;
 using Newtonsoft.Json;
+using Services;
 using Utils;
 
 public abstract class ChainBaseNonResultHandler<TRequest>(

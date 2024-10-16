@@ -1,11 +1,12 @@
 ﻿namespace Fanex.DepositPlayerAPI.Infrastructure;
 
+using Application.Services;
 using DbSettingConfig;
 using Domain.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Repositories;
-using Repositories.Decorate;
+using Services;
 
 public static class DependencyInjection
 {
@@ -15,7 +16,14 @@ public static class DependencyInjection
 
         services.AddMemoryCache(options => { options.TrackStatistics = true; });
 
+        // services
+        services.TryAddScoped<ILogAggregate, LogAggregate>();
+        services.TryAddScoped<IDateTimeProvider, SystemDateTimeProvider>();
+        services.TryAddScoped<IBackgroundTask, BackgroundTask>();
+        services.TryAddScoped<ICacheProvider, CacheProvider>();
+
         // repositories
+        services.TryAddScoped<IServerDbConfigRepository, ServerDbConfigRepository>();
         services.TryAddTransient<IRollbackRepository, RollbackRepository>();
         services.TryAddTransient<IPlayerRepository, PlayerRepository>();
         services.TryAddTransient<IAffiliateRepository, AffiliateRepository>();
@@ -24,14 +32,6 @@ public static class DependencyInjection
         services.TryAddTransient<ILogDbRepository, LogDbRepository>();
         services.TryAddSingleton<IDbFactory, DbFactory>();
 
-        services.AddDecorateRepository();
-
         return services;
-    }
-
-    private static void AddDecorateRepository(this IServiceCollection services)
-    {
-        services.TryAddScoped<IServerDbConfigRepository, ServerDbConfigRepository>();
-        services.TryDecorate<IServerDbConfigRepository, CachedServerDbConfigRepository>();
     }
 }

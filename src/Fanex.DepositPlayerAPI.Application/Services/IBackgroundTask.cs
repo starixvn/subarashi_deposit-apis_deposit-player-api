@@ -1,4 +1,4 @@
-﻿namespace Fanex.DepositPlayerAPI.Application.Common.Interfaces;
+﻿namespace Fanex.DepositPlayerAPI.Application.Services;
 
 using Domain.Entities;
 using Domain.Params;

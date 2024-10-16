@@ -1,6 +1,6 @@
-﻿namespace Fanex.DepositPlayerAPI.Application.Common;
+﻿namespace Fanex.DepositPlayerAPI.Infrastructure.Services;
 
-using Interfaces;
+using Application.Services;
 
 public class SystemDateTimeProvider : IDateTimeProvider
 {

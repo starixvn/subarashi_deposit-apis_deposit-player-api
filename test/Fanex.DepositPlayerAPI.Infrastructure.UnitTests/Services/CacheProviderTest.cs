@@ -1,11 +1,11 @@
-﻿namespace Fanex.DepositPlayerAPI.Infrastructure.UnitTests.Repositories.Decorate;
+﻿namespace Fanex.DepositPlayerAPI.Infrastructure.UnitTests.Services;
 
 using AutoFixture;
 using Microsoft.Extensions.Caching.Memory;
 using NSubstitute;
 using NSubstitute.ClearExtensions;
 
-public abstract class CachedRepositoryBaseTest : IDisposable
+public class CacheProviderTest : IDisposable
 {
     protected readonly IFixture Fixture = new Fixture();
     protected readonly IMemoryCache MemoryCache = Substitute.For<IMemoryCache>();
@@ -15,7 +15,7 @@ public abstract class CachedRepositoryBaseTest : IDisposable
         MemoryCache.ClearSubstitute();
     }
 
-    protected void SetupCacheData(string key, object data, Func<bool>? func = null)
+    private void SetupCacheData(string key, object data, Func<bool>? func = null)
     {
         MemoryCache
             .TryGetValue(Arg.Is<object>(k => k.ToString() == key), out _)
@@ -26,7 +26,7 @@ public abstract class CachedRepositoryBaseTest : IDisposable
             });
     }
 
-    protected void SetupNoCacheData(string key)
+    private void SetupNoCacheData(string key)
     {
         MemoryCache
             .TryGetValue(Arg.Is<object>(k => k.ToString() == key), out _)
