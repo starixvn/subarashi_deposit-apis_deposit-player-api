@@ -61,7 +61,7 @@ public class ReactivatePlayerInsertSettingChainHandler(
 
     public override void HandleSuccess(ReactivatePlayerChainParam request)
     {
-        LogAggregate.AppendLog("[ReactivatePlayer] - Run Success Handler Task: WriteLogData, WriteLogTracking, InsertDefaultCommLicenseeDb");
+        LogAggregate.AppendLog("[ReactivatePlayer] - Run Success Handler Task: WriteLogData, WriteLogTracking, InsertDefaultCommLicenseeDb, ReinitBalanceReactivatePlayer");
 
         backgroundTask.WriteLogData(ChainName, request.LogData);
 
