@@ -1,5 +1,4 @@
 using Fanex.DepositPlayerAPI.Presentation;
-using Fanex.DepositPlayerAPI.WebApi.HostedServices;
 using Fanex.DepositPlayerAPI.WebApi.Startup;
 using Serilog;
 
@@ -8,16 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 builder.Services.AddDependencyInjection(builder.Configuration);
-builder.Services.AddHostedService<SetupDbServerConfigCacheHostedService>();
 
 var app = builder.Build();
 
-app.ConfigureHealthCheck();
 app.UseForwardedHeaders();
+app.ConfigureHealthCheck();
 
 app.UseWhen(
     context => context.Request.Path.StartsWithSegments("/api"),
-    builder => builder.UseHttpLogging());
+    applicationBuilder => applicationBuilder.UseHttpLogging());
 
 app.ConfigureExceptionHandler(builder.Configuration);
 

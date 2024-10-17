@@ -7,7 +7,9 @@ using Data;
 using Domain.Options;
 using ExceptionHandler;
 using HealthChecks;
+using HostedServices;
 using Infrastructure;
+using Microsoft.AspNetCore.HttpOverrides;
 using Presentation;
 
 public static class DependencyInjection
@@ -29,6 +31,16 @@ public static class DependencyInjection
                 .AllowAnyHeader()));
 
         services.Configure<RouteHandlerOptions>(options => { options.ThrowOnBadRequest = true; });
+
+        services.AddHostedService<SetupDbServerConfigCacheHostedService>();
+
+        services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+            options.ForwardLimit = null;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
 
         services
             .AddHealthChecks()
