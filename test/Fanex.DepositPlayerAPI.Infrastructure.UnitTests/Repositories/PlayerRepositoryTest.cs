@@ -1,6 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.Infrastructure.UnitTests.Repositories;
 
 using System.Collections;
+using System.Data;
 using AutoFixture;
 using Constants;
 using Data;
@@ -11,6 +12,7 @@ using Domain.Repositories;
 using FluentAssertions;
 using Infrastructure.Repositories;
 using Infrastructure.Utils;
+using Microsoft.Data.SqlClient;
 using NSubstitute;
 
 [Collection("DbFactoryFixture")]
@@ -575,6 +577,16 @@ public class PlayerRepositoryTest : RepositoryBaseTest
             { DbParam.CustId, data.CustId },
             { DbParam.Username, data.Username }
         });
+
+        ObjectDb.GetAddedParameters().Returns([
+            new SqlParameter
+            {
+                Direction = ParameterDirection.Input,
+                ParameterName = DbParam.CustId,
+                Value = param.CustId
+            }
+        ]);
+
         var capturedParams = DbUtils.CaptureInputOutputParams(ObjectDb, [DbParam.CustId]);
         var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data, capturedParams);
 
@@ -602,6 +614,16 @@ public class PlayerRepositoryTest : RepositoryBaseTest
             { DbParam.CustId, data.CustId },
             { DbParam.Username, data.Username }
         });
+
+        ObjectDb.GetAddedParameters().Returns([
+            new SqlParameter
+            {
+                Direction = ParameterDirection.Input,
+                ParameterName = DbParam.CustId,
+                Value = param.CustId
+            }
+        ]);
+
         var capturedParams = DbUtils.CaptureInputOutputParams(ObjectDb, [DbParam.CustId]);
         var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data, capturedParams);
 

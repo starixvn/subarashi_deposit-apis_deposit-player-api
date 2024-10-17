@@ -67,6 +67,6 @@ public class ServerHealthCheckTest
         result.Status.Should().Be(HealthStatus.Healthy);
         result.Description.Should().Be("Server Info");
         result.Exception.Should().BeNull();
-        result.Data.Should().BeEquivalentTo(expected);
+        result.Data.Should().BeEquivalentTo(expected, options => options.Excluding(x => x["Server Time"]));
     }
 }

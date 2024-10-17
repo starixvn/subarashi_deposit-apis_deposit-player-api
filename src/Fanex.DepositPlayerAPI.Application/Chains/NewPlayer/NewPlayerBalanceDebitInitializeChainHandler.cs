@@ -40,8 +40,7 @@ public class NewPlayerBalanceDebitInitializeChainHandler(
 
     public override void HandleError(NewPlayerChainParam request)
     {
-        LogAggregate.AppendLog(
-            "[NewPlayer] - Run Error Handler Task: RollbackFullNewPlayer");
+        LogAggregate.AppendLog("[NewPlayer] - Run Error Handler Task: RollbackFullNewPlayer");
 
         backgroundTask.RollbackFullNewPlayer(ChainName, request.CustId);
     }

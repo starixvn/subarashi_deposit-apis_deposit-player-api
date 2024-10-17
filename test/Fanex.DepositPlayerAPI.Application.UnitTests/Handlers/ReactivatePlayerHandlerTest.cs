@@ -1,8 +1,8 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.UnitTests.Handlers;
 
+using Application.Chains;
 using Application.Handlers;
 using AutoFixture;
-using Chains;
 using Commands;
 using Domain.Errors;
 using Domain.Params.Chains;
