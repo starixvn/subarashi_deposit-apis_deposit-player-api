@@ -63,7 +63,7 @@ public class CacheProvider(IMemoryCache cache) : ICacheProvider
 
     public T GetValueFromCache<T>(string key, T defaultValue = default)
     {
-        return !cache.TryGetValue(key, out T data) ? data : defaultValue;
+        return cache.TryGetValue(key, out T data) ? data : defaultValue;
     }
 
     public void RemoveFromCache(string key)
