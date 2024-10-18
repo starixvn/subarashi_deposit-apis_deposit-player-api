@@ -6,14 +6,14 @@ using Infrastructure.DbSettingConfig;
 using NSubstitute;
 using NSubstitute.ClearExtensions;
 
-public abstract class RepositoryBaseTest : IDisposable
+public abstract class RepositoryTestBase : IDisposable
 {
     protected readonly DbFactoryFixture DbFactoryFixture;
     protected readonly IFixture Fixture;
     protected readonly IObjectDb ObjectDb;
     protected readonly IShardDbInfoAccessor ShardDbInfoAccessor;
 
-    protected RepositoryBaseTest(DbFactoryFixture dbFactoryFixture)
+    protected RepositoryTestBase(DbFactoryFixture dbFactoryFixture)
     {
         Fixture = new Fixture();
         ObjectDb = Substitute.For<IObjectDb>();

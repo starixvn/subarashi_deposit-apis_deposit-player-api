@@ -12,7 +12,7 @@ using Infrastructure.Utils;
 using NSubstitute;
 
 [Collection("DbFactoryFixture")]
-public class AffiliateRepositoryTest(DbFactoryFixture dbFactoryFixture) : RepositoryBaseTest(dbFactoryFixture)
+public class AffiliateRepositoryTest(DbFactoryFixture dbFactoryFixture) : RepositoryTestBase(dbFactoryFixture)
 {
     private readonly IAffiliateRepository _affiliateRepository = new AffiliateRepository(dbFactoryFixture);
 

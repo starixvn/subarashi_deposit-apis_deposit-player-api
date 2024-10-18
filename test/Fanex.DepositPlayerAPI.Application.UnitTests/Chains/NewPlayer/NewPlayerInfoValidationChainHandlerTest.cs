@@ -8,36 +8,30 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
-using Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Services;
 
-public class NewPlayerInfoValidationChainHandlerTest
+public class NewPlayerInfoValidationChainHandlerTest : ChainHandlerTestBase
 {
-    private readonly IFixture _fixture;
     private readonly NewPlayerInfoValidationChainHandler _handler;
-    private readonly ILogAggregate _logAggregate;
-    private readonly ILogger _logger;
     private readonly IPlayerRepository _playerRepository;
 
     public NewPlayerInfoValidationChainHandlerTest()
     {
-        _fixture = new Fixture();
-        _logger = Substitute.For<ILogger>();
-        _logAggregate = Substitute.For<ILogAggregate>();
         _playerRepository = Substitute.For<IPlayerRepository>();
-        _handler = new NewPlayerInfoValidationChainHandler(_logger, _logAggregate, _playerRepository);
+        _handler = new NewPlayerInfoValidationChainHandler(Logger, LogAggregate, _playerRepository);
     }
 
     [Fact]
     public async Task ChainHandler_Should_ReturnFailure_WhenValidateFailure()
     {
         // Arrange
-        var param = _fixture.Create<NewPlayerChainParam>();
+        var param = Fixture.Create<NewPlayerChainParam>();
+        var extraInfo = Fixture.Create<string>();
+
         _playerRepository
             .ValidatePlayerInfoAsync(Arg.Any<ValidatePlayerInfoParam>())
-            .Returns(ServiceResult<ValidatePlayerInfoOutputParam>.Failure(ServiceErrors.SystemError));
+            .Returns(ServiceResult<ValidatePlayerInfoOutputParam>.Failure(ServiceErrors.SystemError, extraInfo));
 
         // Action
         var result = await _handler.Handle(param);
@@ -45,55 +39,62 @@ public class NewPlayerInfoValidationChainHandlerTest
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.ExtraInfo.Should().Be(extraInfo);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).ValidatePlayerInfoAsync(Arg.Is<ValidatePlayerInfoParam>(
             x => x.AgentId == param.AgentId && x.DepositUserName == param.DepositUserName));
+        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
 
     [Fact]
     public async Task ChainHandler_Should_ReturnSuccess_WhenValidateSuccess()
     {
         // Arrange
-        var param = _fixture.Create<NewPlayerChainParam>();
-        var outputParam = _fixture.Create<ValidatePlayerInfoOutputParam>();
+        var request = Fixture.Create<NewPlayerChainParam>();
+        var outputParam = Fixture.Create<ValidatePlayerInfoOutputParam>();
         _playerRepository
             .ValidatePlayerInfoAsync(Arg.Any<ValidatePlayerInfoParam>())
             .Returns(ServiceResult<ValidatePlayerInfoOutputParam>.Success(outputParam));
 
         // Action
-        var result = await _handler.Handle(param);
+        var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Error.Should().BeEquivalentTo(ServiceErrors.None);
         result.Result.Should().BeNull();
-        param.CurrencyName.Should().Be(outputParam.CurrencyName);
-        param.Site.Should().Be(outputParam.Site);
-        param.Username2.Should().Be(outputParam.Username2);
-        param.Recommend.Should().Be(outputParam.Recommend);
+        request.CurrencyName.Should().Be(outputParam.CurrencyName);
+        request.Site.Should().Be(outputParam.Site);
+        request.Username2.Should().Be(outputParam.Username2);
+        request.Recommend.Should().Be(outputParam.Recommend);
         await _playerRepository.Received(1).ValidatePlayerInfoAsync(Arg.Is<ValidatePlayerInfoParam>(
-            x => x.AgentId == param.AgentId && x.DepositUserName == param.DepositUserName));
+            x => x.AgentId == request.AgentId && x.DepositUserName == request.DepositUserName));
+        Logger.DidNotReceive().Error(Arg.Any<string>());
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
 
     [Fact]
     public async Task ChainHandler_Should_LogError_WhenValidateThrowException()
     {
         // Arrange
-        var param = _fixture.Create<NewPlayerChainParam>();
-        var outputParam = _fixture.Create<ValidatePlayerInfoOutputParam>();
+        var param = Fixture.Create<NewPlayerChainParam>();
+        var outputParam = Fixture.Create<ValidatePlayerInfoOutputParam>();
         _playerRepository.ValidatePlayerInfoAsync(Arg.Any<ValidatePlayerInfoParam>()).Throws<Exception>();
 
         // Action
         var result = await _handler.Handle(param);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
         result.Result.Should().BeNull();
-        result.Error.Should().Be(ServiceErrors.SystemError);
         await _playerRepository.Received(1).ValidatePlayerInfoAsync(Arg.Is<ValidatePlayerInfoParam>(
             x => x.AgentId == param.AgentId && x.DepositUserName == param.DepositUserName));
-        await _logger.Received(1).ErrorAsync(Arg.Any<string>());
-        _logAggregate.Received().AppendLog(Arg.Any<string>());
-        _logAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
 }

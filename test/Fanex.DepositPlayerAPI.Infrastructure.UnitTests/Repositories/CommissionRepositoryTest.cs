@@ -12,7 +12,7 @@ using Infrastructure.Utils;
 using NSubstitute;
 
 [Collection("DbFactoryFixture")]
-public class CommissionRepositoryTest : RepositoryBaseTest
+public class CommissionRepositoryTest : RepositoryTestBase
 {
     private readonly ICommissionRepository _commissionRepository;
 

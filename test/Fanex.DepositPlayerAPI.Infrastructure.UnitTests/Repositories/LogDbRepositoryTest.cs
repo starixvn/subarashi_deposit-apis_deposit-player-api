@@ -9,7 +9,7 @@ using Infrastructure.Repositories;
 using NSubstitute;
 
 [Collection("DbFactoryFixture")]
-public class LogDbRepositoryTest : RepositoryBaseTest
+public class LogDbRepositoryTest : RepositoryTestBase
 {
     private readonly ILogDbRepository _logDbRepository;
 

@@ -8,7 +8,7 @@ using Infrastructure.Repositories;
 using NSubstitute;
 
 [Collection("DbFactoryFixture")]
-public class RollbackRepositoryTest : RepositoryBaseTest
+public class RollbackRepositoryTest : RepositoryTestBase
 {
     private readonly IRollbackRepository _rollbackRepository;
 

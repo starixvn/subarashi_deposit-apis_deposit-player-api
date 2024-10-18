@@ -16,7 +16,7 @@ using Microsoft.Data.SqlClient;
 using NSubstitute;
 
 [Collection("DbFactoryFixture")]
-public class PlayerRepositoryTest : RepositoryBaseTest
+public class PlayerRepositoryTest : RepositoryTestBase
 {
     private readonly IMultiResultReader _multiResultReader;
     private readonly IPlayerRepository _playerRepository;

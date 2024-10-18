@@ -11,7 +11,7 @@ using NSubstitute;
 using Utils;
 
 [Collection("DbFactoryFixture")]
-public class ServerDbConfigRepositoryTest : RepositoryBaseTest
+public class ServerDbConfigRepositoryTest : RepositoryTestBase
 {
     private static readonly Dictionary<string, string> ColumnMapping = new()
     {

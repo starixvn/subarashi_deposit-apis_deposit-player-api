@@ -98,8 +98,7 @@ public abstract class ChainBaseHandler<TRequest, TResponse>(
         messageBuilder.AppendLine($"ERROR: An error occurred in the {ChainName} process.");
         messageBuilder.AppendLine($"\nEXTRA INFO: {response.ExtraInfo}");
         messageBuilder.AppendLine($"\nREQUEST INFO: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
-        messageBuilder.AppendLine(
-            $"\nRESULT INFO: {JsonConvert.SerializeObject(response.Error, Formatting.Indented)}");
+        messageBuilder.AppendLine($"\nRESULT INFO: {JsonConvert.SerializeObject(response.Error, Formatting.Indented)}");
         Logger.Error(messageBuilder.ToString());
     }
 

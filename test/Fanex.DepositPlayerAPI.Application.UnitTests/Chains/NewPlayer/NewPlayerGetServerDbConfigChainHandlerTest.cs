@@ -8,33 +8,26 @@ using Domain.Errors;
 using Domain.Params.Chains;
 using Domain.Repositories;
 using FluentAssertions;
-using Logging;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Services;
 
-public class NewPlayerGetServerDbConfigChainHandlerTest
+public class NewPlayerGetServerDbConfigChainHandlerTest : ChainHandlerTestBase
 {
     private readonly ICacheProvider _cacheProvider;
-    private readonly IFixture _fixture;
     private readonly NewPlayerGetServerDbConfigChainHandler _handler;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogAggregate _logAggregate;
-    private readonly ILogger _logger;
     private readonly IServerDbConfigRepository _serverDbConfigRepository;
 
     public NewPlayerGetServerDbConfigChainHandlerTest()
     {
-        _fixture = new Fixture();
-        _logger = Substitute.For<ILogger>();
-        _logAggregate = Substitute.For<ILogAggregate>();
         _serverDbConfigRepository = Substitute.For<IServerDbConfigRepository>();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _cacheProvider = Substitute.For<ICacheProvider>();
         _handler = new NewPlayerGetServerDbConfigChainHandler(
-            _logger,
-            _logAggregate,
+            Logger,
+            LogAggregate,
             _serverDbConfigRepository,
             _httpContextAccessor,
             _cacheProvider);
@@ -44,7 +37,7 @@ public class NewPlayerGetServerDbConfigChainHandlerTest
     public async Task ChainHandler_Should_Not_CallGetServerDbConfigByAgentId_WhenHitCache()
     {
         // Arrange
-        var dbConfig = _fixture.Create<ServerDbConfig>();
+        var dbConfig = Fixture.Create<ServerDbConfig>();
         var newPlayerChainParam = new NewPlayerChainParam { AgentId = dbConfig.CustId };
         _cacheProvider
             .GetValueFromCache(CacheKeys.ServerDbConfigAll, Arg.Any<Dictionary<int, ServerDbConfig>>())
@@ -60,14 +53,17 @@ public class NewPlayerGetServerDbConfigChainHandlerTest
         result.IsSuccess.Should().BeTrue();
         result.Error.Should().BeEquivalentTo(ServiceErrors.None);
         await _serverDbConfigRepository.DidNotReceive().GetServerDbConfigByAgentIdAsync(Arg.Any<int>());
-        AssertReceivedHttpContextAccessor(dbConfig);
+        Logger.DidNotReceive().Error(Arg.Any<string>());
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        AssertReceivedHttpContextAccessor(dbConfig, _httpContextAccessor);
     }
 
     [Fact]
     public async Task ChainHandler_Should_CallGetServerDbConfigByAgentId_WhenNotHitCache()
     {
         // Arrange
-        var dbConfig = _fixture.Create<ServerDbConfig>();
+        var dbConfig = Fixture.Create<ServerDbConfig>();
         var newPlayerChainParam = new NewPlayerChainParam { AgentId = dbConfig.CustId };
         _cacheProvider
             .GetValueFromCache(CacheKeys.ServerDbConfigAll, Arg.Any<Dictionary<int, ServerDbConfig>>())
@@ -86,14 +82,17 @@ public class NewPlayerGetServerDbConfigChainHandlerTest
         result.IsSuccess.Should().BeTrue();
         result.Error.Should().BeEquivalentTo(ServiceErrors.None);
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
-        AssertReceivedHttpContextAccessor(dbConfig);
+        Logger.DidNotReceive().Error(Arg.Any<string>());
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        AssertReceivedHttpContextAccessor(dbConfig, _httpContextAccessor);
     }
 
     [Fact]
     public async Task ChainHandler_Should_ReturnFailure_WhenNotFoundServerDbConfigByAgentId()
     {
         // Arrange
-        var dbConfig = _fixture.Create<ServerDbConfig>();
+        var dbConfig = Fixture.Create<ServerDbConfig>();
         var newPlayerChainParam = new NewPlayerChainParam { AgentId = dbConfig.CustId };
         _cacheProvider
             .GetValueFromCache(CacheKeys.ServerDbConfigAll, Arg.Any<Dictionary<int, ServerDbConfig>>())
@@ -114,14 +113,17 @@ public class NewPlayerGetServerDbConfigChainHandlerTest
         result.ExtraInfo.Should().StartWith($"[NewPlayer] - DB server configuration not found for AgentId={dbConfig.CustId}.");
         result.Result.Should().BeNull();
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
-        AssertDidNotReceivedHttpContextAccessor(dbConfig);
+        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        AssertDidNotReceivedHttpContextAccessor(dbConfig, _httpContextAccessor);
     }
 
     [Fact]
     public async Task ChainHandler_Should_LogError_WhenGetServerDbConfigThrowException()
     {
         // Arrange
-        var dbConfig = _fixture.Create<ServerDbConfig>();
+        var dbConfig = Fixture.Create<ServerDbConfig>();
         var newPlayerChainParam = new NewPlayerChainParam { AgentId = dbConfig.CustId };
         _cacheProvider
             .GetValueFromCache(CacheKeys.ServerDbConfigAll, Arg.Any<Dictionary<int, ServerDbConfig>>())
@@ -138,31 +140,13 @@ public class NewPlayerGetServerDbConfigChainHandlerTest
         var result = await _handler.Handle(newPlayerChainParam);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
+        result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
         result.Result.Should().BeNull();
-        result.Error.Should().Be(ServiceErrors.SystemError);
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
-        AssertDidNotReceivedHttpContextAccessor(dbConfig);
-        await _logger.Received(1).ErrorAsync(Arg.Any<string>());
-        _logAggregate.Received().AppendLog(Arg.Any<string>());
-        _logAggregate.Received(1).AppendStepLog(Arg.Any<string>());
-    }
-
-    private void AssertReceivedHttpContextAccessor(ServerDbConfig config)
-    {
-        _httpContextAccessor.HttpContext.Items.Received(1)["CustDbGroupIdKey"] = config.CustDbGroupId;
-        _httpContextAccessor.HttpContext.Items.Received(1)["SiteDbGroupIdKey"] = config.SiteDbGroupId;
-        _httpContextAccessor.HttpContext.Items.Received(1)["CustDbServerKey"] = config.CustDbServer;
-        _httpContextAccessor.HttpContext.Items.Received(1)["SiteDbServerKey"] = config.SiteDbServer;
-        _httpContextAccessor.HttpContext.Items.Received(1)["SiteKey"] = config.Site;
-    }
-
-    private void AssertDidNotReceivedHttpContextAccessor(ServerDbConfig config)
-    {
-        _httpContextAccessor.HttpContext.Items.DidNotReceive()["CustDbGroupIdKey"] = config.CustDbGroupId;
-        _httpContextAccessor.HttpContext.Items.DidNotReceive()["SiteDbGroupIdKey"] = config.SiteDbGroupId;
-        _httpContextAccessor.HttpContext.Items.DidNotReceive()["CustDbServerKey"] = config.CustDbServer;
-        _httpContextAccessor.HttpContext.Items.DidNotReceive()["SiteDbServerKey"] = config.SiteDbServer;
-        _httpContextAccessor.HttpContext.Items.DidNotReceive()["SiteKey"] = config.Site;
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        AssertDidNotReceivedHttpContextAccessor(dbConfig, _httpContextAccessor);
     }
 }

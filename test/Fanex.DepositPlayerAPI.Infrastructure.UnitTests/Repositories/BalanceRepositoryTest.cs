@@ -13,7 +13,7 @@ using Infrastructure.Utils;
 using NSubstitute;
 
 [Collection("DbFactoryFixture")]
-public class BalanceRepositoryTest : RepositoryBaseTest
+public class BalanceRepositoryTest : RepositoryTestBase
 {
     private readonly IBalanceRepository _balanceRepository;
 

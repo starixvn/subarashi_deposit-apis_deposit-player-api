@@ -1,43 +1,35 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.UnitTests.Chains.NewPlayer;
 
 using Application.Chains.NewPlayer;
+using AutoFixture;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
-using Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Services;
 
-public class NewPlayerBalanceDebitInitializeChainHandlerTest
+public class NewPlayerBalanceDebitInitializeChainHandlerTest : ChainHandlerTestBase
 {
     private readonly IBackgroundTask _backgroundTask;
     private readonly IBalanceRepository _balanceRepository;
     private readonly NewPlayerBalanceDebitInitializeChainHandler _handler;
-    private readonly ILogAggregate _logAggregate;
-    private readonly ILogger _logger;
 
     public NewPlayerBalanceDebitInitializeChainHandlerTest()
     {
-        _logger = Substitute.For<ILogger>();
-        _logAggregate = Substitute.For<ILogAggregate>();
         _backgroundTask = Substitute.For<IBackgroundTask>();
         _balanceRepository = Substitute.For<IBalanceRepository>();
-        _handler = new NewPlayerBalanceDebitInitializeChainHandler(_logger, _logAggregate, _balanceRepository, _backgroundTask);
+        _handler = new NewPlayerBalanceDebitInitializeChainHandler(Logger, LogAggregate, _balanceRepository, _backgroundTask);
     }
 
     [Fact]
     public async Task ChainHandler_Should_CallInitializeNewPlayerDebitBalanceAsync()
     {
         // Arrange
-        var data = new Player
-        {
-            CustId = 123,
-            Username = "UserTest"
-        };
+        var data = Fixture.Create<Player>();
         var newPlayerChainParam = new NewPlayerChainParam { CustId = data.CustId, Username = data.Username };
         _balanceRepository.InitializeNewPlayerDebitBalanceAsync(data.CustId).Returns(ServiceResult<Player>.Success(null!));
 
@@ -49,6 +41,9 @@ public class NewPlayerBalanceDebitInitializeChainHandlerTest
         result.Error.Should().BeEquivalentTo(ServiceErrors.None);
         result.Result.Should().BeEquivalentTo(data);
         await _balanceRepository.Received(1).InitializeNewPlayerDebitBalanceAsync(data.CustId);
+        Logger.DidNotReceive().Error(Arg.Any<string>());
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
 
     [Theory]
@@ -58,7 +53,7 @@ public class NewPlayerBalanceDebitInitializeChainHandlerTest
     {
         // Arrange
         var custId = 123;
-        var extraInfo = "Initialize New Player Debit Balance failed";
+        var extraInfo = Fixture.Create<string>();
         var newPlayerChainParam = new NewPlayerChainParam { CustId = custId };
         var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
         _balanceRepository.InitializeNewPlayerDebitBalanceAsync(custId).Returns(ServiceResult<Player>.Failure(error, extraInfo));
@@ -72,9 +67,9 @@ public class NewPlayerBalanceDebitInitializeChainHandlerTest
         result.Error.Should().Be(error);
         result.ExtraInfo.Should().Be(extraInfo);
         await _balanceRepository.Received(1).InitializeNewPlayerDebitBalanceAsync(custId);
-        _logger.Received(1).Error(Arg.Any<string>());
-        _logAggregate.Received().AppendLog(Arg.Any<string>());
-        _logAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).RollbackFullNewPlayer(_handler.ChainName, custId);
     }
 
@@ -82,12 +77,8 @@ public class NewPlayerBalanceDebitInitializeChainHandlerTest
     public async Task ChainHandler_Should_ReturnSuccess_WhenInitializeNewPlayerDebitBalanceSuccessCorrectly()
     {
         // Arrange
-        var data = new Player
-        {
-            CustId = 123,
-            Username = "UserTest"
-        };
-        var extraInfo = "Initialize New Player Debit Balance success";
+        var data = Fixture.Create<Player>();
+        var extraInfo = Fixture.Create<string>();
         var newPlayerChainParam = new NewPlayerChainParam { CustId = data.CustId, Username = data.Username };
         _balanceRepository.InitializeNewPlayerDebitBalanceAsync(data.CustId).Returns(ServiceResult<Player>.Success(null!, extraInfo));
 
@@ -100,9 +91,9 @@ public class NewPlayerBalanceDebitInitializeChainHandlerTest
         result.Result.Should().BeEquivalentTo(data);
         result.ExtraInfo.Should().Be(extraInfo);
         await _balanceRepository.Received(1).InitializeNewPlayerDebitBalanceAsync(data.CustId);
-        _logger.DidNotReceive().Error(Arg.Any<string>());
-        _logAggregate.Received().AppendLog(Arg.Any<string>());
-        _logAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        Logger.DidNotReceive().Error(Arg.Any<string>());
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.DidNotReceive().RollbackFullNewPlayer(Arg.Any<string>(), Arg.Any<int>());
     }
 
@@ -111,7 +102,6 @@ public class NewPlayerBalanceDebitInitializeChainHandlerTest
     {
         // Arrange
         var custId = 123;
-        var extraInfo = "Initialize New Player Debit Balance failed";
         var newPlayerChainParam = new NewPlayerChainParam { CustId = custId };
         _balanceRepository.InitializeNewPlayerDebitBalanceAsync(custId).Throws<Exception>();
 
@@ -123,9 +113,9 @@ public class NewPlayerBalanceDebitInitializeChainHandlerTest
         result.Result.Should().BeNull();
         result.Error.Should().Be(ServiceErrors.SystemError);
         await _balanceRepository.Received(1).InitializeNewPlayerDebitBalanceAsync(custId);
-        await _logger.Received(1).ErrorAsync(Arg.Any<string>());
-        _logAggregate.Received().AppendLog(Arg.Any<string>());
-        _logAggregate.Received(1).AppendStepLog(Arg.Any<string>());
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        LogAggregate.Received().AppendLog(Arg.Any<string>());
+        LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).RollbackFullNewPlayer(_handler.ChainName, custId);
     }
 }
