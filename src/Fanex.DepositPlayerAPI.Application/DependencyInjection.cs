@@ -19,66 +19,65 @@ public static class DependencyInjection
         // new player chain
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerGetServerDbConfigChainHandler>("NewPlayerGetServerDbConfigChainHandler");
+                NewPlayerGetServerDbConfigChainHandler>(nameof(NewPlayerGetServerDbConfigChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerAffiliateValidationChainHandler>("NewPlayerAffiliateValidationChainHandler");
+                NewPlayerAffiliateValidationChainHandler>(nameof(NewPlayerAffiliateValidationChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerBalanceCreditInitializeChainHandler>("NewPlayerBalanceCreditInitializeChainHandler");
+                NewPlayerBalanceCreditInitializeChainHandler>(nameof(NewPlayerBalanceCreditInitializeChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerBalanceDebitInitializeChainHandler>("NewPlayerBalanceDebitInitializeChainHandler");
+                NewPlayerBalanceDebitInitializeChainHandler>(nameof(NewPlayerBalanceDebitInitializeChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerInfoValidationChainHandler>("NewPlayerInfoValidationChainHandler");
+                NewPlayerInfoValidationChainHandler>(nameof(NewPlayerInfoValidationChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerInsertDefaultCommChainHandler>("NewPlayerInsertDefaultCommChainHandler");
+                NewPlayerInsertDefaultCommChainHandler>(nameof(NewPlayerInsertDefaultCommChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerInsertDefaultGroupCommChainHandler>("NewPlayerInsertDefaultGroupCommChainHandler");
+                NewPlayerInsertDefaultGroupCommChainHandler>(nameof(NewPlayerInsertDefaultGroupCommChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerInsertInfoChainHandler>("NewPlayerInsertInfoChainHandler");
+                NewPlayerInsertInfoChainHandler>(nameof(NewPlayerInsertInfoChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewPlayerChainParam, Player>,
-                NewPlayerInsertSettingChainHandler>("NewPlayerInsertSettingChainHandler");
+                NewPlayerInsertSettingChainHandler>(nameof(NewPlayerInsertSettingChainHandler));
 
         // reactivate player chain
         services
             .TryAddKeyedTransient<IChainNonResultHandler<ReactivatePlayerChainParam>,
-                ReactivatePlayerGetArchivedInfoChainHandler>("ReactivatePlayerGetArchivedInfoChainHandler");
+                ReactivatePlayerGetArchivedInfoChainHandler>(nameof(ReactivatePlayerGetArchivedInfoChainHandler));
         services
             .TryAddKeyedTransient<IChainNonResultHandler<ReactivatePlayerChainParam>,
-                ReactivatePlayerGetServerDbConfigChainHandler>("ReactivatePlayerGetDBServerConfigChainHandler");
+                ReactivatePlayerGetServerDbConfigChainHandler>(nameof(ReactivatePlayerGetServerDbConfigChainHandler));
         services
             .TryAddKeyedTransient<IChainNonResultHandler<ReactivatePlayerChainParam>,
-                ReactivatePlayerInsertDefaultGroupCommChainHandler>(
-                "ReactivatePlayerInsertDefaultGroupCommChainHandler");
+                ReactivatePlayerInsertDefaultGroupCommChainHandler>(nameof(ReactivatePlayerInsertDefaultGroupCommChainHandler));
         services
             .TryAddKeyedTransient<IChainNonResultHandler<ReactivatePlayerChainParam>,
-                ReactivatePlayerInsertSettingChainHandler>("ReactivatePlayerInsertSettingChainHandler");
+                ReactivatePlayerInsertSettingChainHandler>(nameof(ReactivatePlayerInsertSettingChainHandler));
         services
             .TryAddKeyedTransient<IChainNonResultHandler<ReactivatePlayerChainParam>,
-                ReactivatePlayerWriteLogDataChainHandler>("ReactivatePlayerWriteLogDataChainHandler");
+                ReactivatePlayerWriteLogDataChainHandler>(nameof(ReactivatePlayerWriteLogDataChainHandler));
 
         // new shadow account chain
         services
             .TryAddKeyedTransient<IChainHandler<NewShadowAccountChainParam, ShadowAccount>,
-                NewShadowAccountGetServerDbConfigChainHandler>("NewShadowAccountGetServerDbConfigChainHandler");
+                NewShadowAccountGetServerDbConfigChainHandler>(nameof(NewShadowAccountGetServerDbConfigChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewShadowAccountChainParam, ShadowAccount>,
-                NewShadowAccountRegisterInfoChainHandler>("NewShadowAccountRegisterInfoChainHandler");
+                NewShadowAccountRegisterInfoChainHandler>(nameof(NewShadowAccountRegisterInfoChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewShadowAccountChainParam, ShadowAccount>,
-                NewShadowAccountInsertSettingChainHandler>("NewShadowAccountInsertSettingChainHandler");
+                NewShadowAccountInsertSettingChainHandler>(nameof(NewShadowAccountInsertSettingChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewShadowAccountChainParam, ShadowAccount>,
-                NewShadowAccountBalanceCreditInitializeChainHandler>("NewShadowAccountBalanceCreditInitializeChainHandler");
+                NewShadowAccountBalanceCreditInitializeChainHandler>(nameof(NewShadowAccountBalanceCreditInitializeChainHandler));
         services
             .TryAddKeyedTransient<IChainHandler<NewShadowAccountChainParam, ShadowAccount>,
-                NewShadowAccountBalanceDebitInitializeChainHandler>("NewShadowAccountBalanceDebitInitializeChainHandler");
+                NewShadowAccountBalanceDebitInitializeChainHandler>(nameof(NewShadowAccountBalanceDebitInitializeChainHandler));
 
         return services;
     }
