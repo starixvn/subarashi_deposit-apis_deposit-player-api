@@ -4,20 +4,50 @@ using System.Net;
 using Application.Utils;
 using AutoFixture;
 using Data;
+using Domain.Errors;
+using Domain.Results;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
 
 public class ErrorMessageUtilsTest
 {
     private readonly IFixture _fixture = new Fixture();
+
+    [Theory]
+    [InlineData(1, "Error 1")]
+    [InlineData(2, "Error 2")]
+    [InlineData(3, "Error 3")]
+    public void GenerateMessage_Should_ReturnCorrectErrorInfo(int errorCode, string errorMessage)
+    {
+        // Arrange
+        var functionName = _fixture.Create<string>();
+        var chainName = _fixture.Create<string>();
+        var request = _fixture.Create<RequestTest>();
+        var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
+        var response = ServiceResult.Failure(error);
+        List<string> expected =
+        [
+            $"ERROR [{functionName}]: {JsonConvert.SerializeObject(response.Error)}",
+            $"MESSAGE: An error occurred in the {chainName} process.",
+            JsonConvert.SerializeObject(request, Formatting.Indented),
+            JsonConvert.SerializeObject(response.Error, Formatting.Indented)
+        ];
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(functionName, chainName, response, request);
+
+        // Assert
+        result.Should().ContainAll(expected);
+    }
 
     [Fact]
     public void GenerateMessage_Should_ReturnCorrectExceptionInfo()
     {
         // Arrange
         var exception = new Exception("Test");
-        var expected = $"ErrMsg: {exception.Message}";
+        var expected = $"MESSAGE: {exception.Message}";
 
         // Act
         var result = ErrorMessageUtils.GenerateMessage(exception);
@@ -90,5 +120,11 @@ public class ErrorMessageUtilsTest
 
         // Assert
         result.Should().ContainAll(expected);
+    }
+
+    internal class RequestTest
+    {
+        public string PropertyA { get; set; } = "TestA";
+        public string PropertyB { get; set; } = "TestB";
     }
 }

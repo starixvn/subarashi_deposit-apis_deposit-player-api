@@ -8,6 +8,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Services;
@@ -130,7 +131,8 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
             && x.SiteDbGroupId == request.SiteDbGroupId
             && x.Site == request.Site
             && x.CurrencyName == request.CurrencyName));
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(PlayerError.CreateCustomerFailed)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).RollbackInfoNewPlayer(_handler.ChainName, request.CustId);
@@ -160,7 +162,8 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
             && x.SiteDbGroupId == request.SiteDbGroupId
             && x.Site == request.Site
             && x.CurrencyName == request.CurrencyName));
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).RollbackInfoNewPlayer(_handler.ChainName, request.CustId);
@@ -193,7 +196,8 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
             && x.SiteDbGroupId == request.SiteDbGroupId
             && x.Site == request.Site
             && x.CurrencyName == request.CurrencyName));
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).RollbackInfoNewPlayer(_handler.ChainName, request.CustId);

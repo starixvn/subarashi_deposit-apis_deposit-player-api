@@ -9,6 +9,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Services;
@@ -109,7 +110,8 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
             && x.DefaultCommissions == request.DefaultCommissions
             && x.GroupDiscountId == request.GroupDiscountId));
 
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
@@ -149,7 +151,7 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
             && x.DefaultCommissions == request.DefaultCommissions
             && x.GroupDiscountId == request.GroupDiscountId));
 
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(error)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogData(_handler.ChainName, request.LogData);
@@ -187,7 +189,8 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
             && x.DefaultCommissions == request.DefaultCommissions
             && x.GroupDiscountId == request.GroupDiscountId));
 
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);

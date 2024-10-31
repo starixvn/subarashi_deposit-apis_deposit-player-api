@@ -8,6 +8,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -96,7 +97,8 @@ public class NewPlayerInsertDefaultCommChainHandlerTest : ChainHandlerTestBase
         result.Result.Should().BeNull();
         await _commissionRepository.Received(1).InsertDefaultCommAsync(Arg.Is<InsertDefaultCommissionParam>(x =>
             x.CustId == param.CustId && x.Site == param.Site && x.GroupDiscountId == param.GroupDiscountId));
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
@@ -120,7 +122,8 @@ public class NewPlayerInsertDefaultCommChainHandlerTest : ChainHandlerTestBase
         result.Result.Should().BeNull();
         await _commissionRepository.Received(1).InsertDefaultCommAsync(Arg.Is<InsertDefaultCommissionParam>(x =>
             x.CustId == param.CustId && x.Site == param.Site && x.GroupDiscountId == param.GroupDiscountId));
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }

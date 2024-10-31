@@ -49,8 +49,8 @@ public class ProcessUtilsTest
     {
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(isBackground
-            ? $"ERROR [Background Task]: An error occurred in the {processName} background process."
-            : $"ERROR: An error occurred in the {processName} process.");
+            ? $"ERROR [Background Task]: An exception occurred in the {processName} background process."
+            : $"ERROR: An exception occurred in the {processName} process.");
         messageBuilder.AppendLine($"FUNCTION: {funcName}");
 
         return messageBuilder.ToString();

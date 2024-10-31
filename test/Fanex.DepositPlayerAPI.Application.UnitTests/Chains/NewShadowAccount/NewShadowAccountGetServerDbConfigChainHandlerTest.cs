@@ -9,6 +9,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Services;
@@ -110,10 +111,11 @@ public class NewShadowAccountGetServerDbConfigChainHandlerTest : ChainHandlerTes
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Error.Should().BeEquivalentTo(PlayerError.CreateCustomerFailed);
-        result.ExtraInfo.Should().StartWith($"[NewShadowAccount] - DB server configuration not found for AgentId={dbConfig.CustId}.");
+        result.ExtraInfo.Should().StartWith($"[{_handler.FunctionName}] - DB server configuration not found for AgentId={dbConfig.CustId}.");
         result.Result.Should().BeNull();
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(PlayerError.CreateCustomerFailed)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         AssertDidNotReceivedHttpContextAccessor(dbConfig, _httpContextAccessor);
@@ -144,7 +146,8 @@ public class NewShadowAccountGetServerDbConfigChainHandlerTest : ChainHandlerTes
         result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
         result.Result.Should().BeNull();
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         AssertDidNotReceivedHttpContextAccessor(dbConfig, _httpContextAccessor);
