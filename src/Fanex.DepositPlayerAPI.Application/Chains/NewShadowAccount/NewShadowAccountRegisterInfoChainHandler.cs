@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewShadowAccount;
 
+using Constants;
 using Domain.Entities;
 using Domain.Extensions;
 using Domain.Params;
@@ -19,7 +20,9 @@ public class NewShadowAccountRegisterInfoChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[NewShadowAccount] - NewShadowAccountRegisterInfoChainHandler";
+    public override string ChainName => nameof(NewShadowAccountRegisterInfoChainHandler);
+
+    public override string FunctionName => FunctionNames.NewShadowAccount;
 
     public override async Task<ServiceResult<ShadowAccount>> HandleInternal(NewShadowAccountChainParam request)
     {

@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.ReactivatePlayer;
 
+using Constants;
 using Domain.Params;
 using Domain.Params.Chains;
 using Domain.Repositories;
@@ -20,7 +21,9 @@ public class ReactivatePlayerInsertSettingChainHandler(
 
     public override bool IsBreakOnSuccess => true;
 
-    public override string ChainName => "[ReactivatePlayer] - ReactivatePlayerInsertSettingChainHandler";
+    public override string ChainName => nameof(ReactivatePlayerInsertSettingChainHandler);
+
+    public override string FunctionName => FunctionNames.ReactivatePlayer;
 
     public override bool IsProcessFailure(ServiceResult response)
     {
@@ -51,17 +54,17 @@ public class ReactivatePlayerInsertSettingChainHandler(
 
     public override void HandleError(ReactivatePlayerChainParam request)
     {
-        LogAggregate.AppendLog("[ReactivatePlayer] - Run Error Handler Task: [WriteLog Tracking]");
-
         if (request?.LogTracking is not null)
         {
+            LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.WriteLogTracking)}");
+
             backgroundTask.WriteLogTracking(ChainName, request.LogTracking);
         }
     }
 
     public override void HandleSuccess(ReactivatePlayerChainParam request)
     {
-        LogAggregate.AppendLog("[ReactivatePlayer] - Run Success Handler Task: WriteLogData, WriteLogTracking, InsertDefaultCommLicenseeDb, ReinitBalanceReactivatePlayer");
+        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.WriteLogData)}");
 
         backgroundTask.WriteLogData(ChainName, request.LogData);
 
@@ -72,10 +75,14 @@ public class ReactivatePlayerInsertSettingChainHandler(
             ClosingBalance = request.ClosingBalance
         };
 
+        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.ReinitBalanceReactivatePlayer)}");
+
         backgroundTask.ReinitBalanceReactivatePlayer(ChainName, reinitBalanceParam);
 
         if (request?.LogTracking is not null)
         {
+            LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.WriteLogTracking)}");
+
             backgroundTask.WriteLogTracking(ChainName, request.LogTracking);
         }
 
@@ -87,6 +94,8 @@ public class ReactivatePlayerInsertSettingChainHandler(
                 CustId = request.CustId,
                 GroupDiscountId = request.GroupDiscountId
             };
+
+            LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.InsertDefaultCommLicenseeDb)}");
 
             backgroundTask.InsertDefaultCommLicenseeDb(ChainName, param);
         }

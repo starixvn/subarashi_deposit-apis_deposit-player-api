@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.ReactivatePlayer;
 
+using Constants;
 using Domain.Entities;
 using Domain.Params.Chains;
 using Domain.Repositories;
@@ -17,7 +18,9 @@ public class ReactivatePlayerWriteLogDataChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[ReactivatePlayer] - ReactivatePlayerWriteLogDataChainHandler";
+    public override string ChainName => nameof(ReactivatePlayerWriteLogDataChainHandler);
+
+    public override string FunctionName => FunctionNames.ReactivatePlayer;
 
     public override async Task<ServiceResult> HandleInternal(ReactivatePlayerChainParam request)
     {

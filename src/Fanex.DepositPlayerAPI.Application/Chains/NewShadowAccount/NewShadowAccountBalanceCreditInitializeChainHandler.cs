@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewShadowAccount;
 
+using Constants;
 using Domain.Entities;
 using Domain.Extensions;
 using Domain.Params.Chains;
@@ -16,8 +17,12 @@ public class NewShadowAccountBalanceCreditInitializeChainHandler(
     : ChainBaseHandler<NewShadowAccountChainParam, ShadowAccount>(logger, logAggregate)
 {
     public override bool IsBreakOnError => true;
+
     public override bool IsBreakOnSuccess => false;
-    public override string ChainName => "[NewShadowAccount] - NewShadowAccountBalanceCreditInitializeChainHandler";
+
+    public override string ChainName => nameof(NewShadowAccountBalanceCreditInitializeChainHandler);
+
+    public override string FunctionName => FunctionNames.NewShadowAccount;
 
     public override async Task<ServiceResult<ShadowAccount>> HandleInternal(NewShadowAccountChainParam request)
     {
@@ -30,8 +35,7 @@ public class NewShadowAccountBalanceCreditInitializeChainHandler(
 
     public override void HandleError(NewShadowAccountChainParam request)
     {
-        LogAggregate.AppendLog(
-            "[NewShadowAccount] - Run Error Handler Task: RollbackFullNewPlayer");
+        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.RollbackFullNewPlayer)}");
 
         backgroundTask.RollbackFullNewPlayer(ChainName, request.CustId);
     }

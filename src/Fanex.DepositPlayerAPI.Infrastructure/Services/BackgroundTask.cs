@@ -27,12 +27,12 @@ public class BackgroundTask(
         async Task Func()
         {
             var isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => logDbRepository.WriteLogDataDBLOGAsync(logData),
-                "WriteLogDataDBLOGAsync", processName, logger, true);
+                nameof(logDbRepository.WriteLogDataDBLOGAsync), processName, logger, true);
 
             if (!isSuccess)
             {
                 await ProcessUtils.ExecuteWithTryCatchAsync(() => logDbRepository.WriteLogDataDBCUSTAsync(logData),
-                    "WriteLogDataDBCUSTAsync", processName, logger, true);
+                    nameof(logDbRepository.WriteLogDataDBCUSTAsync), processName, logger, true);
             }
         }
 
@@ -44,7 +44,7 @@ public class BackgroundTask(
         async Task Func()
         {
             await ProcessUtils.ExecuteWithTryCatchAsync(() => logDbRepository.WriteLogTrackingDBLOGAsync(logTracking),
-                "WriteLogTrackingDBLOGAsync", processName, logger, true);
+                nameof(logDbRepository.WriteLogTrackingDBLOGAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -55,7 +55,7 @@ public class BackgroundTask(
         async Task Func()
         {
             await ProcessUtils.ExecuteWithTryCatchAsync(() => commissionRepository.InsertDefaultCommAsync(param),
-                "InsertDefaultCommAsync", processName, logger, true);
+                nameof(commissionRepository.InsertDefaultCommAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -71,18 +71,18 @@ public class BackgroundTask(
         async Task Func()
         {
             var isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerSettingAsync(custId),
-                "RollbackNewPlayerSettingAsync", processName, logger, true);
+                nameof(rollbackRepository.RollbackNewPlayerSettingAsync), processName, logger, true);
 
             if (isSuccess)
             {
                 isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerUserInfoAsync(custId),
-                    "RollbackNewPlayerUserInfoAsync", processName, logger, true);
+                    nameof(rollbackRepository.RollbackNewPlayerUserInfoAsync), processName, logger, true);
             }
 
             if (isSuccess)
             {
                 await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerAsync(custId),
-                    "RollbackNewPlayerAsync", processName, logger, true);
+                    nameof(rollbackRepository.RollbackNewPlayerAsync), processName, logger, true);
             }
         }
 
@@ -99,7 +99,7 @@ public class BackgroundTask(
         async Task Func()
         {
             await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerAsync(custId),
-                "RollbackNewPlayerAsync", processName, logger, true);
+                nameof(rollbackRepository.RollbackNewPlayerAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -110,7 +110,7 @@ public class BackgroundTask(
         async Task Func()
         {
             await ProcessUtils.ExecuteWithTryCatchAsync(() => affiliateRepository.InsertPlayerAffiliateAsync(param),
-                "InsertPlayerAffiliateAsync", processName, logger, true);
+                nameof(affiliateRepository.InsertPlayerAffiliateAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -127,7 +127,7 @@ public class BackgroundTask(
                 {
                     await logDbRepository.WriteLogTrackingDBLOGAsync(result.Result);
                 }
-            }, "InitializeReactivatePlayerBalanceAsync", processName, logger, true);
+            }, nameof(balanceRepository.InitializeReactivatePlayerBalanceAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -151,7 +151,7 @@ public class BackgroundTask(
                 catch (Exception exception)
                 {
                     var messageBuilder = new StringBuilder();
-                    messageBuilder.AppendLine($"ERROR [Background Task]: An error occurred in the {processName} background process.");
+                    messageBuilder.AppendLine($"ERROR [Background Task]: An exception occurred in the {processName} background process.");
                     messageBuilder.AppendLine(ErrorMessageUtils.GenerateMessage(exception));
                     await logger.ErrorAsync(messageBuilder.ToString());
                 }

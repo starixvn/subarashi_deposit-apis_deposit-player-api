@@ -21,8 +21,8 @@ public static class ProcessUtils
         {
             var messageBuilder = new StringBuilder();
             messageBuilder.AppendLine(isBackground
-                ? $"ERROR [Background Task]: An error occurred in the {processName} background process."
-                : $"ERROR: An error occurred in the {processName} process.");
+                ? $"ERROR [Background Task]: An exception occurred in the {processName} background process."
+                : $"ERROR: An exception occurred in the {processName} process.");
             messageBuilder.AppendLine($"FUNCTION: {funcName}");
             messageBuilder.AppendLine(ErrorMessageUtils.GenerateMessage(exception));
             await logger.ErrorAsync(messageBuilder.ToString());
@@ -46,8 +46,8 @@ public static class ProcessUtils
         {
             var messageBuilder = new StringBuilder();
             messageBuilder.AppendLine(isBackground
-                ? $"ERROR [Background Task]: An error occurred in the {processName} background process."
-                : $"ERROR: An error occurred in the {processName} process.");
+                ? $"ERROR [Background Task]: An exception occurred in the {processName} background process."
+                : $"ERROR: An exception occurred in the {processName} process.");
             messageBuilder.AppendLine($"FUNCTION: {funcName}");
             messageBuilder.AppendLine(ErrorMessageUtils.GenerateMessage(exception));
             logger.Error(messageBuilder.ToString());

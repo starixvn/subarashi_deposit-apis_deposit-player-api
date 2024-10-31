@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewPlayer;
 
+using Constants;
 using Domain.Entities;
 using Domain.Extensions;
 using Domain.Params;
@@ -19,7 +20,9 @@ public class NewPlayerInfoValidationChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[NewPlayer] - NewPlayerInfoValidationChainHandler";
+    public override string ChainName => nameof(NewPlayerInfoValidationChainHandler);
+
+    public override string FunctionName => FunctionNames.NewPlayer;
 
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {

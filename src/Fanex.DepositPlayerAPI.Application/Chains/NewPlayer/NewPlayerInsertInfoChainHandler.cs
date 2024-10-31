@@ -1,6 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewPlayer;
 
 using System.Text;
+using Constants;
 using Domain.Entities;
 using Domain.Errors;
 using Domain.Extensions;
@@ -24,7 +25,9 @@ public class NewPlayerInsertInfoChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[NewPlayer] - NewPlayerInsertInfoChainHandler";
+    public override string ChainName => nameof(NewPlayerInsertInfoChainHandler);
+
+    public override string FunctionName => FunctionNames.NewPlayer;
 
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {
@@ -59,7 +62,7 @@ public class NewPlayerInsertInfoChainHandler(
 
     public override void HandleError(NewPlayerChainParam request)
     {
-        LogAggregate.AppendLog("[NewPlayer] - Run Error Handler Task: RollbackInfoNewPlayer");
+        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.RollbackInfoNewPlayer)}");
 
         backgroundTask.RollbackInfoNewPlayer(ChainName, request.CustId);
     }
@@ -76,8 +79,10 @@ public class NewPlayerInsertInfoChainHandler(
     {
         var result = await playerRepository.InsertPlayerInfoAsync(param);
         // Add extra info
-        extraInfo.AppendLine($"\n--- Retry {param.RetryNumber} ---\n");
-        extraInfo.AppendLine($"1. Generate:\n{result.ExtraInfo}");
+        extraInfo.AppendLine();
+        extraInfo.AppendLine($"--- Retry {param.RetryNumber} ---");
+        extraInfo.AppendLine("1. Generate:");
+        extraInfo.AppendLine(result.ExtraInfo);
 
         if (result.IsFailure)
         {
@@ -87,7 +92,8 @@ public class NewPlayerInsertInfoChainHandler(
         var verifyResult = await playerRepository.VerifyUsernameExistence(result.Result.Username);
 
         // Add extra info
-        extraInfo.AppendLine($"2. Verify:\n{verifyResult.ExtraInfo}");
+        extraInfo.AppendLine("2. Verify:");
+        extraInfo.AppendLine(verifyResult.ExtraInfo);
 
         if (verifyResult.IsSuccess)
         {
@@ -98,9 +104,12 @@ public class NewPlayerInsertInfoChainHandler(
         var messageBuilder = new StringBuilder();
         messageBuilder.AppendLine(
             $"ERROR: Username \"{result.Result.Username}\" already exists at attempt {param.RetryNumber} in the {ChainName} process.");
-        messageBuilder.AppendLine($"\nEXTRA INFO:\n--- Retry {param.RetryNumber} ---\n");
-        messageBuilder.AppendLine($"1. Generate:\n{result.ExtraInfo}");
-        messageBuilder.AppendLine($"2. Verify:\n{verifyResult.ExtraInfo}");
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine($"--- Retry {param.RetryNumber} ---");
+        messageBuilder.AppendLine("1. Generate:");
+        messageBuilder.AppendLine(result.ExtraInfo);
+        messageBuilder.AppendLine("2. Verify:");
+        messageBuilder.AppendLine(verifyResult.ExtraInfo);
 
         await Logger.ErrorAsync(messageBuilder.ToString());
 

@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.ReactivatePlayer;
 
+using Constants;
 using Domain.Params;
 using Domain.Params.Chains;
 using Domain.Repositories;
@@ -18,7 +19,9 @@ public class ReactivatePlayerGetArchivedInfoChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[ReactivatePlayer] - ReactivatePlayerGetArchivedInfoChainHandler";
+    public override string ChainName => nameof(ReactivatePlayerGetArchivedInfoChainHandler);
+
+    public override string FunctionName => FunctionNames.ReactivatePlayer;
 
     public override async Task<ServiceResult> HandleInternal(ReactivatePlayerChainParam request)
     {
@@ -34,10 +37,10 @@ public class ReactivatePlayerGetArchivedInfoChainHandler(
 
     public override void HandleError(ReactivatePlayerChainParam request)
     {
-        LogAggregate.AppendLog("[ReactivatePlayer] - Run Error Handler Task: WriteLogTracking");
-
         if (request?.LogTracking is not null)
         {
+            LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.WriteLogTracking)}");
+
             backgroundTask.WriteLogTracking(ChainName, request.LogTracking);
         }
     }

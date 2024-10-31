@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewPlayer;
 
+using Constants;
 using Domain.Entities;
 using Domain.Extensions;
 using Domain.Params.Chains;
@@ -19,7 +20,9 @@ public class NewPlayerBalanceDebitInitializeChainHandler(
 
     public override bool IsBreakOnSuccess => true;
 
-    public override string ChainName => "[NewPlayer] - NewPlayerBalanceDebitInitializeChainHandler";
+    public override string ChainName => nameof(NewPlayerBalanceDebitInitializeChainHandler);
+
+    public override string FunctionName => FunctionNames.NewPlayer;
 
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {
@@ -40,7 +43,7 @@ public class NewPlayerBalanceDebitInitializeChainHandler(
 
     public override void HandleError(NewPlayerChainParam request)
     {
-        LogAggregate.AppendLog("[NewPlayer] - Run Error Handler Task: RollbackFullNewPlayer");
+        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.RollbackFullNewPlayer)}");
 
         backgroundTask.RollbackFullNewPlayer(ChainName, request.CustId);
     }

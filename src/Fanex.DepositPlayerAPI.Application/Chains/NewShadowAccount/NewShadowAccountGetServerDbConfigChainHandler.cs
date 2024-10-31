@@ -22,8 +22,12 @@ public class NewShadowAccountGetServerDbConfigChainHandler(
     : ChainBaseHandler<NewShadowAccountChainParam, ShadowAccount>(logger, logAggregate)
 {
     public override bool IsBreakOnError => true;
+
     public override bool IsBreakOnSuccess => false;
-    public override string ChainName => "[NewShadowAccount] - NewShadowAccountGetServerDbConfigChainHandler";
+
+    public override string ChainName => nameof(NewShadowAccountGetServerDbConfigChainHandler);
+
+    public override string FunctionName => FunctionNames.NewShadowAccount;
 
     public override async Task<ServiceResult<ShadowAccount>> HandleInternal(NewShadowAccountChainParam request)
     {
@@ -39,7 +43,7 @@ public class NewShadowAccountGetServerDbConfigChainHandler(
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine($"[NewShadowAccount] - DB server configuration not found for AgentId={request.AgentId}.");
+            stringBuilder.AppendLine($"[{FunctionName}] - DB server configuration not found for AgentId={request.AgentId}.");
             stringBuilder.AppendLine($"Request Info: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
 
             return ServiceResult<ShadowAccount>.Failure(PlayerError.CreateCustomerFailed, stringBuilder.ToString());

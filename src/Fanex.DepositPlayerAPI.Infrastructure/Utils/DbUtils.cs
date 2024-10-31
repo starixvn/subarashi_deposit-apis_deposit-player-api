@@ -24,9 +24,13 @@ public static class DbUtils
     {
         var stringBuilder = new StringBuilder();
         var connString = new SqlConnectionStringBuilder(objectDb.DbSetting.ConnectionString);
+        stringBuilder.AppendLine();
+        stringBuilder.AppendLine("DATABASE INFO");
         stringBuilder.AppendLine($"Server: {connString.DataSource}");
         stringBuilder.AppendLine($"DbName: {objectDb.DbSetting.DbName}");
         stringBuilder.AppendLine($"SpName: {objectDb.DbSetting.SpName}");
+        stringBuilder.AppendLine($"UserId: {connString.UserID}");
+        stringBuilder.AppendLine($"CommandTimeout: {objectDb.CommandTimeout}");
         stringBuilder.AppendLine($"Parameters: {GetParameters(objectDb.GetAddedParameters(), otherAddedParameters)}");
         stringBuilder.AppendLine($"OutputParameters: {GetOutputParameters(objectDb.GetOutputParams(), output)}");
         return stringBuilder.ToString();

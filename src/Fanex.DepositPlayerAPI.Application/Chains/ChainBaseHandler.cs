@@ -25,6 +25,8 @@ public abstract class ChainBaseHandler<TRequest, TResponse>(
 
     public abstract string ChainName { get; }
 
+    public abstract string FunctionName { get; }
+
     public IChainHandler<TRequest, TResponse> SetNextHandler(IChainHandler<TRequest, TResponse> handler)
     {
         _nextHandler = handler;
@@ -46,13 +48,13 @@ public abstract class ChainBaseHandler<TRequest, TResponse>(
         {
             // Log exception
             var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine($"ERROR: An exception occurred in the {ChainName} process.");
+            messageBuilder.AppendLine($"ERROR [{FunctionName}]: An exception occurred in the {ChainName} process.");
             messageBuilder.AppendLine(ErrorMessageUtils.GenerateMessage(exception));
             await Logger.ErrorAsync(messageBuilder.ToString());
             LogAggregate.AppendLog($"Error occurred in {ChainName} Process");
             LogAggregate.AppendLog(messageBuilder.ToString());
 
-            // error handle
+            // Error handle
             ProcessUtils.ExecuteWithTryCatch(() => HandleError(request), "HandleError", ChainName, Logger);
 
             if (IsBreakOnError)
@@ -88,17 +90,24 @@ public abstract class ChainBaseHandler<TRequest, TResponse>(
 
     public void LogErrorIfFailure(ServiceResult<TResponse> response, TRequest request)
     {
-        if (response is null || response.IsSuccess)
+        if (response is null or { IsSuccess: true })
         {
             return;
         }
 
         // Log error
         var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine($"ERROR: An error occurred in the {ChainName} process.");
-        messageBuilder.AppendLine($"\nEXTRA INFO: {response.ExtraInfo}");
-        messageBuilder.AppendLine($"\nREQUEST INFO: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
-        messageBuilder.AppendLine($"\nRESULT INFO: {JsonConvert.SerializeObject(response.Error, Formatting.Indented)}");
+        messageBuilder.AppendLine($"ERROR [{FunctionName}]: {JsonConvert.SerializeObject(response.Error)}");
+        messageBuilder.AppendLine($"MESSAGE: An error occurred in the {ChainName} process.");
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(response.ExtraInfo);
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine("REQUEST INFO:");
+        messageBuilder.AppendLine(JsonConvert.SerializeObject(request, Formatting.Indented));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine("RESPONSE INFO:");
+        messageBuilder.AppendLine(JsonConvert.SerializeObject(response.Error, Formatting.Indented));
+
         Logger.Error(messageBuilder.ToString());
     }
 

@@ -22,8 +22,12 @@ public class NewPlayerGetServerDbConfigChainHandler(
     : ChainBaseHandler<NewPlayerChainParam, Player>(logger, logAggregate)
 {
     public override bool IsBreakOnError => true;
+
     public override bool IsBreakOnSuccess => false;
-    public override string ChainName => "[NewPlayer] - NewPlayerGetServerDbConfigChainHandler";
+
+    public override string ChainName => nameof(NewPlayerGetServerDbConfigChainHandler);
+
+    public override string FunctionName => FunctionNames.NewPlayer;
 
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {
@@ -39,7 +43,7 @@ public class NewPlayerGetServerDbConfigChainHandler(
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine($"[NewPlayer] - DB server configuration not found for AgentId={request.AgentId}.");
+            stringBuilder.AppendLine($"[{FunctionName}] - DB server configuration not found for AgentId={request.AgentId}.");
             stringBuilder.AppendLine($"Request Info: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
 
             return ServiceResult<Player>.Failure(PlayerError.CreateCustomerFailed, stringBuilder.ToString());

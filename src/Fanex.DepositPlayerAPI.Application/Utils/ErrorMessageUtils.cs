@@ -11,7 +11,7 @@ public static class ErrorMessageUtils
     {
         var messageBuilder = new StringBuilder();
 
-        messageBuilder.AppendLine($"ErrMsg: {exception.Message}");
+        messageBuilder.AppendLine($"MESSAGE: {exception.Message}");
 
         if (context is not null)
         {
