@@ -95,20 +95,7 @@ public abstract class ChainBaseHandler<TRequest, TResponse>(
             return;
         }
 
-        // Log error
-        var messageBuilder = new StringBuilder();
-        messageBuilder.AppendLine($"ERROR [{FunctionName}]: {JsonConvert.SerializeObject(response.Error)}");
-        messageBuilder.AppendLine($"MESSAGE: An error occurred in the {ChainName} process.");
-        messageBuilder.AppendLine();
-        messageBuilder.AppendLine(response.ExtraInfo);
-        messageBuilder.AppendLine();
-        messageBuilder.AppendLine("REQUEST INFO:");
-        messageBuilder.AppendLine(JsonConvert.SerializeObject(request, Formatting.Indented));
-        messageBuilder.AppendLine();
-        messageBuilder.AppendLine("RESPONSE INFO:");
-        messageBuilder.AppendLine(JsonConvert.SerializeObject(response.Error, Formatting.Indented));
-
-        Logger.Error(messageBuilder.ToString());
+        Logger.Error(ErrorMessageUtils.GenerateMessage(FunctionName, ChainName, response, request));
     }
 
     public abstract Task<ServiceResult<TResponse>> HandleInternal(TRequest request);
