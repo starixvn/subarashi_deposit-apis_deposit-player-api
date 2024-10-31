@@ -25,7 +25,9 @@ public class ReactivatePlayerGetServerDbConfigChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[ReactivatePlayer] - ReactivatePlayerGetDBServerConfigChainHandler";
+    public override string ChainName => nameof(ReactivatePlayerGetServerDbConfigChainHandler);
+
+    public override string FunctionName => FunctionNames.ReactivatePlayer;
 
     public override async Task<ServiceResult> HandleInternal(ReactivatePlayerChainParam request)
     {

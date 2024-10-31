@@ -120,7 +120,7 @@ public class BackgroundTaskTest
         await _balanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
         await _logDbRepository.DidNotReceive().WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>());
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     [Fact]
@@ -141,7 +141,7 @@ public class BackgroundTaskTest
         await _balanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
         await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     #endregion
@@ -178,7 +178,7 @@ public class BackgroundTaskTest
         // Assert
         await _affiliateRepository.Received(1).InsertPlayerAffiliateAsync(param);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     #endregion
@@ -230,7 +230,7 @@ public class BackgroundTaskTest
         // Assert
         await _rollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     #endregion
@@ -288,7 +288,7 @@ public class BackgroundTaskTest
         await _rollbackRepository.DidNotReceive().RollbackNewPlayerUserInfoAsync(Arg.Any<int>());
         await _rollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class BackgroundTaskTest
         await _rollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
         await _rollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     [Fact]
@@ -328,7 +328,7 @@ public class BackgroundTaskTest
         await _rollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
         await _rollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     #endregion
@@ -367,7 +367,7 @@ public class BackgroundTaskTest
         await _logDbRepository.Received(1).WriteLogDataDBLOGAsync(logData);
         await _logDbRepository.Received(1).WriteLogDataDBCUSTAsync(logData);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     #endregion
@@ -404,7 +404,7 @@ public class BackgroundTaskTest
         // Assert
         await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     #endregion
@@ -441,7 +441,7 @@ public class BackgroundTaskTest
         // Assert
         await _commissionRepository.Received(1).InsertDefaultCommAsync(param);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An error occurred in the {processName} background process.")));
+            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
 
     #endregion

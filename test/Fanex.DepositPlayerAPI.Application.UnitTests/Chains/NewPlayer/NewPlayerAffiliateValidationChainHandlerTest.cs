@@ -8,6 +8,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -83,7 +84,7 @@ public class NewPlayerAffiliateValidationChainHandlerTest : ChainHandlerTestBase
         result.Error.Should().Be(error);
         result.ExtraInfo.Should().Be(extraInfo);
         await _affiliateRepository.Received(1).ValidateAffiliateAsync(affiliateId);
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(error)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
@@ -127,7 +128,8 @@ public class NewPlayerAffiliateValidationChainHandlerTest : ChainHandlerTestBase
         result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
         result.Result.Should().BeNull();
         await _affiliateRepository.Received(1).ValidateAffiliateAsync(affiliateId);
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }

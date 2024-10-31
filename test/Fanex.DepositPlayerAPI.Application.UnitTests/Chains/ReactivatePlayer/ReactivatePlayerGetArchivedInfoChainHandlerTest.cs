@@ -9,6 +9,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Services;
@@ -72,7 +73,8 @@ public class ReactivatePlayerGetArchivedInfoChainHandlerTest : ChainHandlerTestB
         result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         await _playerRepository.Received(1).GetArchivedInfoAsync(request.CustId);
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
@@ -101,7 +103,8 @@ public class ReactivatePlayerGetArchivedInfoChainHandlerTest : ChainHandlerTestB
         result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         await _playerRepository.Received(1).GetArchivedInfoAsync(request.CustId);
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.DidNotReceive().WriteLogTracking(Arg.Any<string>(), Arg.Any<LogTracking>());
@@ -125,7 +128,8 @@ public class ReactivatePlayerGetArchivedInfoChainHandlerTest : ChainHandlerTestB
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
         result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
         await _playerRepository.Received(1).GetArchivedInfoAsync(request.CustId);
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.DidNotReceive().WriteLogTracking(Arg.Any<string>(), Arg.Any<LogTracking>());

@@ -62,7 +62,8 @@ public class ReactivatePlayerWriteLogDataChainHandlerTest : ChainHandlerTestBase
             && x.Action == "REACTIVATION"
             && x.Status == "OnProgress"
             && x.Message == "Start reactivating customer"));
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }

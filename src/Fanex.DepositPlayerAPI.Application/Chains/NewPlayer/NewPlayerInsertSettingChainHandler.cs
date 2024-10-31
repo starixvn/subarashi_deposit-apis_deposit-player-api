@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewPlayer;
 
+using Constants;
 using Domain.Entities;
 using Domain.Extensions;
 using Domain.Params;
@@ -22,7 +23,9 @@ public class NewPlayerInsertSettingChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[NewPlayer] - NewPlayerInsertSettingChainHandler";
+    public override string ChainName => nameof(NewPlayerInsertSettingChainHandler);
+
+    public override string FunctionName => FunctionNames.NewPlayer;
 
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {
@@ -62,14 +65,14 @@ public class NewPlayerInsertSettingChainHandler(
 
     public override void HandleError(NewPlayerChainParam request)
     {
-        LogAggregate.AppendLog("[NewPlayer] - Run Error Handler Task: RollbackFullNewPlayer");
+        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.RollbackFullNewPlayer)}");
 
         backgroundTask.RollbackFullNewPlayer(ChainName, request.CustId);
     }
 
     public override void HandleSuccess(NewPlayerChainParam request)
     {
-        LogAggregate.AppendLog("[NewPlayer] - Run Success Handler Task: WriteLogData, InsertNewPlayerAffiliateInfo");
+        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.WriteLogData)}");
 
         backgroundTask.WriteLogData(ChainName, request.LogData);
 
@@ -85,6 +88,8 @@ public class NewPlayerInsertSettingChainHandler(
                 Currency = request.Currency,
                 Recommend = request.Recommend
             };
+
+            LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.InsertNewPlayerAffiliateInfo)}");
 
             backgroundTask.InsertNewPlayerAffiliateInfo(ChainName, param);
         }

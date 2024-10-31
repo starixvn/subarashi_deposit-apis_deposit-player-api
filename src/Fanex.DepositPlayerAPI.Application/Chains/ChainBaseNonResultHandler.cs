@@ -24,6 +24,8 @@ public abstract class ChainBaseNonResultHandler<TRequest>(
 
     public abstract string ChainName { get; }
 
+    public abstract string FunctionName { get; }
+
     public IChainNonResultHandler<TRequest> SetNextHandler(IChainNonResultHandler<TRequest> handler)
     {
         _nextHandler = handler;
@@ -45,13 +47,13 @@ public abstract class ChainBaseNonResultHandler<TRequest>(
         {
             // Log exception
             var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine($"ERROR: An exception occurred in the {ChainName} process.");
+            messageBuilder.AppendLine($"ERROR [{FunctionName}]: An exception occurred in the {ChainName} process.");
             messageBuilder.AppendLine(ErrorMessageUtils.GenerateMessage(exception));
             await Logger.ErrorAsync(messageBuilder.ToString());
             LogAggregate.AppendLog($"Error occurred in {ChainName} Process");
             LogAggregate.AppendLog(messageBuilder.ToString());
 
-            // error handle
+            // Error handle
             ProcessUtils.ExecuteWithTryCatch(() => HandleError(request), "HandleError", ChainName, Logger);
 
             if (IsBreakOnError)
@@ -87,16 +89,12 @@ public abstract class ChainBaseNonResultHandler<TRequest>(
 
     public void LogErrorIfFailure(ServiceResult response, TRequest request)
     {
-        if (response is { IsFailure: true })
+        if (response is null or { IsSuccess: true })
         {
-            // Log error
-            var messageBuilder = new StringBuilder();
-            messageBuilder.AppendLine($"ERROR: An error occurred in the {ChainName} process.");
-            messageBuilder.AppendLine($"\nEXTRA INFO: {response.ExtraInfo}");
-            messageBuilder.AppendLine($"\nREQUEST INFO: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
-            messageBuilder.AppendLine($"\nRESULT INFO: {JsonConvert.SerializeObject(response.Error, Formatting.Indented)}");
-            Logger.Error(messageBuilder.ToString());
+            return;
         }
+
+        Logger.Error(ErrorMessageUtils.GenerateMessage(FunctionName, ChainName, response, request));
     }
 
     public abstract Task<ServiceResult> HandleInternal(TRequest request);

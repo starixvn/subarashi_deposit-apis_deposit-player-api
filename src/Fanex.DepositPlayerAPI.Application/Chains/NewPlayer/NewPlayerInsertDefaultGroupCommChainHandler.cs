@@ -1,5 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application.Chains.NewPlayer;
 
+using Constants;
 using Domain.Entities;
 using Domain.Extensions;
 using Domain.Params;
@@ -19,7 +20,9 @@ public class NewPlayerInsertDefaultGroupCommChainHandler(
 
     public override bool IsBreakOnSuccess => false;
 
-    public override string ChainName => "[NewPlayer] - NewPlayerInsertDefaultGroupCommChainHandler";
+    public override string ChainName => nameof(NewPlayerInsertDefaultGroupCommChainHandler);
+
+    public override string FunctionName => FunctionNames.NewPlayer;
 
     public override async Task<ServiceResult<Player>> HandleInternal(NewPlayerChainParam request)
     {

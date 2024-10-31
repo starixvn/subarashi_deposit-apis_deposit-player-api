@@ -2,16 +2,39 @@
 
 using System.Text;
 using Data;
+using Domain.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
+using Newtonsoft.Json;
 
 public static class ErrorMessageUtils
 {
+    public static string GenerateMessage<T>(
+        string functionName,
+        string chainName,
+        ServiceResult response,
+        T request) where T : class
+    {
+        var messageBuilder = new StringBuilder();
+        messageBuilder.AppendLine($"ERROR [{functionName}]: {JsonConvert.SerializeObject(response.Error)}");
+        messageBuilder.AppendLine($"MESSAGE: An error occurred in the {chainName} process.");
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine(response.ExtraInfo);
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine("REQUEST INFO:");
+        messageBuilder.AppendLine(JsonConvert.SerializeObject(request, Formatting.Indented));
+        messageBuilder.AppendLine();
+        messageBuilder.AppendLine("RESPONSE INFO:");
+        messageBuilder.AppendLine(JsonConvert.SerializeObject(response.Error, Formatting.Indented));
+
+        return messageBuilder.ToString();
+    }
+
     public static string GenerateMessage(Exception exception, HttpContext context = null)
     {
         var messageBuilder = new StringBuilder();
 
-        messageBuilder.AppendLine($"ErrMsg: {exception.Message}");
+        messageBuilder.AppendLine($"MESSAGE: {exception.Message}");
 
         if (context is not null)
         {

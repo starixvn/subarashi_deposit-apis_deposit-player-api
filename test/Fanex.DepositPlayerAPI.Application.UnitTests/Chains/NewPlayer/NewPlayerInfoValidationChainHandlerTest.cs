@@ -8,6 +8,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -43,7 +44,8 @@ public class NewPlayerInfoValidationChainHandlerTest : ChainHandlerTestBase
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).ValidatePlayerInfoAsync(Arg.Is<ValidatePlayerInfoParam>(
             x => x.AgentId == param.AgentId && x.DepositUserName == param.DepositUserName));
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
@@ -93,7 +95,8 @@ public class NewPlayerInfoValidationChainHandlerTest : ChainHandlerTestBase
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).ValidatePlayerInfoAsync(Arg.Is<ValidatePlayerInfoParam>(
             x => x.AgentId == param.AgentId && x.DepositUserName == param.DepositUserName));
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }

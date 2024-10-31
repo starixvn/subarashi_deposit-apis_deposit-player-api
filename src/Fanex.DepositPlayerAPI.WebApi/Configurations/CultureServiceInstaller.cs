@@ -31,7 +31,7 @@ public class CultureServiceInstaller : IServiceInstaller
                     var query = context.Request.Query;
                     var culture = defaultCulture;
 
-                    if (query != null && query.ContainsKey("lang"))
+                    if (query.ContainsKey("lang"))
                     {
                         culture = LanguageCodeMappers.GetValueOrDefault(query["lang"], defaultCulture);
                     }

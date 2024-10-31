@@ -8,6 +8,7 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
+using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 
@@ -77,7 +78,8 @@ public class NewPlayerInsertDefaultGroupCommChainHandlerTest : ChainHandlerTestB
         await _commissionRepository.Received(1).GetPlayerCommProductsAsync();
         await _commissionRepository.Received(1).InsertDefaultGroupCommissionAsync(Arg.Is<InsertDefaultGroupCommissionParam>(x =>
             x.CommissionProducts == commProducts && x.Site == request.Site));
-        Logger.Received(1).Error(Arg.Is<string>(x => x.StartsWith($"ERROR: An error occurred in the {_handler.ChainName} process.")));
+        Logger.Received(1).Error(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
@@ -105,7 +107,8 @@ public class NewPlayerInsertDefaultGroupCommChainHandlerTest : ChainHandlerTestB
         await _commissionRepository.Received(1).GetPlayerCommProductsAsync();
         await _commissionRepository.Received(1).InsertDefaultGroupCommissionAsync(Arg.Is<InsertDefaultGroupCommissionParam>(x =>
             x.CommissionProducts == commProducts && x.Site == request.Site));
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
@@ -132,7 +135,8 @@ public class NewPlayerInsertDefaultGroupCommChainHandlerTest : ChainHandlerTestB
         result.Result.Should().BeNull();
         await _commissionRepository.Received(1).GetPlayerCommProductsAsync();
         await _commissionRepository.DidNotReceive().InsertDefaultGroupCommissionAsync(Arg.Any<InsertDefaultGroupCommissionParam>());
-        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x => x.StartsWith($"ERROR: An exception occurred in the {_handler.ChainName} process.")));
+        await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
