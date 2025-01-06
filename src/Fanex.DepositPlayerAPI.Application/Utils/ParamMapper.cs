@@ -26,8 +26,8 @@ public static class ParamMapper
         return new NewShadowAccountChainParam
         {
             AgentId = command.AgentId,
-            RealCustId = command.RealCustId,
-            SiteDbGroupId = command.SiteDbGroupId
+            SiteDbGroupId = command.SiteDbGroupId,
+            IsTest = command.IsTest
         };
     }
 

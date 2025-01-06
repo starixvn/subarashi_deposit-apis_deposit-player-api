@@ -28,9 +28,9 @@ public class NewShadowAccountRegisterInfoChainHandler(
     {
         var param = new InsertShadowAccountInfoParam
         {
-            RealCustId = request.RealCustId,
             AgentId = request.AgentId,
-            SiteDbGroupId = request.SiteDbGroupId
+            SiteDbGroupId = request.SiteDbGroupId,
+            IsTest = request.IsTest
         };
 
         var result = await playerRepository.InsertShadowAccountInfoAsync(param);

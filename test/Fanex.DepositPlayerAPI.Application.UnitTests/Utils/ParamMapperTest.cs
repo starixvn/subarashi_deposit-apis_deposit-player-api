@@ -41,7 +41,7 @@ public class ParamMapperTest
 
         // Assert
         param.AgentId.Should().Be(command.AgentId);
-        param.RealCustId.Should().Be(command.RealCustId);
+        param.IsTest.Should().Be(command.IsTest);
         param.SiteDbGroupId.Should().Be(command.SiteDbGroupId);
     }
 

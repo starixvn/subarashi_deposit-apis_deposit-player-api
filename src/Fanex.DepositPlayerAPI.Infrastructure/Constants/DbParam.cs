@@ -27,7 +27,7 @@ public static class DbParam
     public const string DefaultCommissions = "DefaultComms";
     public const string GroupDiscountId = "GroupDiscountId";
     public const string OddsType = "OddsType";
-    public const string RealCustId = "RealCustId";
+    public const string IsTest = "IsTest";
     public const string Recommend = "Recommend";
     public const string Site = "Site";
     public const string SiteDbGroupId = "SiteDbGroupId";

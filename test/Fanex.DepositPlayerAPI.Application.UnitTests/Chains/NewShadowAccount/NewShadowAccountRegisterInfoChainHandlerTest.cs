@@ -45,7 +45,7 @@ public class NewShadowAccountRegisterInfoChainHandlerTest : ChainHandlerTestBase
         request.Username2.Should().Be(outputParam.Username2);
         request.CustId.Should().Be(outputParam.CustId);
         await _playerRepository.Received(1).InsertShadowAccountInfoAsync(Arg.Is<InsertShadowAccountInfoParam>(x =>
-            x.RealCustId == request.RealCustId
+            x.IsTest == request.IsTest
             && x.AgentId == request.AgentId
             && x.SiteDbGroupId == request.SiteDbGroupId));
         Logger.DidNotReceive().Error(Arg.Any<string>());
@@ -73,7 +73,7 @@ public class NewShadowAccountRegisterInfoChainHandlerTest : ChainHandlerTestBase
         result.ExtraInfo.Should().Be(extraInfo);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).InsertShadowAccountInfoAsync(Arg.Is<InsertShadowAccountInfoParam>(x =>
-            x.RealCustId == request.RealCustId
+            x.IsTest == request.IsTest
             && x.AgentId == request.AgentId
             && x.SiteDbGroupId == request.SiteDbGroupId));
         Logger.Received(1).Error(Arg.Is<string>(x =>
@@ -99,7 +99,7 @@ public class NewShadowAccountRegisterInfoChainHandlerTest : ChainHandlerTestBase
         result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).InsertShadowAccountInfoAsync(Arg.Is<InsertShadowAccountInfoParam>(x =>
-            x.RealCustId == request.RealCustId
+            x.IsTest == request.IsTest
             && x.AgentId == request.AgentId
             && x.SiteDbGroupId == request.SiteDbGroupId));
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>

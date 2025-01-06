@@ -49,8 +49,7 @@ public class NewShadowAccountInsertSettingChainHandlerTest : ChainHandlerTestBas
         await _playerRepository.Received(1).InsertShadowAccountSettingAsync(Arg.Is<InsertShadowAccountSettingParam>(x =>
             x.CustId == request.CustId
             && x.Username == request.Username
-            && x.Username2 == request.Username2
-            && x.RealCustId == request.RealCustId
+            && x.IsTest == request.IsTest
             && x.AgentId == request.AgentId));
 
         Logger.DidNotReceive().Error(Arg.Any<string>());
@@ -82,8 +81,7 @@ public class NewShadowAccountInsertSettingChainHandlerTest : ChainHandlerTestBas
         await _playerRepository.Received(1).InsertShadowAccountSettingAsync(Arg.Is<InsertShadowAccountSettingParam>(x =>
             x.CustId == request.CustId
             && x.Username == request.Username
-            && x.Username2 == request.Username2
-            && x.RealCustId == request.RealCustId
+            && x.IsTest == request.IsTest
             && x.AgentId == request.AgentId));
 
         Logger.Received(1).Error(Arg.Is<string>(x =>
@@ -113,8 +111,7 @@ public class NewShadowAccountInsertSettingChainHandlerTest : ChainHandlerTestBas
         await _playerRepository.Received(1).InsertShadowAccountSettingAsync(Arg.Is<InsertShadowAccountSettingParam>(x =>
             x.CustId == request.CustId
             && x.Username == request.Username
-            && x.Username2 == request.Username2
-            && x.RealCustId == request.RealCustId
+            && x.IsTest == request.IsTest
             && x.AgentId == request.AgentId));
 
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>

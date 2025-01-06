@@ -6,9 +6,7 @@ public class InsertShadowAccountSettingParam
 
     public string Username { get; set; }
 
-    public string Username2 { get; set; }
-
-    public int RealCustId { get; set; }
-
     public int AgentId { get; set; }
+
+    public bool IsTest { get; set; }
 }
