@@ -1,6 +1,7 @@
 ﻿namespace Fanex.DepositPlayerAPI.Application;
 
 using Chains;
+using Chains.MapSabaId;
 using Chains.NewPlayer;
 using Chains.NewShadowAccount;
 using Chains.ReactivatePlayer;
@@ -78,6 +79,19 @@ public static class DependencyInjection
         services
             .TryAddKeyedTransient<IChainHandler<NewShadowAccountChainParam, ShadowAccount>,
                 NewShadowAccountBalanceDebitInitializeChainHandler>(nameof(NewShadowAccountBalanceDebitInitializeChainHandler));
+
+        // map saba id
+        services
+            .TryAddKeyedTransient<IChainNonResultHandler<MapSabaIdChainParam>,
+                MapSabaIdGetServerDbConfigChainHandler>(nameof(MapSabaIdGetServerDbConfigChainHandler));
+
+        services
+            .TryAddKeyedTransient<IChainNonResultHandler<MapSabaIdChainParam>,
+                MapSabaIdValidationChainHandler>(nameof(MapSabaIdValidationChainHandler));
+
+        services
+            .TryAddKeyedTransient<IChainNonResultHandler<MapSabaIdChainParam>,
+                MapSabaIdInsertDataChainHandler>(nameof(MapSabaIdInsertDataChainHandler));
 
         return services;
     }

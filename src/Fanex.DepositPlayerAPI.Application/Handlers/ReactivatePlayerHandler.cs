@@ -16,7 +16,7 @@ public class ReactivatePlayerHandler(
         logAggregate.AppendLog("Started processing...");
 
         var rootChainHandler = chainHandlerFactory.CreateReactivatePlayerChainHandler();
-        var param = ParamMapper.MapReactivatePlayerChainParam(command);
+        var param = ParamMapper.BuildReactivatePlayerChainParam(command);
 
         var result = await rootChainHandler.Handle(param);
 

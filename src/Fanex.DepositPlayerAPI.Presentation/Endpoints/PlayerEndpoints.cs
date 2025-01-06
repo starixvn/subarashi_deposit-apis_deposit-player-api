@@ -44,7 +44,7 @@ public class PlayerEndpoints : IEndpoints
     {
         logAggregate.AppendHeader($"Log Aggregate: Licensee Create Player - UserName: {request.UserName}");
 
-        var command = ObjectMapper.MapNewPlayerCommand(request);
+        var command = ObjectMapper.BuildNewPlayerCommand(request);
         var result = await mediator.Send(command);
 
         if (request.IsDebug || appSetting.Value.DebugMode)
@@ -79,7 +79,7 @@ public class PlayerEndpoints : IEndpoints
     {
         logAggregate.AppendHeader($"Log Aggregate: Licensee Reactivate Player - CustId: {custId}");
 
-        var command = ObjectMapper.MapReactivatePlayerCommand(request, custId);
+        var command = ObjectMapper.BuildReactivatePlayerCommand(request, custId);
         var result = await mediator.Send(command);
 
         if (request.IsDebug || appSetting.Value.DebugMode)

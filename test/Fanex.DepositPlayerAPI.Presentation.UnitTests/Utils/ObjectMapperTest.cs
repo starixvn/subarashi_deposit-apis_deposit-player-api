@@ -16,7 +16,7 @@ public class ObjectMapperTest
         var createPlayerRequest = _fixture.Create<CreatePlayerRequest>();
 
         // Action
-        var newPlayerCommand = ObjectMapper.MapNewPlayerCommand(createPlayerRequest);
+        var newPlayerCommand = ObjectMapper.BuildNewPlayerCommand(createPlayerRequest);
 
         // Assert
         newPlayerCommand.DepositUserName.Should().Be(createPlayerRequest.UserName);
@@ -36,7 +36,7 @@ public class ObjectMapperTest
         CreatePlayerRequest createPlayerRequest = null!;
 
         // Action
-        Action action = () => ObjectMapper.MapNewPlayerCommand(createPlayerRequest);
+        Action action = () => ObjectMapper.BuildNewPlayerCommand(createPlayerRequest);
 
         // Assert
         action.Should().Throw<Exception>();
@@ -49,7 +49,7 @@ public class ObjectMapperTest
         var createShadowAccountRequest = _fixture.Create<CreateShadowAccountRequest>();
 
         // Action
-        var newShadowAccountCommand = ObjectMapper.MapShadowAccountCommand(createShadowAccountRequest);
+        var newShadowAccountCommand = ObjectMapper.BuildShadowAccountCommand(createShadowAccountRequest);
 
         // Assert
         newShadowAccountCommand.IsTest.Should().Be(createShadowAccountRequest.IsTest);
@@ -63,7 +63,7 @@ public class ObjectMapperTest
         CreateShadowAccountRequest createShadowAccountRequest = null!;
 
         // Action
-        Action action = () => ObjectMapper.MapShadowAccountCommand(createShadowAccountRequest);
+        Action action = () => ObjectMapper.BuildShadowAccountCommand(createShadowAccountRequest);
 
         // Assert
         action.Should().Throw<Exception>();
@@ -77,7 +77,7 @@ public class ObjectMapperTest
         var custId = _fixture.Create<int>();
 
         // Action
-        var reactivatePlayerCommand = ObjectMapper.MapReactivatePlayerCommand(reactivatePlayerRequest, custId);
+        var reactivatePlayerCommand = ObjectMapper.BuildReactivatePlayerCommand(reactivatePlayerRequest, custId);
 
         // Assert
         reactivatePlayerCommand.CustId.Should().Be(custId);
@@ -91,7 +91,7 @@ public class ObjectMapperTest
         ReactivatePlayerRequest reactivatePlayerRequest = null!;
 
         // Action
-        Action action = () => ObjectMapper.MapReactivatePlayerCommand(reactivatePlayerRequest, _fixture.Create<int>());
+        Action action = () => ObjectMapper.BuildReactivatePlayerCommand(reactivatePlayerRequest, _fixture.Create<int>());
 
         // Assert
         action.Should().Throw<Exception>();

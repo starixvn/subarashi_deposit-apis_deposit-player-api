@@ -27,7 +27,6 @@ public static class DbParam
     public const string DefaultCommissions = "DefaultComms";
     public const string GroupDiscountId = "GroupDiscountId";
     public const string OddsType = "OddsType";
-    public const string IsTest = "IsTest";
     public const string Recommend = "Recommend";
     public const string Site = "Site";
     public const string SiteDbGroupId = "SiteDbGroupId";
@@ -39,6 +38,9 @@ public static class DbParam
     public const string Username = "Username";
     public const string Username2 = "Username2";
     public const string RetryNumber = "RetryNumber";
+    public const string IsTest = "IsTest";
+    public const string CustType = "CustType";
+    public const string SabaId = "SabaId";
 
     #endregion
 }

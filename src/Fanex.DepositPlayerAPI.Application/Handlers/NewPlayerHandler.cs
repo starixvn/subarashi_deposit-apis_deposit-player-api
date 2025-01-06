@@ -17,7 +17,7 @@ public class NewPlayerHandler(
         logAggregate.AppendLog("Started processing...");
 
         var rootChainHandler = chainHandlerFactory.CreateNewPlayerChainHandler();
-        var param = ParamMapper.MapNewPlayerChainParam(command);
+        var param = ParamMapper.BuildNewPlayerChainParam(command);
         var result = await rootChainHandler.Handle(param);
 
         logAggregate.AppendLog("Finished processing...");

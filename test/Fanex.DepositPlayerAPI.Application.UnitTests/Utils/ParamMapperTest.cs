@@ -16,7 +16,7 @@ public class ParamMapperTest
         var command = _fixture.Create<NewPlayerCommand>();
 
         // Action
-        var param = ParamMapper.MapNewPlayerChainParam(command);
+        var param = ParamMapper.BuildNewPlayerChainParam(command);
 
         // Assert
         param.DepositUserName.Should().Be(command.DepositUserName);
@@ -37,7 +37,7 @@ public class ParamMapperTest
         var command = _fixture.Create<NewShadowAccountCommand>();
 
         // Action
-        var param = ParamMapper.MapNewShadowAccountChainParam(command);
+        var param = ParamMapper.BuildNewShadowAccountChainParam(command);
 
         // Assert
         param.AgentId.Should().Be(command.AgentId);
@@ -52,7 +52,7 @@ public class ParamMapperTest
         var command = _fixture.Create<ReactivatePlayerCommand>();
 
         // Action
-        var param = ParamMapper.MapReactivatePlayerChainParam(command);
+        var param = ParamMapper.BuildReactivatePlayerChainParam(command);
 
         // Assert
         param.CustId.Should().Be(command.CustId);
