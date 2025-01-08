@@ -20,7 +20,7 @@ public abstract class RepositoryTestBase : IDisposable
         ShardDbInfoAccessor = Substitute.For<IShardDbInfoAccessor>();
         DbFactoryFixture = dbFactoryFixture;
 
-        DbFactoryFixture.MockObjectDb((spKey, _) =>
+        DbFactoryFixture.MockObjectDb((spKey, _, _) =>
         {
             ObjectDb.SettingKey.Returns(spKey);
             return ObjectDb;

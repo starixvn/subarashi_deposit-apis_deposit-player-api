@@ -7,10 +7,7 @@ public class DbFactoryFixture : IDbFactory, IDisposable
 {
     public DbFactoryFixture()
     {
-        DbSettingProviderManager
-            .StartTestingSession()
-            .Run();
-        ObjectDbFactory.SwitchToTestingMode();
+        DbSettingProviderManager.StartTestingSession();
     }
 
     public IObjectDb GetObjectDb(string spName, int timeout = 120) => ObjectDbFactory.CreateInstance(spName, timeout);
