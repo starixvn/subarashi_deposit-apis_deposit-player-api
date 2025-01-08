@@ -9,8 +9,5 @@ public class CreateShadowAccountRequest : IRequest
     [Range(1, int.MaxValue)]
     public int AgentId { get; set; }
 
-    [Required]
-    public bool IsTest { get; set; }
-
     public bool IsDebug { get; set; }
 }

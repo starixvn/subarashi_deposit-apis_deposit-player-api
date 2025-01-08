@@ -10,11 +10,7 @@ public class NewShadowAccountChainParam
 
     public string Username { get; set; }
 
-    public string Username2 { get; set; }
-
     public int CustId { get; set; }
 
     public LogData LogData { get; set; }
-
-    public bool IsTest { get; set; }
 }

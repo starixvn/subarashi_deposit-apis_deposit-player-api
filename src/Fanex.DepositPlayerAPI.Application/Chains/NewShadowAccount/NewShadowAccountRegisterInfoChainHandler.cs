@@ -29,8 +29,7 @@ public class NewShadowAccountRegisterInfoChainHandler(
         var param = new InsertShadowAccountInfoParam
         {
             AgentId = request.AgentId,
-            SiteDbGroupId = request.SiteDbGroupId,
-            IsTest = request.IsTest
+            SiteDbGroupId = request.SiteDbGroupId
         };
 
         var result = await playerRepository.InsertShadowAccountInfoAsync(param);
@@ -48,7 +47,6 @@ public class NewShadowAccountRegisterInfoChainHandler(
     private static void UpdateRequest(InsertShadowAccountInfoOutputParam output, NewShadowAccountChainParam request)
     {
         request.Username = output.Username;
-        request.Username2 = output.Username2;
         request.CustId = output.CustId;
     }
 }

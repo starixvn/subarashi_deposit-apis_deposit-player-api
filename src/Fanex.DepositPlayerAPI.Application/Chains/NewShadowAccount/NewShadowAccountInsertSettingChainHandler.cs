@@ -31,8 +31,7 @@ public class NewShadowAccountInsertSettingChainHandler(
         {
             CustId = request.CustId,
             Username = request.Username,
-            AgentId = request.AgentId,
-            IsTest = request.IsTest
+            AgentId = request.AgentId
         };
 
         var result = await playerRepository.InsertShadowAccountSettingAsync(param);

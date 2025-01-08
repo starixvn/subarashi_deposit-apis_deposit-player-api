@@ -5,15 +5,11 @@ public class InsertShadowAccountInfoParam
     public int AgentId { get; set; }
 
     public int SiteDbGroupId { get; set; }
-
-    public bool IsTest { get; set; }
 }
 
 public class InsertShadowAccountInfoOutputParam
 {
     public string Username { get; set; }
-
-    public string Username2 { get; set; }
 
     public int CustId { get; set; }
 }

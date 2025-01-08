@@ -52,7 +52,6 @@ public class ObjectMapperTest
         var newShadowAccountCommand = ObjectMapper.BuildShadowAccountCommand(createShadowAccountRequest);
 
         // Assert
-        newShadowAccountCommand.IsTest.Should().Be(createShadowAccountRequest.IsTest);
         newShadowAccountCommand.AgentId.Should().Be(createShadowAccountRequest.AgentId);
     }
 

@@ -123,7 +123,6 @@ public class PlayerRepositoryTest : RepositoryTestBase
         // Assert
         ObjectDb.Received(1).SetParameterValue(DbParam.CustId, param.CustId);
         ObjectDb.Received(1).SetParameterValue(DbParam.Username, param.Username);
-        ObjectDb.Received(1).SetParameterValue(DbParam.IsTest, param.IsTest);
         ObjectDb.Received(1).SetParameterValue(DbParam.AgentId, param.AgentId);
     }
 
@@ -197,7 +196,6 @@ public class PlayerRepositoryTest : RepositoryTestBase
         await _playerRepository.InsertShadowAccountInfoAsync(param);
 
         // Assert
-        ObjectDb.Received(1).SetParameterValue(DbParam.IsTest, param.IsTest);
         ObjectDb.Received(1).SetParameterValue(DbParam.AgentId, param.AgentId);
         ObjectDb.Received(1).SetParameterValue(DbParam.SiteDbGroupId, param.SiteDbGroupId);
     }
@@ -218,7 +216,6 @@ public class PlayerRepositoryTest : RepositoryTestBase
             { DbParam.ErrCode, errorCode },
             { DbParam.ErrMsg, errorMessage },
             { DbParam.Username, data.Username },
-            { DbParam.Username2, data.Username2 },
             { DbParam.CustId, data.CustId }
         });
 
@@ -246,7 +243,6 @@ public class PlayerRepositoryTest : RepositoryTestBase
             { DbParam.ErrCode, 0 },
             { DbParam.ErrMsg, "" },
             { DbParam.Username, data.Username },
-            { DbParam.Username2, data.Username2 },
             { DbParam.CustId, data.CustId }
         });
 

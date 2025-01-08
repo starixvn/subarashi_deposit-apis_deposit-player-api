@@ -24,8 +24,7 @@ public static class ObjectMapper
     {
         return new NewShadowAccountCommand
         {
-            AgentId = request.AgentId,
-            IsTest = request.IsTest
+            AgentId = request.AgentId
         };
     }
 

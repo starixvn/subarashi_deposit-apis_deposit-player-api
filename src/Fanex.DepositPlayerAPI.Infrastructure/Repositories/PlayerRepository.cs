@@ -232,7 +232,6 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
 
         using var objectDb = dbFactory.GetObjectDb(SpKey);
 
-        objectDb.SetParameterValue(DbParam.IsTest, param.IsTest);
         objectDb.SetParameterValue(DbParam.AgentId, param.AgentId);
         objectDb.SetParameterValue(DbParam.SiteDbGroupId, param.SiteDbGroupId);
 
@@ -245,7 +244,6 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
         var result = new InsertShadowAccountInfoOutputParam
         {
             Username = Converter.ToString(output[DbParam.Username]),
-            Username2 = Converter.ToString(output[DbParam.Username2]),
             CustId = Converter.ToInt(output[DbParam.CustId])
         };
 
@@ -268,7 +266,6 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
 
         objectDb.SetParameterValue(DbParam.CustId, param.CustId);
         objectDb.SetParameterValue(DbParam.Username, param.Username);
-        objectDb.SetParameterValue(DbParam.IsTest, param.IsTest);
         objectDb.SetParameterValue(DbParam.AgentId, param.AgentId);
 
         var logData = await objectDb.QueryEntityAsync<LogData>();
