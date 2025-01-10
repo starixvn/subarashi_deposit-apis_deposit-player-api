@@ -21,21 +21,28 @@ public class RunLoadTest(ITestOutputHelper testOutputHelper)
     [Fact(Skip = Skip)]
     public void RunCreateNewPlayerTest()
     {
-        var runCommand = string.Format(RunK6Command, "LicenseeApi/CreateNewPlayerTest.js");
+        var runCommand = string.Format(RunK6Command, "CreateNewPlayerTest.js");
         ExecuteCommand(runCommand);
     }
 
     [Fact(Skip = Skip)]
     public void RunCreateShadowAccountTest()
     {
-        var runCommand = string.Format(RunK6Command, "LicenseeApi/CreateShadowAccountTest.js");
+        var runCommand = string.Format(RunK6Command, "CreateShadowAccountTest.js");
         ExecuteCommand(runCommand);
     }
 
     [Fact(Skip = Skip)]
     public void RunReactivatePlayerTest()
     {
-        var runCommand = string.Format(RunK6Command, "LicenseeApi/ReactivatePlayerTest.js");
+        var runCommand = string.Format(RunK6Command, "ReactivatePlayerTest.js");
+        ExecuteCommand(runCommand);
+    }
+
+    [Fact(Skip = Skip)]
+    public void RunMapSabaIdTest()
+    {
+        var runCommand = string.Format(RunK6Command, "MapSabaIdTest.js");
         ExecuteCommand(runCommand);
     }
 
