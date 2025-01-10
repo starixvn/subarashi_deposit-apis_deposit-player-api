@@ -42,7 +42,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<ValidatePlayerInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<ValidatePlayerInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -82,7 +82,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertPlayerInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertPlayerInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -105,7 +105,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult.Success(dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult.Failure(error, dbInfo);
     }
 
@@ -148,7 +148,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertNewPlayerSettingOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertNewPlayerSettingOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -189,7 +189,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertReactivePlayerSettingOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertReactivePlayerSettingOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -222,7 +222,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<GetArchivedPlayerInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<GetArchivedPlayerInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -254,7 +254,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertShadowAccountInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertShadowAccountInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -281,7 +281,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<LogData>.Success(logData, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<LogData>.FailureWithData(error, logData, dbInfo);
     }
 }

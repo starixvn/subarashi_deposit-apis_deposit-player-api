@@ -46,7 +46,7 @@ public class ReactivatePlayerHandlerTest : HandlerTestBase
     {
         // Arrange
         var command = Fixture.Create<ReactivatePlayerCommand>();
-        var expectedResult = ServiceResult.Failure(ServiceErrors.SystemError);
+        var expectedResult = ServiceResult.Failure(ServiceError.SystemError);
         var reactivatePlayerChainParam = Substitute.For<IChainNonResultHandler<ReactivatePlayerChainParam>>();
 
         ChainHandlerFactory.CreateReactivatePlayerChainHandler().Returns(reactivatePlayerChainParam);
@@ -93,7 +93,7 @@ public class ReactivatePlayerHandlerTest : HandlerTestBase
         var actualResult = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        actualResult.Should().BeEquivalentTo(ServiceResult.Failure(ServiceErrors.SystemError));
+        actualResult.Should().BeEquivalentTo(ServiceResult.Failure(ServiceError.SystemError));
         await Logger.Received(1).ErrorAsync(Arg.Any<string>());
         reactivatePlayerHandler.Received(1).HandleError(Arg.Any<ReactivatePlayerChainParam>());
         LogAggregate.Received(1).AppendLog("Started processing...");

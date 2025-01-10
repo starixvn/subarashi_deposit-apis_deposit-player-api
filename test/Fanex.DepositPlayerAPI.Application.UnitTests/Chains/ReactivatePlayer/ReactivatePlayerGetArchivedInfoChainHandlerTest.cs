@@ -42,7 +42,7 @@ public class ReactivatePlayerGetArchivedInfoChainHandlerTest : ChainHandlerTestB
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         request.CustomerInfo.Should().Be(outputParam.CustomerInfo);
         request.LogTracking.Should().Be(outputParam.LogTracking);
         request.Recommend.Should().Be(outputParam.Recommend);
@@ -63,18 +63,18 @@ public class ReactivatePlayerGetArchivedInfoChainHandlerTest : ChainHandlerTestB
 
         _playerRepository
             .GetArchivedInfoAsync(Arg.Any<int>())
-            .Returns(ServiceResult<GetArchivedPlayerInfoOutputParam>.FailureWithData(ServiceErrors.SystemError, outputParam, extraInfo));
+            .Returns(ServiceResult<GetArchivedPlayerInfoOutputParam>.FailureWithData(ServiceError.SystemError, outputParam, extraInfo));
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         await _playerRepository.Received(1).GetArchivedInfoAsync(request.CustId);
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceError.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
@@ -93,18 +93,18 @@ public class ReactivatePlayerGetArchivedInfoChainHandlerTest : ChainHandlerTestB
 
         _playerRepository
             .GetArchivedInfoAsync(Arg.Any<int>())
-            .Returns(ServiceResult<GetArchivedPlayerInfoOutputParam>.FailureWithData(ServiceErrors.SystemError, outputParam, extraInfo));
+            .Returns(ServiceResult<GetArchivedPlayerInfoOutputParam>.FailureWithData(ServiceError.SystemError, outputParam, extraInfo));
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         await _playerRepository.Received(1).GetArchivedInfoAsync(request.CustId);
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceError.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.DidNotReceive().WriteLogTracking(Arg.Any<string>(), Arg.Any<LogTracking>());
@@ -126,7 +126,7 @@ public class ReactivatePlayerGetArchivedInfoChainHandlerTest : ChainHandlerTestB
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         await _playerRepository.Received(1).GetArchivedInfoAsync(request.CustId);
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
             x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));

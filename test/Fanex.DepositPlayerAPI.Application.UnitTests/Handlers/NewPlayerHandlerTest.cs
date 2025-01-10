@@ -48,7 +48,7 @@ public class NewPlayerHandlerTest : HandlerTestBase
     {
         // Arrange
         var command = Fixture.Create<NewPlayerCommand>();
-        var expectedResult = ServiceResult<Player>.Failure(ServiceErrors.SystemError);
+        var expectedResult = ServiceResult<Player>.Failure(ServiceError.SystemError);
         var newPlayerChainHandler = Substitute.For<IChainHandler<NewPlayerChainParam, Player>>();
 
         ChainHandlerFactory.CreateNewPlayerChainHandler().Returns(newPlayerChainHandler);
@@ -95,7 +95,7 @@ public class NewPlayerHandlerTest : HandlerTestBase
         var actualResult = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        actualResult.Should().BeEquivalentTo(ServiceResult<Player>.Failure(ServiceErrors.SystemError));
+        actualResult.Should().BeEquivalentTo(ServiceResult<Player>.Failure(ServiceError.SystemError));
         await Logger.Received(1).ErrorAsync(Arg.Any<string>());
         newPlayerChainHandler.Received(1).HandleError(Arg.Any<NewPlayerChainParam>());
         LogAggregate.Received(1).AppendLog("Started processing...");

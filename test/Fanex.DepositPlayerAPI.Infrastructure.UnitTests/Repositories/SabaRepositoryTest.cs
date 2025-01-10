@@ -15,23 +15,23 @@ using NSubstitute;
 [Collection("DbFactoryFixture")]
 public class SabaRepositoryTest : RepositoryTestBase
 {
-    private readonly ISabaRepository _sabaRepository;
+    private readonly ISabaIdRepository _sabaRepository;
 
     public SabaRepositoryTest(DbFactoryFixture dbFactoryFixture) : base(dbFactoryFixture)
     {
         _sabaRepository = new SabaRepository(dbFactoryFixture, ShardDbInfoAccessor);
     }
 
-    #region ValidateSabaInfoAsync
+    #region ValidateSabaIdInfoAsync
 
     [Fact]
-    public async Task ValidateSabaInfoAsync_Should_SetParameterValueCorrect()
+    public async Task ValidateSabaIdInfoAsync_Should_SetParameterValueCorrect()
     {
         // Arrange
-        var param = Fixture.Create<ValidateSabaInfoParam>();
+        var param = Fixture.Create<ValidateSabaIdInfoParam>();
 
         // Action
-        await _sabaRepository.ValidateSabaInfoAsync(param);
+        await _sabaRepository.ValidateSabaIdInfoAsync(param);
 
         // Assert
         ObjectDb.Received(1).SetParameterValue(DbParam.CustId, param.CustId);
@@ -42,11 +42,11 @@ public class SabaRepositoryTest : RepositoryTestBase
     [Theory]
     [InlineData(911, "Create customer failed. Please try again.")]
     [InlineData(999, "System error.")]
-    public async Task ValidateSabaInfoAsync_Should_ReturnError_WhenDBReturnError(int errorCode, string errorMessage)
+    public async Task ValidateSabaIdInfoAsync_Should_ReturnError_WhenDBReturnError(int errorCode, string errorMessage)
     {
         // Arrange
-        var param = Fixture.Create<ValidateSabaInfoParam>();
-        var data = Fixture.Create<ValidateSabaInfoOutputParam>();
+        var param = Fixture.Create<ValidateSabaIdInfoParam>();
+        var data = Fixture.Create<ValidateSabaIdInfoOutputParam>();
 
         ObjectDb.GetOutputParams().Returns(new Hashtable
         {
@@ -58,21 +58,21 @@ public class SabaRepositoryTest : RepositoryTestBase
         var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data);
 
         // Action
-        var result = await _sabaRepository.ValidateSabaInfoAsync(param);
+        var result = await _sabaRepository.ValidateSabaIdInfoAsync(param);
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.GetFromDbError(errorCode, errorMessage));
+        result.Error.Should().BeEquivalentTo(ServiceError.GetFromDbError(errorCode, errorMessage));
         result.ExtraInfo.Should().BeEquivalentTo(dbInfo);
         result.Result.Should().BeEquivalentTo(data);
     }
 
     [Fact]
-    public async Task ValidateSabaInfoAsync_Should_ReturnSuccess()
+    public async Task ValidateSabaIdInfoAsync_Should_ReturnSuccess()
     {
         // Arrange
-        var param = Fixture.Create<ValidateSabaInfoParam>();
-        var data = Fixture.Create<ValidateSabaInfoOutputParam>();
+        var param = Fixture.Create<ValidateSabaIdInfoParam>();
+        var data = Fixture.Create<ValidateSabaIdInfoOutputParam>();
 
         ObjectDb.GetOutputParams().Returns(new Hashtable
         {
@@ -84,42 +84,42 @@ public class SabaRepositoryTest : RepositoryTestBase
         var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data);
 
         // Action
-        var result = await _sabaRepository.ValidateSabaInfoAsync(param);
+        var result = await _sabaRepository.ValidateSabaIdInfoAsync(param);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.ExtraInfo.Should().BeEquivalentTo(dbInfo);
         result.Result.Should().BeEquivalentTo(data);
     }
 
     #endregion
 
-    #region MapSabaInfoAsync
+    #region MapSabaIdInfoAsync
 
     [Fact]
-    public async Task MapSabaInfoAsync_Should_CreateCorrectShardSpKey()
+    public async Task MapSabaIdInfoAsync_Should_CreateCorrectShardSpKey()
     {
         // Arrange
-        var param = Fixture.Create<MapSabaInfoParam>();
+        var param = Fixture.Create<MapSabaIdInfoParam>();
         var shardSpKey = Fixture.Create<string>();
         ShardDbInfoAccessor.ToShardCustDbSp(Arg.Any<string>()).Returns(shardSpKey);
 
         // Action
-        await _sabaRepository.MapSabaInfoAsync(param);
+        await _sabaRepository.MapSabaIdInfoAsync(param);
 
         // Assert
         ObjectDb.SettingKey.Should().Be(shardSpKey);
     }
 
     [Fact]
-    public async Task MapSabaInfoAsync_Should_SetParameterValueCorrect()
+    public async Task MapSabaIdInfoAsync_Should_SetParameterValueCorrect()
     {
         // Arrange
-        var param = Fixture.Create<MapSabaInfoParam>();
+        var param = Fixture.Create<MapSabaIdInfoParam>();
 
         // Action
-        await _sabaRepository.MapSabaInfoAsync(param);
+        await _sabaRepository.MapSabaIdInfoAsync(param);
 
         // Assert
         ObjectDb.Received(1).SetParameterValue(DbParam.CustId, param.CustId);
@@ -131,10 +131,10 @@ public class SabaRepositoryTest : RepositoryTestBase
     [Theory]
     [InlineData(911, "Create customer failed. Please try again.")]
     [InlineData(999, "System error.")]
-    public async Task MapSabaInfoAsync_Should_ReturnError_WhenDBReturnError(int errorCode, string errorMessage)
+    public async Task MapSabaIdInfoAsync_Should_ReturnError_WhenDBReturnError(int errorCode, string errorMessage)
     {
         // Arrange
-        var param = Fixture.Create<MapSabaInfoParam>();
+        var param = Fixture.Create<MapSabaIdInfoParam>();
         var data = Fixture.Create<LogData>();
 
         ObjectDb.GetOutputParams().Returns(new Hashtable
@@ -148,20 +148,20 @@ public class SabaRepositoryTest : RepositoryTestBase
         var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data);
 
         // Action
-        var result = await _sabaRepository.MapSabaInfoAsync(param);
+        var result = await _sabaRepository.MapSabaIdInfoAsync(param);
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.GetFromDbError(errorCode, errorMessage));
+        result.Error.Should().BeEquivalentTo(ServiceError.GetFromDbError(errorCode, errorMessage));
         result.ExtraInfo.Should().BeEquivalentTo(dbInfo);
         result.Result.Should().BeEquivalentTo(data);
     }
 
     [Fact]
-    public async Task MapSabaInfoAsync_Should_ReturnSuccess()
+    public async Task MapSabaIdInfoAsync_Should_ReturnSuccess()
     {
         // Arrange
-        var param = Fixture.Create<MapSabaInfoParam>();
+        var param = Fixture.Create<MapSabaIdInfoParam>();
         var data = Fixture.Create<LogData>();
 
         ObjectDb.GetOutputParams().Returns(new Hashtable
@@ -175,11 +175,11 @@ public class SabaRepositoryTest : RepositoryTestBase
         var dbInfo = DbUtils.GetDatabaseInfo(ObjectDb, data);
 
         // Action
-        var result = await _sabaRepository.MapSabaInfoAsync(param);
+        var result = await _sabaRepository.MapSabaIdInfoAsync(param);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.ExtraInfo.Should().BeEquivalentTo(dbInfo);
         result.Result.Should().BeEquivalentTo(data);
     }

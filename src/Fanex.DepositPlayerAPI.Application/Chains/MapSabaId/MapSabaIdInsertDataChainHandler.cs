@@ -12,7 +12,7 @@ using Services;
 public class MapSabaIdInsertDataChainHandler(
     ILogger logger,
     ILogAggregate logAggregate,
-    ISabaRepository sabaRepository,
+    ISabaIdRepository sabaRepository,
     IBackgroundTask backgroundTask)
     : ChainBaseNonResultHandler<MapSabaIdChainParam>(logger, logAggregate)
 {
@@ -23,7 +23,7 @@ public class MapSabaIdInsertDataChainHandler(
 
     public override async Task<ServiceResult> HandleInternal(MapSabaIdChainParam request)
     {
-        var param = new MapSabaInfoParam
+        var param = new MapSabaIdInfoParam
         {
             CustId = request.CustId,
             CustType = request.CustType,
@@ -31,7 +31,7 @@ public class MapSabaIdInsertDataChainHandler(
             IsTest = request.IsTest
         };
 
-        var result = await sabaRepository.MapSabaInfoAsync(param);
+        var result = await sabaRepository.MapSabaIdInfoAsync(param);
 
         if (result?.Result is not null)
         {

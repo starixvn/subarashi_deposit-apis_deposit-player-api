@@ -35,7 +35,7 @@ public class BalanceRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardD
             return ServiceResult<LogTracking>.Success(logTracking, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<LogTracking>.FailureWithData(error, logTracking, dbInfo);
     }
 
@@ -71,7 +71,7 @@ public class BalanceRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardD
             return ServiceResult.Success(dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult.Failure(error, dbInfo);
     }
 }

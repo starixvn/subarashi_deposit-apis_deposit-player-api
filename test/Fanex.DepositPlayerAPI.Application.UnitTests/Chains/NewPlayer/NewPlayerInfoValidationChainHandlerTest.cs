@@ -32,20 +32,20 @@ public class NewPlayerInfoValidationChainHandlerTest : ChainHandlerTestBase
 
         _playerRepository
             .ValidatePlayerInfoAsync(Arg.Any<ValidatePlayerInfoParam>())
-            .Returns(ServiceResult<ValidatePlayerInfoOutputParam>.Failure(ServiceErrors.SystemError, extraInfo));
+            .Returns(ServiceResult<ValidatePlayerInfoOutputParam>.Failure(ServiceError.SystemError, extraInfo));
 
         // Action
         var result = await _handler.Handle(param);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).ValidatePlayerInfoAsync(Arg.Is<ValidatePlayerInfoParam>(
             x => x.AgentId == param.AgentId && x.DepositUserName == param.DepositUserName));
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceError.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
@@ -65,7 +65,7 @@ public class NewPlayerInfoValidationChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         request.CurrencyName.Should().Be(outputParam.CurrencyName);
         request.Site.Should().Be(outputParam.Site);
@@ -90,7 +90,7 @@ public class NewPlayerInfoValidationChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).ValidatePlayerInfoAsync(Arg.Is<ValidatePlayerInfoParam>(
             x => x.AgentId == param.AgentId && x.DepositUserName == param.DepositUserName));

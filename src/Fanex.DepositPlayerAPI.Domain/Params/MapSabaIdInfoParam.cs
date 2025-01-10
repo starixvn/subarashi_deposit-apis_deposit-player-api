@@ -1,6 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Domain.Params;
 
-public class MapSabaInfoParam
+public class MapSabaIdInfoParam
 {
     public int CustId { get; set; }
 

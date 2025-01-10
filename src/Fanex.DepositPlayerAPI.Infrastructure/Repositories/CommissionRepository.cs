@@ -47,7 +47,7 @@ public class CommissionRepository(IDbFactory dbFactory, IShardDbInfoAccessor sha
             return ServiceResult.Success(dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult.Failure(error, dbInfo);
     }
 
@@ -81,7 +81,7 @@ public class CommissionRepository(IDbFactory dbFactory, IShardDbInfoAccessor sha
             return ServiceResult<InsertDefaultGroupCommissionOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertDefaultGroupCommissionOutputParam>.FailureWithData(error, result, dbInfo);
     }
 }

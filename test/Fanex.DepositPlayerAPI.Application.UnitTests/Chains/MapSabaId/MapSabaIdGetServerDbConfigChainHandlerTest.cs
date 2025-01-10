@@ -43,7 +43,7 @@ public class MapSabaIdGetServerDbConfigChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
         Logger.DidNotReceive().Error(Arg.Any<string>());
         LogAggregate.Received().AppendLog(Arg.Any<string>());
@@ -65,11 +65,11 @@ public class MapSabaIdGetServerDbConfigChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(SabaIdError.InvalidMember);
         result.ExtraInfo.Should().StartWith($"[{_handler.FunctionName}] - DB server configuration not found for CustId={dbConfig.CustId}.");
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(SabaIdError.InvalidMember)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         AssertDidNotReceivedHttpContextAccessor(dbConfig, _httpContextAccessor);
@@ -89,7 +89,7 @@ public class MapSabaIdGetServerDbConfigChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
             x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));

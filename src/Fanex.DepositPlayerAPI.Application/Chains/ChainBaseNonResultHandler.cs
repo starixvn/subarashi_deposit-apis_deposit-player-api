@@ -58,7 +58,7 @@ public abstract class ChainBaseNonResultHandler<TRequest>(
 
             if (IsBreakOnError)
             {
-                return ServiceResult.Failure(ServiceErrors.SystemError);
+                return ServiceResult.Failure(ServiceError.SystemError);
             }
 
             return await RunNextHandle(request, result);

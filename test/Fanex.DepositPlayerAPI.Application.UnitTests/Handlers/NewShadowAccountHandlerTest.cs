@@ -49,7 +49,7 @@ public class NewShadowAccountHandlerTest : HandlerTestBase
     {
         // Arrange
         var command = Fixture.Create<NewShadowAccountCommand>();
-        var expectedResult = ServiceResult<ShadowAccount>.Failure(ServiceErrors.SystemError);
+        var expectedResult = ServiceResult<ShadowAccount>.Failure(ServiceError.SystemError);
         var newShadowAccountChainHandler = Substitute.For<IChainHandler<NewShadowAccountChainParam, ShadowAccount>>();
 
         ChainHandlerFactory.CreateNewShadowAccountChainHandler().Returns(newShadowAccountChainHandler);
@@ -96,7 +96,7 @@ public class NewShadowAccountHandlerTest : HandlerTestBase
         var actualResult = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        actualResult.Should().BeEquivalentTo(ServiceResult<Player>.Failure(ServiceErrors.SystemError));
+        actualResult.Should().BeEquivalentTo(ServiceResult<Player>.Failure(ServiceError.SystemError));
         await Logger.Received(1).ErrorAsync(Arg.Any<string>());
         newShadowAccountChainHandler.Received(1).HandleError(Arg.Any<NewShadowAccountChainParam>());
         LogAggregate.Received(1).AppendLog("Started processing...");

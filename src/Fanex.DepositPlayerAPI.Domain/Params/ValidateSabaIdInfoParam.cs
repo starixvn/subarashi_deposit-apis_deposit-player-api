@@ -1,6 +1,6 @@
 ﻿namespace Fanex.DepositPlayerAPI.Domain.Params;
 
-public class ValidateSabaInfoParam
+public class ValidateSabaIdInfoParam
 {
     public long SabaId { get; set; }
 
@@ -9,7 +9,7 @@ public class ValidateSabaInfoParam
     public byte CustType { get; set; }
 }
 
-public class ValidateSabaInfoOutputParam
+public class ValidateSabaIdInfoOutputParam
 {
     public bool IsTest { get; set; }
 }

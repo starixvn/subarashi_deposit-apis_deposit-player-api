@@ -46,7 +46,7 @@ public class MapSabaIdHandlerTest : HandlerTestBase
     {
         // Arrange
         var command = Fixture.Create<MapSabaIdCommand>();
-        var expectedResult = ServiceResult.Failure(ServiceErrors.SystemError);
+        var expectedResult = ServiceResult.Failure(ServiceError.SystemError);
         var mapSabaIdChainParam = Substitute.For<IChainNonResultHandler<MapSabaIdChainParam>>();
 
         ChainHandlerFactory.CreateMapSabaIdChainParam().Returns(mapSabaIdChainParam);
@@ -93,7 +93,7 @@ public class MapSabaIdHandlerTest : HandlerTestBase
         var actualResult = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        actualResult.Should().BeEquivalentTo(ServiceResult.Failure(ServiceErrors.SystemError));
+        actualResult.Should().BeEquivalentTo(ServiceResult.Failure(ServiceError.SystemError));
         await Logger.Received(1).ErrorAsync(Arg.Any<string>());
         mapSabaIdHandler.Received(1).HandleError(Arg.Any<MapSabaIdChainParam>());
         LogAggregate.Received(1).AppendLog("Started processing...");

@@ -44,7 +44,7 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         request.Username.Should().Be(outputParam.Username);
         request.CustId.Should().Be(outputParam.CustId);
@@ -79,14 +79,14 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
             .Returns(ServiceResult<InsertPlayerInfoOutputParam>.Success(outputParam));
 
         _playerRepository.VerifyUsernameExistence(Arg.Any<string>()).Returns(_ =>
-            ++count < failureCount ? ServiceResult.Failure(ServiceErrors.SystemError) : ServiceResult.Success());
+            ++count < failureCount ? ServiceResult.Failure(ServiceError.SystemError) : ServiceResult.Success());
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         request.Username.Should().Be(outputParam.Username);
         request.CustId.Should().Be(outputParam.CustId);
@@ -115,7 +115,7 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
             .InsertPlayerInfoAsync(Arg.Any<InsertPlayerInfoParam>())
             .Returns(ServiceResult<InsertPlayerInfoOutputParam>.Success(outputParam));
 
-        _playerRepository.VerifyUsernameExistence(Arg.Any<string>()).Returns(ServiceResult.Failure(ServiceErrors.SystemError));
+        _playerRepository.VerifyUsernameExistence(Arg.Any<string>()).Returns(ServiceResult.Failure(ServiceError.SystemError));
 
         // Action
         var result = await _handler.Handle(request);
@@ -153,7 +153,7 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _playerRepository.DidNotReceive().VerifyUsernameExistence(Arg.Any<string>());
         await _playerRepository.Received(1).InsertPlayerInfoAsync(Arg.Is<InsertPlayerInfoParam>(x =>
@@ -187,7 +187,7 @@ public class NewPlayerInsertInfoChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).VerifyUsernameExistence(Arg.Is<string>(x => x == outputParam.Username));
         await _playerRepository.Received(1).InsertPlayerInfoAsync(Arg.Is<InsertPlayerInfoParam>(x =>

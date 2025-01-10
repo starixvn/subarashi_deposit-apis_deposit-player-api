@@ -39,7 +39,7 @@ public class NewShadowAccountBalanceCreditInitializeChainHandlerTest : ChainHand
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         await _balanceRepository.Received(1).InitializeNewPlayerCreditBalanceAsync(custId);
         Logger.DidNotReceive().Error(Arg.Any<string>());
@@ -58,7 +58,7 @@ public class NewShadowAccountBalanceCreditInitializeChainHandlerTest : ChainHand
         var custId = 123;
         var extraInfo = Fixture.Create<string>();
         var newShadowAccountChainParam = new NewShadowAccountChainParam { CustId = custId };
-        var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
+        var error = ServiceError.GetFromDbError(errorCode, errorMessage);
         _balanceRepository.InitializeNewPlayerCreditBalanceAsync(custId).Returns(ServiceResult<ShadowAccount>.Failure(error, extraInfo));
 
         // Action
@@ -90,7 +90,7 @@ public class NewShadowAccountBalanceCreditInitializeChainHandlerTest : ChainHand
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         result.ExtraInfo.Should().Be(extraInfo);
         await _balanceRepository.Received(1).InitializeNewPlayerCreditBalanceAsync(custId);
@@ -113,7 +113,7 @@ public class NewShadowAccountBalanceCreditInitializeChainHandlerTest : ChainHand
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _balanceRepository.Received(1).InitializeNewPlayerCreditBalanceAsync(custId);
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>

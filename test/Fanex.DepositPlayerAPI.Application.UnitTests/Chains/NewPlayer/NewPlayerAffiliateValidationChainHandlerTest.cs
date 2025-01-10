@@ -36,7 +36,7 @@ public class NewPlayerAffiliateValidationChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         await _affiliateRepository.Received(1).ValidateAffiliateAsync(affiliateId);
         Logger.DidNotReceive().Error(Arg.Any<string>());
@@ -55,7 +55,7 @@ public class NewPlayerAffiliateValidationChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         await _affiliateRepository.DidNotReceive().ValidateAffiliateAsync(Arg.Any<int>());
         Logger.DidNotReceive().Error(Arg.Any<string>());
@@ -72,7 +72,7 @@ public class NewPlayerAffiliateValidationChainHandlerTest : ChainHandlerTestBase
         var affiliateId = 123;
         var extraInfo = Fixture.Create<string>();
         var newPlayerChainParam = new NewPlayerChainParam { AffiliateId = affiliateId };
-        var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
+        var error = ServiceError.GetFromDbError(errorCode, errorMessage);
         _affiliateRepository.ValidateAffiliateAsync(affiliateId).Returns(ServiceResult<Player>.Failure(error, extraInfo));
 
         // Action
@@ -103,7 +103,7 @@ public class NewPlayerAffiliateValidationChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         result.ExtraInfo.Should().Be(extraInfo);
         await _affiliateRepository.Received(1).ValidateAffiliateAsync(affiliateId);
@@ -125,7 +125,7 @@ public class NewPlayerAffiliateValidationChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _affiliateRepository.Received(1).ValidateAffiliateAsync(affiliateId);
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>

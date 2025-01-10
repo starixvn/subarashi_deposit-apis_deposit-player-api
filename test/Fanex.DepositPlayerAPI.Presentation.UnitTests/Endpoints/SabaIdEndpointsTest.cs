@@ -56,7 +56,7 @@ public class SabaIdEndpointsTest
         var request = _fixture.Create<MapSabaIdRequest>();
         _mediator
             .Send(Arg.Any<MapSabaIdCommand>())
-            .Returns(ServiceResult.Failure(ServiceErrors.SystemError));
+            .Returns(ServiceResult.Failure(ServiceError.SystemError));
 
         // Action
         var result = await SabaIdEndpoints.MapSabaId(sabaId, request, _mediator, _logAggregate, _appSetting);
@@ -64,8 +64,8 @@ public class SabaIdEndpointsTest
 
         // Assert
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.ErrorCode.Should().Be(ServiceErrors.SystemError.Code);
-        okResult.Value.ErrorMessage.Should().Be(ServiceErrors.SystemError.Message);
+        okResult.Value.ErrorCode.Should().Be(ServiceError.SystemError.Code);
+        okResult.Value.ErrorMessage.Should().Be(ServiceError.SystemError.Message);
     }
 
     [Fact]

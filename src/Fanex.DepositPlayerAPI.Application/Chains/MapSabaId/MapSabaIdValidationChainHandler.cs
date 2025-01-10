@@ -11,7 +11,7 @@ using Services;
 public class MapSabaIdValidationChainHandler(
     ILogger logger,
     ILogAggregate logAggregate,
-    ISabaRepository sabaRepository)
+    ISabaIdRepository sabaRepository)
     : ChainBaseNonResultHandler<MapSabaIdChainParam>(logger, logAggregate)
 {
     public override bool IsBreakOnError => true;
@@ -21,14 +21,14 @@ public class MapSabaIdValidationChainHandler(
 
     public override async Task<ServiceResult> HandleInternal(MapSabaIdChainParam request)
     {
-        var param = new ValidateSabaInfoParam
+        var param = new ValidateSabaIdInfoParam
         {
             CustId = request.CustId,
             CustType = request.CustType,
             SabaId = request.SabaId
         };
 
-        var result = await sabaRepository.ValidateSabaInfoAsync(param);
+        var result = await sabaRepository.ValidateSabaIdInfoAsync(param);
 
         if (result?.Result is not null)
         {
@@ -38,7 +38,7 @@ public class MapSabaIdValidationChainHandler(
         return result;
     }
 
-    private static void UpdateRequest(ValidateSabaInfoOutputParam output, MapSabaIdChainParam request)
+    private static void UpdateRequest(ValidateSabaIdInfoOutputParam output, MapSabaIdChainParam request)
     {
         request.IsTest = output.IsTest;
     }

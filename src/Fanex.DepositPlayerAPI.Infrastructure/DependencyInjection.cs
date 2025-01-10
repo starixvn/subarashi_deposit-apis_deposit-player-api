@@ -30,7 +30,7 @@ public static class DependencyInjection
         services.TryAddTransient<IBalanceRepository, BalanceRepository>();
         services.TryAddTransient<ICommissionRepository, CommissionRepository>();
         services.TryAddTransient<ILogDbRepository, LogDbRepository>();
-        services.TryAddTransient<ISabaRepository, SabaRepository>();
+        services.TryAddTransient<ISabaIdRepository, SabaRepository>();
         services.TryAddSingleton<IDbFactory, DbFactory>();
 
         return services;

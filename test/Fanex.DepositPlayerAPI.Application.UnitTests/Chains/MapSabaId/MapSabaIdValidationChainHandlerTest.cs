@@ -15,11 +15,11 @@ using NSubstitute.ExceptionExtensions;
 public class MapSabaIdValidationChainHandlerTest : ChainHandlerTestBase
 {
     private readonly MapSabaIdValidationChainHandler _handler;
-    private readonly ISabaRepository _sabaRepository;
+    private readonly ISabaIdRepository _sabaRepository;
 
     public MapSabaIdValidationChainHandlerTest()
     {
-        _sabaRepository = Substitute.For<ISabaRepository>();
+        _sabaRepository = Substitute.For<ISabaIdRepository>();
         _handler = new MapSabaIdValidationChainHandler(Logger, LogAggregate, _sabaRepository);
     }
 
@@ -31,20 +31,20 @@ public class MapSabaIdValidationChainHandlerTest : ChainHandlerTestBase
         var extraInfo = Fixture.Create<string>();
 
         _sabaRepository
-            .ValidateSabaInfoAsync(Arg.Any<ValidateSabaInfoParam>())
-            .Returns(ServiceResult<ValidateSabaInfoOutputParam>.Failure(ServiceErrors.SystemError, extraInfo));
+            .ValidateSabaIdInfoAsync(Arg.Any<ValidateSabaIdInfoParam>())
+            .Returns(ServiceResult<ValidateSabaIdInfoOutputParam>.Failure(ServiceError.SystemError, extraInfo));
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
-        await _sabaRepository.Received(1).ValidateSabaInfoAsync(Arg.Is<ValidateSabaInfoParam>(
+        await _sabaRepository.Received(1).ValidateSabaIdInfoAsync(Arg.Is<ValidateSabaIdInfoParam>(
             x => x.CustId == request.CustId && x.CustType == request.CustType));
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceError.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
     }
@@ -54,19 +54,19 @@ public class MapSabaIdValidationChainHandlerTest : ChainHandlerTestBase
     {
         // Arrange
         var request = Fixture.Create<MapSabaIdChainParam>();
-        var outputParam = Fixture.Create<ValidateSabaInfoOutputParam>();
+        var outputParam = Fixture.Create<ValidateSabaIdInfoOutputParam>();
         _sabaRepository
-            .ValidateSabaInfoAsync(Arg.Any<ValidateSabaInfoParam>())
-            .Returns(ServiceResult<ValidateSabaInfoOutputParam>.Success(outputParam));
+            .ValidateSabaIdInfoAsync(Arg.Any<ValidateSabaIdInfoParam>())
+            .Returns(ServiceResult<ValidateSabaIdInfoOutputParam>.Success(outputParam));
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         request.IsTest.Should().Be(outputParam.IsTest);
-        await _sabaRepository.Received(1).ValidateSabaInfoAsync(Arg.Is<ValidateSabaInfoParam>(
+        await _sabaRepository.Received(1).ValidateSabaIdInfoAsync(Arg.Is<ValidateSabaIdInfoParam>(
             x => x.CustId == request.CustId && x.CustType == request.CustType));
         Logger.DidNotReceive().Error(Arg.Any<string>());
         LogAggregate.Received().AppendLog(Arg.Any<string>());
@@ -78,15 +78,15 @@ public class MapSabaIdValidationChainHandlerTest : ChainHandlerTestBase
     {
         // Arrange
         var request = Fixture.Create<MapSabaIdChainParam>();
-        _sabaRepository.ValidateSabaInfoAsync(Arg.Any<ValidateSabaInfoParam>()).Throws<Exception>();
+        _sabaRepository.ValidateSabaIdInfoAsync(Arg.Any<ValidateSabaIdInfoParam>()).Throws<Exception>();
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
-        await _sabaRepository.Received(1).ValidateSabaInfoAsync(Arg.Is<ValidateSabaInfoParam>(
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
+        await _sabaRepository.Received(1).ValidateSabaIdInfoAsync(Arg.Is<ValidateSabaIdInfoParam>(
             x => x.CustId == request.CustId && x.CustType == request.CustType));
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
             x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));

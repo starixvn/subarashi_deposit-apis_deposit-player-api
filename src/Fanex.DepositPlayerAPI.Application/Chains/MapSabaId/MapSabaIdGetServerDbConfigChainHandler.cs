@@ -34,7 +34,7 @@ public class MapSabaIdGetServerDbConfigChainHandler(
             stringBuilder.AppendLine($"[{FunctionName}] - DB server configuration not found for CustId={request.CustId}.");
             stringBuilder.AppendLine($"Request Info: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
 
-            return ServiceResult.Failure(ServiceErrors.SystemError, stringBuilder.ToString());
+            return ServiceResult.Failure(SabaIdError.InvalidMember, stringBuilder.ToString());
         }
 
         ServerDbConfigUtils.SetServerDbConfigToHttpContext(result, httpContextAccessor);
