@@ -26,12 +26,12 @@ export default function () {
 const DefaultDataByEnv = {};
 
 DefaultDataByEnv[Env.LOCAL] = {
-    realCustId: 148708160,
+    //realCustId: 148708160,
     agentId: 117835401,
 };
 
 DefaultDataByEnv[Env.SIT] = {
-    realCustId: 148708160,
+    //realCustId: 148708160,
     agentId: 117835401,
 };
 

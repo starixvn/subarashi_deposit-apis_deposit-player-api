@@ -7,14 +7,14 @@ using NSubstitute.Core;
 
 public static class DbTestUtils
 {
-    public static void MapReaderData(IDataReader reader, object readerDataMapping, Dictionary<string, string>? columnMapping = null)
+    public static void MapReaderData(IDataReader reader, object readerDataMapping, Dictionary<string, string> columnMapping = null)
     {
         var func = CreateMappingFunc(readerDataMapping, columnMapping);
 
         reader[Arg.Any<string>()].Returns(func);
     }
 
-    private static Func<CallInfo, object> CreateMappingFunc(object mappingData, Dictionary<string, string>? columnMapping)
+    private static Func<CallInfo, object> CreateMappingFunc(object mappingData, Dictionary<string, string> columnMapping)
     {
         switch (mappingData)
         {
@@ -51,7 +51,7 @@ public static class DbTestUtils
         }
     }
 
-    private static IDictionary<string, object> ToDictionary(object data, Dictionary<string, string>? columnMapping)
+    private static IDictionary<string, object> ToDictionary(object data, Dictionary<string, string> columnMapping)
     {
         if (data is IDictionary)
         {
