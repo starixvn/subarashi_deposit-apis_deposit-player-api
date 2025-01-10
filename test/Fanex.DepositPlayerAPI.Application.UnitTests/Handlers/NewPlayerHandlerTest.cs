@@ -9,75 +9,70 @@ using Domain.Errors;
 using Domain.Params.Chains;
 using Domain.Results;
 using FluentAssertions;
-using Logging;
+using MediatR;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using Services;
 
-public class NewPlayerHandlerTest
+public class NewPlayerHandlerTest : HandlerTestBase
 {
-    private readonly IChainHandlerFactory _chainHandlerFactory = Substitute.For<IChainHandlerFactory>();
-    private readonly IFixture _fixture = new Fixture();
-    private readonly ILogAggregate _logAggregate = Substitute.For<ILogAggregate>();
-    private readonly ILogger _logger = Substitute.For<ILogger>();
+    private readonly IRequestHandler<NewPlayerCommand, ServiceResult<Player>> _handler;
+
+    public NewPlayerHandlerTest()
+    {
+        _handler = new NewPlayerHandler(LogAggregate, ChainHandlerFactory);
+    }
 
     [Fact]
     public async Task NewPlayerHandler_Should_ReturnSuccess_WhenHandlerReturnSuccess()
     {
         // Arrange
-        var command = _fixture.Create<NewPlayerCommand>();
-        var data = _fixture.Create<Player>();
+        var command = Fixture.Create<NewPlayerCommand>();
+        var data = Fixture.Create<Player>();
         var expectedResult = ServiceResult<Player>.Success(data);
         var newPlayerChainHandler = Substitute.For<IChainHandler<NewPlayerChainParam, Player>>();
 
-        _chainHandlerFactory.CreateNewPlayerChainHandler().Returns(newPlayerChainHandler);
+        ChainHandlerFactory.CreateNewPlayerChainHandler().Returns(newPlayerChainHandler);
         newPlayerChainHandler.Handle(Arg.Any<NewPlayerChainParam>()).Returns(expectedResult);
 
-        var handler = new NewPlayerHandler(_logAggregate, _chainHandlerFactory);
-
         // Action
-        var actualResult = await handler.Handle(command, CancellationToken.None);
+        var actualResult = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         actualResult.Should().BeEquivalentTo(expectedResult);
-        _logAggregate.Received(1).AppendLog("Started processing...");
-        _logAggregate.Received(1).AppendLog("Finished processing...");
+        LogAggregate.Received(1).AppendLog("Started processing...");
+        LogAggregate.Received(1).AppendLog("Finished processing...");
     }
 
     [Fact]
     public async Task NewPlayerHandler_Should_ReturnFailure_WhenHandlerReturnFailure()
     {
         // Arrange
-        var command = _fixture.Create<NewPlayerCommand>();
+        var command = Fixture.Create<NewPlayerCommand>();
         var expectedResult = ServiceResult<Player>.Failure(ServiceErrors.SystemError);
         var newPlayerChainHandler = Substitute.For<IChainHandler<NewPlayerChainParam, Player>>();
 
-        _chainHandlerFactory.CreateNewPlayerChainHandler().Returns(newPlayerChainHandler);
+        ChainHandlerFactory.CreateNewPlayerChainHandler().Returns(newPlayerChainHandler);
         newPlayerChainHandler.Handle(Arg.Any<NewPlayerChainParam>()).Returns(expectedResult);
 
-        var handler = new NewPlayerHandler(_logAggregate, _chainHandlerFactory);
-
         // Action
-        var actualResult = await handler.Handle(command, CancellationToken.None);
+        var actualResult = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         actualResult.Should().BeEquivalentTo(expectedResult);
-        _logAggregate.Received(1).AppendLog("Started processing...");
-        _logAggregate.Received(1).AppendLog("Finished processing...");
+        LogAggregate.Received(1).AppendLog("Started processing...");
+        LogAggregate.Received(1).AppendLog("Finished processing...");
     }
 
     [Fact]
     public async Task NewPlayerHandler_Should_ThrowException_WhenChainHandlerIsNull()
     {
         // Arrange
-        var command = _fixture.Create<NewPlayerCommand>();
+        var command = Fixture.Create<NewPlayerCommand>();
 
-        _chainHandlerFactory.CreateNewPlayerChainHandler().Returns((IChainHandler<NewPlayerChainParam, Player>)null!);
-
-        var handler = new NewPlayerHandler(_logAggregate, _chainHandlerFactory);
+        ChainHandlerFactory.CreateNewPlayerChainHandler().Returns((IChainHandler<NewPlayerChainParam, Player>)null!);
 
         // Action
-        var action = () => handler.Handle(command, CancellationToken.None);
+        var action = () => _handler.Handle(command, CancellationToken.None);
 
         // Assert
         await action.Should().ThrowAsync<NullReferenceException>();
@@ -87,26 +82,24 @@ public class NewPlayerHandlerTest
     public async Task NewPlayerHandler_Should_HandleException_WhenRootChainHandlerThrowsException()
     {
         // Arrange
-        var chainName = _fixture.Create<string>();
-        var command = _fixture.Create<NewPlayerCommand>();
-        var newPlayerChainHandler = Substitute.ForPartsOf<ChainBaseHandler<NewPlayerChainParam, Player>>(_logger, _logAggregate);
+        var chainName = Fixture.Create<string>();
+        var command = Fixture.Create<NewPlayerCommand>();
+        var newPlayerChainHandler = Substitute.ForPartsOf<ChainBaseHandler<NewPlayerChainParam, Player>>(Logger, LogAggregate);
         newPlayerChainHandler.IsBreakOnError.Returns(true);
         newPlayerChainHandler.ChainName.Returns(chainName);
         newPlayerChainHandler.HandleInternal(Arg.Any<NewPlayerChainParam>()).Throws(new Exception("Test Exception"));
 
-        _chainHandlerFactory.CreateNewPlayerChainHandler().Returns(newPlayerChainHandler);
-
-        var handler = new NewPlayerHandler(_logAggregate, _chainHandlerFactory);
+        ChainHandlerFactory.CreateNewPlayerChainHandler().Returns(newPlayerChainHandler);
 
         // Action
-        var actualResult = await handler.Handle(command, CancellationToken.None);
+        var actualResult = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         actualResult.Should().BeEquivalentTo(ServiceResult<Player>.Failure(ServiceErrors.SystemError));
-        await _logger.Received(1).ErrorAsync(Arg.Any<string>());
+        await Logger.Received(1).ErrorAsync(Arg.Any<string>());
         newPlayerChainHandler.Received(1).HandleError(Arg.Any<NewPlayerChainParam>());
-        _logAggregate.Received(1).AppendLog("Started processing...");
-        _logAggregate.Received(1).AppendStepLog($"START PROCESS \"{chainName}\"");
-        _logAggregate.Received(1).AppendLog("Finished processing...");
+        LogAggregate.Received(1).AppendLog("Started processing...");
+        LogAggregate.Received(1).AppendStepLog($"START PROCESS \"{chainName}\"");
+        LogAggregate.Received(1).AppendLog("Finished processing...");
     }
 }

@@ -83,7 +83,6 @@ public class NewPlayerInfoValidationChainHandlerTest : ChainHandlerTestBase
     {
         // Arrange
         var param = Fixture.Create<NewPlayerChainParam>();
-        var outputParam = Fixture.Create<ValidatePlayerInfoOutputParam>();
         _playerRepository.ValidatePlayerInfoAsync(Arg.Any<ValidatePlayerInfoParam>()).Throws<Exception>();
 
         // Action

@@ -10,7 +10,7 @@ public class ObjectMapperTest
     private readonly Fixture _fixture = new();
 
     [Fact]
-    public void MapNewPlayerCommand_Should_MapPropertiesCorrectly()
+    public void BuildNewPlayerCommand_Should_MapPropertiesCorrectly()
     {
         // Arrange
         var createPlayerRequest = _fixture.Create<CreatePlayerRequest>();
@@ -30,7 +30,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void MapNewPlayerCommand_Should_ThrowErrorWhenHandleNullRequest()
+    public void BuildNewPlayerCommand_Should_ThrowErrorWhenHandleNullRequest()
     {
         // Arrange
         CreatePlayerRequest createPlayerRequest = null!;
@@ -43,7 +43,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void MapShadowAccountCommand_Should_MapPropertiesCorrectly()
+    public void BuildShadowAccountCommand_Should_MapPropertiesCorrectly()
     {
         // Arrange
         var createShadowAccountRequest = _fixture.Create<CreateShadowAccountRequest>();
@@ -56,7 +56,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void MapShadowAccountCommand_Should_ThrowErrorWhenHandleNullRequest()
+    public void BuildShadowAccountCommand_Should_ThrowErrorWhenHandleNullRequest()
     {
         // Arrange
         CreateShadowAccountRequest createShadowAccountRequest = null!;
@@ -69,7 +69,7 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void MapReactivatePlayerCommand_Should_MapPropertiesCorrectly()
+    public void BuildReactivatePlayerCommand_Should_MapPropertiesCorrectly()
     {
         // Arrange
         var reactivatePlayerRequest = _fixture.Create<ReactivatePlayerRequest>();
@@ -84,13 +84,44 @@ public class ObjectMapperTest
     }
 
     [Fact]
-    public void MapReactivatePlayerCommand_Should_ThrowErrorWhenHandleNullRequest()
+    public void BuildReactivatePlayerCommand_Should_ThrowErrorWhenHandleNullRequest()
     {
         // Arrange
         ReactivatePlayerRequest reactivatePlayerRequest = null!;
 
         // Action
         Action action = () => ObjectMapper.BuildReactivatePlayerCommand(reactivatePlayerRequest, _fixture.Create<int>());
+
+        // Assert
+        action.Should().Throw<Exception>();
+    }
+
+    [Fact]
+    public void BuildMapSabaIdCommand_Should_MapPropertiesCorrectly()
+    {
+        // Arrange
+        var mapSabaIdRequest = _fixture.Create<MapSabaIdRequest>();
+        long sabaId = _fixture.Create<long>();
+
+
+        // Action
+        var mapSabaIdCommand = ObjectMapper.BuildMapSabaIdCommand(mapSabaIdRequest, sabaId);
+
+        // Assert
+        mapSabaIdCommand.CustId.Should().Be(mapSabaIdRequest.CustId);
+        mapSabaIdCommand.CustType.Should().Be(mapSabaIdRequest.CustType);
+        mapSabaIdCommand.SabaId.Should().Be(sabaId);
+    }
+
+    [Fact]
+    public void BuildMapSabaIdCommand_Should_ThrowErrorWhenHandleNullRequest()
+    {
+        // Arrange
+        MapSabaIdRequest mapSabaIdRequest = null!;
+        long sabaId = _fixture.Create<long>();
+
+        // Action
+        Action action = () => ObjectMapper.BuildMapSabaIdCommand(mapSabaIdRequest, sabaId);
 
         // Assert
         action.Should().Throw<Exception>();
