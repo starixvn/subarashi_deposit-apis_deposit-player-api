@@ -52,7 +52,7 @@ public class NewShadowAccountGetServerDbConfigChainHandlerTest : ChainHandlerTes
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         await _serverDbConfigRepository.DidNotReceive().GetServerDbConfigByAgentIdAsync(Arg.Any<int>());
         Logger.DidNotReceive().Error(Arg.Any<string>());
         LogAggregate.Received().AppendLog(Arg.Any<string>());
@@ -81,7 +81,7 @@ public class NewShadowAccountGetServerDbConfigChainHandlerTest : ChainHandlerTes
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
         Logger.DidNotReceive().Error(Arg.Any<string>());
         LogAggregate.Received().AppendLog(Arg.Any<string>());
@@ -143,7 +143,7 @@ public class NewShadowAccountGetServerDbConfigChainHandlerTest : ChainHandlerTes
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _serverDbConfigRepository.Received(1).GetServerDbConfigByAgentIdAsync(dbConfig.CustId);
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>

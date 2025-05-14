@@ -61,7 +61,7 @@ public class PlayerEndpointsTest
         var request = _fixture.Create<ReactivatePlayerRequest>();
         _mediator
             .Send(Arg.Any<ReactivatePlayerCommand>())
-            .Returns(ServiceResult.Failure(ServiceErrors.SystemError));
+            .Returns(ServiceResult.Failure(ServiceError.SystemError));
 
         // Action
         var result = await PlayerEndpoints.ReactivatePlayer(custId, request, _contextAccessor, _mediator, _logAggregate, _appSetting);
@@ -69,8 +69,8 @@ public class PlayerEndpointsTest
 
         // Assert
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.ErrorCode.Should().Be(ServiceErrors.SystemError.Code);
-        okResult.Value.ErrorMessage.Should().Be(ServiceErrors.SystemError.Message);
+        okResult.Value.ErrorCode.Should().Be(ServiceError.SystemError.Code);
+        okResult.Value.ErrorMessage.Should().Be(ServiceError.SystemError.Message);
     }
 
     [Fact]
@@ -161,7 +161,7 @@ public class PlayerEndpointsTest
         var request = _fixture.Create<CreatePlayerRequest>();
         _mediator
             .Send(Arg.Any<NewPlayerCommand>())
-            .Returns(ServiceResult<Player>.Failure(ServiceErrors.SystemError));
+            .Returns(ServiceResult<Player>.Failure(ServiceError.SystemError));
 
         // Action
         var result = await PlayerEndpoints.CreatePlayer(request, _contextAccessor, _mediator, _logAggregate, _appSetting);
@@ -169,8 +169,8 @@ public class PlayerEndpointsTest
 
         // Assert
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.ErrorCode.Should().Be(ServiceErrors.SystemError.Code);
-        okResult.Value.ErrorMessage.Should().Be(ServiceErrors.SystemError.Message);
+        okResult.Value.ErrorCode.Should().Be(ServiceError.SystemError.Code);
+        okResult.Value.ErrorMessage.Should().Be(ServiceError.SystemError.Message);
         okResult.Value.Result.Should().BeNull();
     }
 

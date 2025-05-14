@@ -194,7 +194,7 @@ public class CacheProviderTest : IDisposable
         _memoryCache.DidNotReceive().CreateEntry(key);
     }
 
-    private void SetupCacheData(string key, object data, Func<bool>? func = null)
+    private void SetupCacheData(string key, object data, Func<bool> func = null)
     {
         _memoryCache
             .TryGetValue(Arg.Is<object>(k => k.ToString() == key), out _)

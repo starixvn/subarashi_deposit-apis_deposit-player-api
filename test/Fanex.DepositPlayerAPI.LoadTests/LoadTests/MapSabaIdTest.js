@@ -26,21 +26,24 @@ export default function () {
 const DefaultDataByEnv = {};
 
 DefaultDataByEnv[Env.LOCAL] = {
-    realCustId: 148708160,
-    agentId: 117835401,
+    sabaId: 2025,
+    custId: 195849188,
+    custType: 0,
 };
 
 DefaultDataByEnv[Env.SIT] = {
-    realCustId: 148708160,
-    agentId: 117835401,
+    sabaId: 2025,
+    custId: 68921608,
+    custType: 0,
 };
 
 const sendRequest = (env) => {
-    const url = BaseUrlByEnv[env] + "/api/deposit/shadowaccounts";
-    // const url = "https://localhost:7086/api/shadowaccounts";
+    const { sabaId, ...bodyData } = DefaultDataByEnv[env];
+    const url = BaseUrlByEnv[env] + `/api/deposit/sabaids/${sabaId}/mapping`;
+    // const url = `https://localhost:7086/api/players/${custId}`;
 
     const payload = JSON.stringify({
-        ...DefaultDataByEnv[env],
+        ...bodyData,
         isDebug: true
     });
 
@@ -51,12 +54,12 @@ const sendRequest = (env) => {
         },
     };
 
-    const res = http.post(url, payload, params);
+    const res = http.put(url, payload, params);
     const data = res.json();
-    const isSuccess = res.status === 200 && data.errorCode === 0 && data.result !== null;
+    const isSuccess = res.status === 200 && data.errorCode === 0;
 
-    CounterErrors.add(!isSuccess);
+    CounterErrors.add(!isSuccess)
 }
 
-// macOs: K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT="./Reports/CreateNewPlayerLoadTests.html" k6 run CreateNewPlayerLoadTests.js
-// windows: $env:K6_WEB_DASHBOARD="true" ; $env:K6_WEB_DASHBOARD_EXPORT="./Reports/CreateNewPlayerLoadTests.html" ; k6 run CreateNewPlayerLoadTests.js
+// macOs: K6_WEB_DASHBOARD=true K6_WEB_DASHBOARD_EXPORT="./Reports/MapSabaIdTest.html" k6 run MapSabaIdTest.js
+// windows: $env:K6_WEB_DASHBOARD="true" ; $env:K6_WEB_DASHBOARD_EXPORT="./Reports/MapSabaIdTest.html" ; k6 run MapSabaIdTest.js

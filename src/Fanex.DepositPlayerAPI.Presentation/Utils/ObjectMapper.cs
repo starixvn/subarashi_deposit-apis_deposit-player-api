@@ -5,7 +5,7 @@ using DTOs.Request;
 
 public static class ObjectMapper
 {
-    public static NewPlayerCommand MapNewPlayerCommand(CreatePlayerRequest request)
+    public static NewPlayerCommand BuildNewPlayerCommand(CreatePlayerRequest request)
     {
         return new NewPlayerCommand
         {
@@ -20,21 +20,30 @@ public static class ObjectMapper
         };
     }
 
-    public static NewShadowAccountCommand MapShadowAccountCommand(CreateShadowAccountRequest request)
+    public static NewShadowAccountCommand BuildShadowAccountCommand(CreateShadowAccountRequest request)
     {
         return new NewShadowAccountCommand
         {
-            RealCustId = request.RealCustId,
             AgentId = request.AgentId
         };
     }
 
-    public static ReactivatePlayerCommand MapReactivatePlayerCommand(ReactivatePlayerRequest request, int custId)
+    public static ReactivatePlayerCommand BuildReactivatePlayerCommand(ReactivatePlayerRequest request, int custId)
     {
         return new ReactivatePlayerCommand
         {
             CustId = custId,
             SubsidiaryId = request.SubsidiaryId
+        };
+    }
+
+    public static MapSabaIdCommand BuildMapSabaIdCommand(MapSabaIdRequest request, long sabaId)
+    {
+        return new MapSabaIdCommand
+        {
+            CustId = request.CustId,
+            CustType = request.CustType,
+            SabaId = sabaId
         };
     }
 }

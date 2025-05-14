@@ -35,7 +35,6 @@ public class ServerHealthCheckTest
         _httpContextAccessor.HttpContext.Returns(httpContext);
         var hostName = Dns.GetHostName();
         var serverIps = await Dns.GetHostAddressesAsync(hostName);
-        var serverTime = DateTimeOffset.Now.LocalDateTime.ToString(CultureInfo.InvariantCulture);
         var lastUpdated = File.GetCreationTime(typeof(ServerHealthCheck).Assembly.Location).ToString(CultureInfo.InvariantCulture);
 
         var expected = new Dictionary<string, object>
@@ -46,7 +45,6 @@ public class ServerHealthCheckTest
             { "Local Ip", httpContext.Connection.LocalIpAddress?.ToString()! },
             { "Local Port", httpContext.Connection.LocalPort! },
             { "Client Ip", httpContext.Connection.RemoteIpAddress?.ToString()! },
-            { "Server Time", serverTime },
             { "Last Updated", lastUpdated },
             { "Host", httpContext.Request.Host },
             { "Schema", httpContext.Request.Scheme }
@@ -67,6 +65,6 @@ public class ServerHealthCheckTest
         result.Status.Should().Be(HealthStatus.Healthy);
         result.Description.Should().Be("Server Info");
         result.Exception.Should().BeNull();
-        result.Data.Should().BeEquivalentTo(expected, options => options.Excluding(x => x["Server Time"]));
+        result.Data.Where(e => e.Key != "Server Time").ToDictionary().Should().BeEquivalentTo(expected);
     }
 }

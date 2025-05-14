@@ -28,7 +28,6 @@ public class NewShadowAccountRegisterInfoChainHandler(
     {
         var param = new InsertShadowAccountInfoParam
         {
-            RealCustId = request.RealCustId,
             AgentId = request.AgentId,
             SiteDbGroupId = request.SiteDbGroupId
         };
@@ -48,7 +47,6 @@ public class NewShadowAccountRegisterInfoChainHandler(
     private static void UpdateRequest(InsertShadowAccountInfoOutputParam output, NewShadowAccountChainParam request)
     {
         request.Username = output.Username;
-        request.Username2 = output.Username2;
         request.CustId = output.CustId;
     }
 }

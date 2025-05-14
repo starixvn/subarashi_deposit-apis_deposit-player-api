@@ -14,8 +14,8 @@ public class ShardDbInfoAccessor(IHttpContextAccessor httpContextAccessor) : ISh
 
     public string GetSpKey(string key)
         => key
-            .Replace(_prefixShardCustDB, string.Empty)
-            .Replace(_prefixShardSiteDB, string.Empty);
+            .Replace(_prefixShardCustDB, string.Empty, StringComparison.OrdinalIgnoreCase)
+            .Replace(_prefixShardSiteDB, string.Empty, StringComparison.OrdinalIgnoreCase);
 
     public string ToShardCustDbSp(string key) => $"{_prefixShardCustDB}{key}";
 

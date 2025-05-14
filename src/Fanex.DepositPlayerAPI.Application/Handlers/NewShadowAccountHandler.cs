@@ -19,7 +19,7 @@ public class NewShadowAccountHandler(
         logAggregate.AppendLog("Started processing...");
 
         var rootChainHandler = chainHandlerFactory.CreateNewShadowAccountChainHandler();
-        var param = ParamMapper.MapNewShadowAccountChainParam(command);
+        var param = ParamMapper.BuildNewShadowAccountChainParam(command);
         var result = await rootChainHandler.Handle(param);
 
         logAggregate.AppendLog("Finished processing...");

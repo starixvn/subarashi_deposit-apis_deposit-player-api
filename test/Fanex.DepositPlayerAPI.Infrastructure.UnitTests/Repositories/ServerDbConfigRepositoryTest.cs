@@ -8,7 +8,6 @@ using Domain.Repositories;
 using FluentAssertions;
 using Infrastructure.Repositories;
 using NSubstitute;
-using Utils;
 
 [Collection("DbFactoryFixture")]
 public class ServerDbConfigRepositoryTest : RepositoryTestBase
@@ -50,7 +49,7 @@ public class ServerDbConfigRepositoryTest : RepositoryTestBase
         var totalRows = 5;
         var data = Fixture.CreateMany<ServerDbConfig>(totalRows);
         _dataReader.Read().Returns(_ => totalRows-- > 0);
-        DbTestUtils.MapReaderData(_dataReader, data, ColumnMapping);
+        MapReaderData(_dataReader, data, ColumnMapping);
 
         // Action
         var result = await _serverDbConfigRepository.GetAllServerDbConfigAsync();
@@ -93,7 +92,7 @@ public class ServerDbConfigRepositoryTest : RepositoryTestBase
         var agentId = Fixture.Create<int>();
         var data = Fixture.Create<ServerDbConfig>();
         _dataReader.Read().Returns(true);
-        DbTestUtils.MapReaderData(_dataReader, data, ColumnMapping);
+        MapReaderData(_dataReader, data, ColumnMapping);
 
         // Action
         var result = await _serverDbConfigRepository.GetServerDbConfigByAgentIdAsync(agentId);

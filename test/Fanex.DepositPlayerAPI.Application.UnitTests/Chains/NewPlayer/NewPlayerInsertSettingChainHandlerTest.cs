@@ -52,7 +52,7 @@ public class NewPlayerInsertSettingChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         request.Currency.Should().Be(outputParam.Currency);
         request.LogData.Should().Be(outputParam.LogData);
@@ -101,14 +101,14 @@ public class NewPlayerInsertSettingChainHandlerTest : ChainHandlerTestBase
         var extraInfo = Fixture.Create<string>();
 
         _playerRepository.InsertNewPlayerSettingAsync(Arg.Any<InsertNewPlayerSettingParam>())
-            .Returns(ServiceResult<InsertNewPlayerSettingOutputParam>.Failure(ServiceErrors.SystemError, extraInfo));
+            .Returns(ServiceResult<InsertNewPlayerSettingOutputParam>.Failure(ServiceError.SystemError, extraInfo));
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).InsertNewPlayerSettingAsync(Arg.Is<InsertNewPlayerSettingParam>(x =>
@@ -127,7 +127,7 @@ public class NewPlayerInsertSettingChainHandlerTest : ChainHandlerTestBase
             && x.Site == request.Site));
 
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceError.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).RollbackFullNewPlayer(_handler.ChainName, request.CustId);
@@ -147,7 +147,7 @@ public class NewPlayerInsertSettingChainHandlerTest : ChainHandlerTestBase
             .With(x => x.AffiliateId, 123)
             .Create();
         var outputParam = Fixture.Create<InsertNewPlayerSettingOutputParam>();
-        var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
+        var error = ServiceError.GetFromDbError(errorCode, errorMessage);
         var extraInfo = Fixture.Create<string>();
         var data = Fixture.Create<Player>();
         _playerRepository.InsertNewPlayerSettingAsync(Arg.Any<InsertNewPlayerSettingParam>())
@@ -162,7 +162,7 @@ public class NewPlayerInsertSettingChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().Be(ServiceErrors.None);
+        result.Error.Should().Be(ServiceError.None);
         result.ExtraInfo.Should().Be(extraInfo);
         result.Result.Should().BeEquivalentTo(data);
         request.Currency.Should().Be(outputParam.Currency);
@@ -212,7 +212,7 @@ public class NewPlayerInsertSettingChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).InsertNewPlayerSettingAsync(Arg.Is<InsertNewPlayerSettingParam>(x =>
             x.CustId == request.CustId

@@ -31,8 +31,6 @@ public class NewShadowAccountInsertSettingChainHandler(
         {
             CustId = request.CustId,
             Username = request.Username,
-            Username2 = request.Username2,
-            RealCustId = request.RealCustId,
             AgentId = request.AgentId
         };
 

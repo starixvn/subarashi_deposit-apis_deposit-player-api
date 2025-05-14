@@ -42,7 +42,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<ValidatePlayerInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<ValidatePlayerInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -82,7 +82,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertPlayerInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertPlayerInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -105,7 +105,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult.Success(dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult.Failure(error, dbInfo);
     }
 
@@ -148,7 +148,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertNewPlayerSettingOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertNewPlayerSettingOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -189,7 +189,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertReactivePlayerSettingOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertReactivePlayerSettingOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -222,7 +222,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<GetArchivedPlayerInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<GetArchivedPlayerInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -232,7 +232,6 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
 
         using var objectDb = dbFactory.GetObjectDb(SpKey);
 
-        objectDb.SetParameterValue(DbParam.RealCustId, param.RealCustId);
         objectDb.SetParameterValue(DbParam.AgentId, param.AgentId);
         objectDb.SetParameterValue(DbParam.SiteDbGroupId, param.SiteDbGroupId);
 
@@ -245,7 +244,6 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
         var result = new InsertShadowAccountInfoOutputParam
         {
             Username = Converter.ToString(output[DbParam.Username]),
-            Username2 = Converter.ToString(output[DbParam.Username2]),
             CustId = Converter.ToInt(output[DbParam.CustId])
         };
 
@@ -256,7 +254,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<InsertShadowAccountInfoOutputParam>.Success(result, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<InsertShadowAccountInfoOutputParam>.FailureWithData(error, result, dbInfo);
     }
 
@@ -268,8 +266,6 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
 
         objectDb.SetParameterValue(DbParam.CustId, param.CustId);
         objectDb.SetParameterValue(DbParam.Username, param.Username);
-        objectDb.SetParameterValue(DbParam.Username2, param.Username2);
-        objectDb.SetParameterValue(DbParam.RealCustId, param.RealCustId);
         objectDb.SetParameterValue(DbParam.AgentId, param.AgentId);
 
         var logData = await objectDb.QueryEntityAsync<LogData>();
@@ -285,7 +281,7 @@ public class PlayerRepository(IDbFactory dbFactory, IShardDbInfoAccessor shardDb
             return ServiceResult<LogData>.Success(logData, dbInfo);
         }
 
-        var error = ServiceErrors.GetFromDbError(code, message);
+        var error = ServiceError.GetFromDbError(code, message);
         return ServiceResult<LogData>.FailureWithData(error, logData, dbInfo);
     }
 }

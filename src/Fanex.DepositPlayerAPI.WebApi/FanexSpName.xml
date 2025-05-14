@@ -23,6 +23,10 @@
 		<Setting Key="API_CustomerIns_Shadow_Register" SpName="API_CustomerIns_Shadow_Register" DbName="DBGLOB.GlobCustDB.asv_cust" />
 		<Setting Key="Dot_Dep_CustomerInsMember_Ag_Cust_Shadow" SpName="Dot_Dep_CustomerInsMember_Ag_Cust_Shadow" DbName="ShardCustDB.CustDB.asv_cust" />
 	</Function>
+	<Function Name="SabaId">
+		<Setting Key="API_CustomerIns_SabaCheck" SpName="API_CustomerIns_SabaCheck" DbName="DBSHADOW.CustDB.asv_cust" />
+		<Setting Key="API_CustomerIns_SabaMapping" SpName="API_CustomerIns_SabaMapping" DbName="ShardCustDB.CustDB.asv_cust" />
+	</Function>
 	<Function Name="WriteLogDB">
 		<Setting Key="WriteLog_UserLog_RunSP" SpName="WriteLog_UserLog_RunSP" DbName="DBLOG.bodb_CustomerLog.asv_cust" />
 		<Setting Key="WriteLog_UserLog_RunSP" SpName="WriteLog_UserLog_RunSP" DbName="ShardCustDB.bodb_CustomerLog.asv_cust" />

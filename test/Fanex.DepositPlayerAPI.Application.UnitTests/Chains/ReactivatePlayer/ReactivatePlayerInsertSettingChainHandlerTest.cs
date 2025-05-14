@@ -51,7 +51,7 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         request.CustIdBalanceDummy.Should().Be(outputParam.CustIdBalanceDummy);
         request.ClosingBalance.Should().Be(outputParam.ClosingBalance);
         request.LogTracking.Should().Be(outputParam.LogTracking);
@@ -94,14 +94,14 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         var extraInfo = Fixture.Create<string>();
 
         _playerRepository.InsertReactivePlayerSettingAsync(Arg.Any<InsertReactivePlayerSettingParam>())
-            .Returns(ServiceResult<InsertReactivePlayerSettingOutputParam>.Failure(ServiceErrors.SystemError, extraInfo));
+            .Returns(ServiceResult<InsertReactivePlayerSettingOutputParam>.Failure(ServiceError.SystemError, extraInfo));
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         await _playerRepository.Received(1).InsertReactivePlayerSettingAsync(Arg.Is<InsertReactivePlayerSettingParam>(x =>
             x.CustId == request.CustId
@@ -111,7 +111,7 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
             && x.GroupDiscountId == request.GroupDiscountId));
 
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceError.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
@@ -131,7 +131,7 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         // Arrange
         var request = Fixture.Create<ReactivatePlayerChainParam>();
         var outputParam = Fixture.Create<InsertReactivePlayerSettingOutputParam>();
-        var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
+        var error = ServiceError.GetFromDbError(errorCode, errorMessage);
         var extraInfo = Fixture.Create<string>();
         var data = Fixture.Create<Player>();
         _playerRepository.InsertReactivePlayerSettingAsync(Arg.Any<InsertReactivePlayerSettingParam>())
@@ -181,7 +181,7 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         await _playerRepository.Received(1).InsertReactivePlayerSettingAsync(Arg.Is<InsertReactivePlayerSettingParam>(x =>
             x.CustId == request.CustId
             && x.CustomerInfo == request.CustomerInfo

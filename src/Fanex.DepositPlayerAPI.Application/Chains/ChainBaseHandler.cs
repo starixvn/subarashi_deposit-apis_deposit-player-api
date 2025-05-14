@@ -59,7 +59,7 @@ public abstract class ChainBaseHandler<TRequest, TResponse>(
 
             if (IsBreakOnError)
             {
-                return ServiceResult<TResponse>.Failure(ServiceErrors.SystemError);
+                return ServiceResult<TResponse>.Failure(ServiceError.SystemError);
             }
 
             return await RunNextHandle(request, result);

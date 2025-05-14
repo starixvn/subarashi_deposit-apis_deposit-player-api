@@ -2,6 +2,7 @@
 
 using Domain.Entities;
 using Domain.Params.Chains;
+using MapSabaId;
 using Microsoft.Extensions.DependencyInjection;
 using NewPlayer;
 using NewShadowAccount;
@@ -69,6 +70,20 @@ public class ChainHandlerFactory(IServiceProvider serviceProvider) : IChainHandl
                 GetChainHandler<NewShadowAccountChainParam, ShadowAccount>(nameof(NewShadowAccountBalanceCreditInitializeChainHandler))) // step 5.1
             .SetNextHandler(
                 GetChainHandler<NewShadowAccountChainParam, ShadowAccount>(nameof(NewShadowAccountBalanceDebitInitializeChainHandler))); // step 5.2
+
+        return chainHandler;
+    }
+
+    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainParam()
+    {
+        var chainHandler = GetChainNonResultHandler<MapSabaIdChainParam>(nameof(MapSabaIdGetServerDbConfigChainHandler)); // step 1
+
+        // gdoc https://docs.google.com/spreadsheets/d/1z6L8e7WclpH4UcZpvyreSGf-AV7ayi6AlUmv2Mek3so/edit?gid=1962701966#gid=1962701966
+        chainHandler
+            .SetNextHandler(
+                GetChainNonResultHandler<MapSabaIdChainParam>(nameof(MapSabaIdValidationChainHandler))) // step 2
+            .SetNextHandler(
+                GetChainNonResultHandler<MapSabaIdChainParam>(nameof(MapSabaIdInsertDataChainHandler))); // step 3
 
         return chainHandler;
     }

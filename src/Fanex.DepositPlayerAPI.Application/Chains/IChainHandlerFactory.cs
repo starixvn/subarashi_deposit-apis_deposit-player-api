@@ -10,4 +10,6 @@ public interface IChainHandlerFactory
     public IChainNonResultHandler<ReactivatePlayerChainParam> CreateReactivatePlayerChainHandler();
 
     public IChainHandler<NewShadowAccountChainParam, ShadowAccount> CreateNewShadowAccountChainHandler();
+
+    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainParam();
 }

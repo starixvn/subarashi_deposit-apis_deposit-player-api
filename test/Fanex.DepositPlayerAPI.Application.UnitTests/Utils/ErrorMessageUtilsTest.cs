@@ -25,7 +25,7 @@ public class ErrorMessageUtilsTest
         var functionName = _fixture.Create<string>();
         var chainName = _fixture.Create<string>();
         var request = _fixture.Create<RequestTest>();
-        var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
+        var error = ServiceError.GetFromDbError(errorCode, errorMessage);
         var response = ServiceResult.Failure(error);
         List<string> expected =
         [

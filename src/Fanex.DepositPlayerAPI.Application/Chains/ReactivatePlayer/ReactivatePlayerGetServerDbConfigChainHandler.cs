@@ -43,7 +43,7 @@ public class ReactivatePlayerGetServerDbConfigChainHandler(
         {
             var stringBuilder = new StringBuilder();
 
-            stringBuilder.AppendLine($"[ReactivatePlayer] - DB server configuration not found for AgentId={request.Recommend}.");
+            stringBuilder.AppendLine($"[{FunctionName}] - DB server configuration not found for AgentId={request.Recommend}.");
             stringBuilder.AppendLine($"Request Info: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
 
             return ServiceResult.Failure(PlayerError.CreateCustomerFailed, stringBuilder.ToString());

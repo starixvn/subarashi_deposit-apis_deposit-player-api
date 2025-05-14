@@ -39,7 +39,7 @@ public class NewShadowAccountBalanceDebitInitializeChainHandlerTest : ChainHandl
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeEquivalentTo(data);
         await _balanceRepository.Received(1).InitializeNewPlayerDebitBalanceAsync(data.CustId);
         Logger.DidNotReceive().Error(Arg.Any<string>());
@@ -58,7 +58,7 @@ public class NewShadowAccountBalanceDebitInitializeChainHandlerTest : ChainHandl
         var custId = 123;
         var extraInfo = Fixture.Create<string>();
         var newShadowAccountChainParam = new NewShadowAccountChainParam { CustId = custId };
-        var error = ServiceErrors.GetFromDbError(errorCode, errorMessage);
+        var error = ServiceError.GetFromDbError(errorCode, errorMessage);
         _balanceRepository.InitializeNewPlayerDebitBalanceAsync(custId).Returns(ServiceResult<ShadowAccount>.Failure(error, extraInfo));
 
         // Action
@@ -90,7 +90,7 @@ public class NewShadowAccountBalanceDebitInitializeChainHandlerTest : ChainHandl
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeEquivalentTo(data);
         result.ExtraInfo.Should().Be(extraInfo);
         await _balanceRepository.Received(1).InitializeNewPlayerDebitBalanceAsync(data.CustId);
@@ -114,7 +114,7 @@ public class NewShadowAccountBalanceDebitInitializeChainHandlerTest : ChainHandl
         // Assert
         result.IsSuccess.Should().BeFalse();
         result.Result.Should().BeNull();
-        result.Error.Should().Be(ServiceErrors.SystemError);
+        result.Error.Should().Be(ServiceError.SystemError);
         await _balanceRepository.Received(1).InitializeNewPlayerDebitBalanceAsync(custId);
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>
             x.StartsWith($"ERROR [{_handler.FunctionName}]: An exception occurred in the {_handler.ChainName} process.")));

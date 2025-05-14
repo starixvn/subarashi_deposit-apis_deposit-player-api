@@ -38,8 +38,8 @@ public class ShadowAccountEndpoints : IEndpoints
         ILogAggregate logAggregate,
         IOptions<AppSetting> appSetting)
     {
-        logAggregate.AppendHeader($"Log Aggregate: Licensee Create Shadow Account - RealCustId: {request.RealCustId}");
-        var command = ObjectMapper.MapShadowAccountCommand(request);
+        logAggregate.AppendHeader($"Log Aggregate: Licensee Create Shadow Account - AgentId: {request.AgentId}");
+        var command = ObjectMapper.BuildShadowAccountCommand(request);
         var result = await mediator.Send(command);
 
         if (request.IsDebug || appSetting.Value.DebugMode)

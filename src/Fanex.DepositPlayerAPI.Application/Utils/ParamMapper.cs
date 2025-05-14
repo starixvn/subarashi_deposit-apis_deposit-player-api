@@ -5,7 +5,7 @@ using Domain.Params.Chains;
 
 public static class ParamMapper
 {
-    public static NewPlayerChainParam MapNewPlayerChainParam(NewPlayerCommand command)
+    public static NewPlayerChainParam BuildNewPlayerChainParam(NewPlayerCommand command)
     {
         return new NewPlayerChainParam
         {
@@ -21,23 +21,32 @@ public static class ParamMapper
         };
     }
 
-    public static NewShadowAccountChainParam MapNewShadowAccountChainParam(NewShadowAccountCommand command)
+    public static NewShadowAccountChainParam BuildNewShadowAccountChainParam(NewShadowAccountCommand command)
     {
         return new NewShadowAccountChainParam
         {
             AgentId = command.AgentId,
-            RealCustId = command.RealCustId,
             SiteDbGroupId = command.SiteDbGroupId
         };
     }
 
-    public static ReactivatePlayerChainParam MapReactivatePlayerChainParam(ReactivatePlayerCommand command)
+    public static ReactivatePlayerChainParam BuildReactivatePlayerChainParam(ReactivatePlayerCommand command)
     {
         return new ReactivatePlayerChainParam
         {
             CustId = command.CustId,
             SubsidiaryId = command.SubsidiaryId,
             Site = command.Site
+        };
+    }
+
+    public static MapSabaIdChainParam BuildMapSabaIdChainParam(MapSabaIdCommand command)
+    {
+        return new MapSabaIdChainParam
+        {
+            CustId = command.CustId,
+            SabaId = command.SabaId,
+            CustType = command.CustType
         };
     }
 }

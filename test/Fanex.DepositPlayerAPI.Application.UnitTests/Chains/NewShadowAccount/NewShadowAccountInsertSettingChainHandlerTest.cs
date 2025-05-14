@@ -43,14 +43,12 @@ public class NewShadowAccountInsertSettingChainHandlerTest : ChainHandlerTestBas
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
         request.LogData.Should().Be(logData);
         await _playerRepository.Received(1).InsertShadowAccountSettingAsync(Arg.Is<InsertShadowAccountSettingParam>(x =>
             x.CustId == request.CustId
             && x.Username == request.Username
-            && x.Username2 == request.Username2
-            && x.RealCustId == request.RealCustId
             && x.AgentId == request.AgentId));
 
         Logger.DidNotReceive().Error(Arg.Any<string>());
@@ -69,25 +67,23 @@ public class NewShadowAccountInsertSettingChainHandlerTest : ChainHandlerTestBas
 
         _playerRepository
             .InsertShadowAccountSettingAsync(Arg.Any<InsertShadowAccountSettingParam>())
-            .Returns(ServiceResult<LogData>.Failure(ServiceErrors.SystemError, extraInfo));
+            .Returns(ServiceResult<LogData>.Failure(ServiceError.SystemError, extraInfo));
 
         // Action
         var result = await _handler.Handle(request);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.SystemError);
+        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
         result.ExtraInfo.Should().Be(extraInfo);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).InsertShadowAccountSettingAsync(Arg.Is<InsertShadowAccountSettingParam>(x =>
             x.CustId == request.CustId
             && x.Username == request.Username
-            && x.Username2 == request.Username2
-            && x.RealCustId == request.RealCustId
             && x.AgentId == request.AgentId));
 
         Logger.Received(1).Error(Arg.Is<string>(x =>
-            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceErrors.SystemError)}")));
+            x.StartsWith($"ERROR [{_handler.FunctionName}]: {JsonConvert.SerializeObject(ServiceError.SystemError)}")));
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).RollbackFullNewPlayer(_handler.ChainName, request.CustId);
@@ -108,13 +104,11 @@ public class NewShadowAccountInsertSettingChainHandlerTest : ChainHandlerTestBas
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         result.Result.Should().BeNull();
         await _playerRepository.Received(1).InsertShadowAccountSettingAsync(Arg.Is<InsertShadowAccountSettingParam>(x =>
             x.CustId == request.CustId
             && x.Username == request.Username
-            && x.Username2 == request.Username2
-            && x.RealCustId == request.RealCustId
             && x.AgentId == request.AgentId));
 
         await Logger.Received(1).ErrorAsync(Arg.Is<string>(x =>

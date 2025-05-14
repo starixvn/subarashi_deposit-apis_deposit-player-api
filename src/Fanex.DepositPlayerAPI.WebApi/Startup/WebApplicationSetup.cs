@@ -16,10 +16,6 @@ public static class WebApplicationSetup
         {
             app.UseExceptionHandler(opts => { });
         }
-        else
-        {
-            app.UseDeveloperExceptionPage();
-        }
 
         return app;
     }
@@ -43,7 +39,15 @@ public static class WebApplicationSetup
 
     public static IApplicationBuilder ConfigureHealthCheck(this IApplicationBuilder app)
     {
-        Func<HttpContext, HealthReport, Task> customResponseWriter = async (context, report) =>
+        app.UseHealthChecks("/whoami", new HealthCheckOptions
+        {
+            AllowCachingResponses = false,
+            ResponseWriter = CustomResponseWriter
+        });
+
+        return app;
+
+        async Task CustomResponseWriter(HttpContext context, HealthReport report)
         {
             var result = JsonConvert.SerializeObject(new
             {
@@ -59,14 +63,6 @@ public static class WebApplicationSetup
 
             context.Response.ContentType = MediaTypeNames.Application.Json;
             await context.Response.WriteAsync(result);
-        };
-
-        app.UseHealthChecks("/whoami", new HealthCheckOptions
-        {
-            AllowCachingResponses = false,
-            ResponseWriter = customResponseWriter
-        });
-
-        return app;
+        }
     }
 }

@@ -58,7 +58,7 @@ public class ShadowAccountEndpointsTest
         var request = _fixture.Create<CreateShadowAccountRequest>();
         _mediator
             .Send(Arg.Any<NewShadowAccountCommand>())
-            .Returns(ServiceResult<ShadowAccount>.Failure(ServiceErrors.SystemError));
+            .Returns(ServiceResult<ShadowAccount>.Failure(ServiceError.SystemError));
 
         // Action
         var result = await ShadowAccountEndpoints.CreateShadowAccount(request, _contextAccessor, _mediator, _logAggregate, _appSetting);
@@ -66,8 +66,8 @@ public class ShadowAccountEndpointsTest
 
         // Assert
         okResult.StatusCode.Should().Be(200);
-        okResult.Value.ErrorCode.Should().Be(ServiceErrors.SystemError.Code);
-        okResult.Value.ErrorMessage.Should().Be(ServiceErrors.SystemError.Message);
+        okResult.Value.ErrorCode.Should().Be(ServiceError.SystemError.Code);
+        okResult.Value.ErrorMessage.Should().Be(ServiceError.SystemError.Message);
     }
 
     [Fact]

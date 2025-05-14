@@ -32,7 +32,7 @@ public class ReactivatePlayerWriteLogDataChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.ExtraInfo.Should().BeNull();
         await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(Arg.Is<LogTracking>(x =>
             x.CustId == request.CustId
@@ -56,7 +56,7 @@ public class ReactivatePlayerWriteLogDataChainHandlerTest : ChainHandlerTestBase
 
         // Assert
         result.IsSuccess.Should().Be(!_handler.IsBreakOnError);
-        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceErrors.SystemError : ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(_handler.IsBreakOnError ? ServiceError.SystemError : ServiceError.None);
         await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(Arg.Is<LogTracking>(x =>
             x.CustId == request.CustId
             && x.Action == "REACTIVATION"

@@ -58,7 +58,7 @@ public class AffiliateRepositoryTest(DbFactoryFixture dbFactoryFixture) : Reposi
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.GetFromDbError(errorCode, errorMessage));
+        result.Error.Should().BeEquivalentTo(ServiceError.GetFromDbError(errorCode, errorMessage));
         result.ExtraInfo.Should().BeEquivalentTo(dbInfo);
     }
 
@@ -79,7 +79,7 @@ public class AffiliateRepositoryTest(DbFactoryFixture dbFactoryFixture) : Reposi
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Error.Should().BeEquivalentTo(ServiceErrors.None);
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.ExtraInfo.Should().BeEquivalentTo(dbInfo);
     }
 
