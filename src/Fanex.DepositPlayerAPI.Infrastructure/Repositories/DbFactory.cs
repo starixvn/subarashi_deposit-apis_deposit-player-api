@@ -11,7 +11,7 @@ public class DbFactory(IShardDbInfoAccessor shardDbInfoAccessor) : IDbFactory
 
         if (shardDbInfoAccessor.TryUseShardDb(spName, out var dbServer))
         {
-            ObjectDbFactory.CreateInstance(spKey, timeout, dbServer);
+            return ObjectDbFactory.CreateInstance(spKey, timeout, dbServer);
         }
 
         return ObjectDbFactory.CreateInstance(spKey, timeout);
