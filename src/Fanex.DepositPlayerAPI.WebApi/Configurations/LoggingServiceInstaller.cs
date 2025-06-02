@@ -36,8 +36,8 @@ public class LoggingServiceInstaller : IServiceInstaller
             .ReadFrom.Services(s)
             .Enrich.FromLogContext()
             .Enrich.WithMachineName()
-            .Enrich.WithProperty("Team", "Legion")
-            .Enrich.WithProperty("Application", "DepositPlayerAPI")
+            .Enrich.WithProperty("Team", "Subarashi")
+            .Enrich.WithProperty("Application", "Deposit Player API")
             .Enrich.WithProperty("Environment", appSetting.Environment)
             .Enrich.WithProperty("Version", appSetting.Version));
 
