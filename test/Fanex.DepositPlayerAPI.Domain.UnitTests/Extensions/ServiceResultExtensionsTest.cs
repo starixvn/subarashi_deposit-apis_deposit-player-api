@@ -1,9 +1,9 @@
 ﻿namespace Fanex.DepositPlayerAPI.Domain.UnitTests.Extensions;
 
 using Domain.Extensions;
+using Domain.Results;
 using Errors;
 using NSubstitute;
-using Results;
 
 public class ServiceResultExtensionsTest
 {

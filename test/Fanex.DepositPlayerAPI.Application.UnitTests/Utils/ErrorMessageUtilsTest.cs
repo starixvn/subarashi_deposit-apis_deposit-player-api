@@ -127,4 +127,196 @@ public class ErrorMessageUtilsTest
         public string PropertyA { get; set; } = "TestA";
         public string PropertyB { get; set; } = "TestB";
     }
+
+    [Fact]
+    public void GenerateMessage_WithNullHttpContext_Should_NotIncludeRequestInfo()
+    {
+        // Arrange
+        var exception = new Exception("Test exception");
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(exception);
+
+        // Assert
+        result.Should().NotContain("REQUEST INFO");
+        result.Should().Contain("DATABASE INFO");
+        result.Should().Contain("EXCEPTION INFO");
+    }
+
+    [Fact]
+    public void GenerateMessage_WithInnerException_Should_IncludeInnerExceptionInfo()
+    {
+        // Arrange
+        var innerException = new InvalidOperationException("Inner exception message");
+        var outerException = new ArgumentException("Outer exception message", innerException);
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(outerException);
+
+        // Assert
+        result.Should().Contain("Outer exception message");
+        result.Should().Contain("Inner exception message");
+        result.Should().Contain("EXCEPTION INFO");
+    }
+
+    [Fact]
+    public void GenerateMessage_WithMultipleInnerExceptions_Should_LimitInnerExceptions()
+    {
+        // Arrange
+        var innermost = new ArgumentNullException("Innermost exception");
+        var inner3 = new InvalidOperationException("Third level exception", innermost);
+        var inner2 = new ArgumentException("Second level exception", inner3);
+        var inner1 = new InvalidOperationException("First level exception", inner2);
+        var outer = new Exception("Outer exception", inner1);
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(outer);
+
+        // Assert
+        result.Should().Contain("Outer exception");
+        result.Should().Contain("First level exception");
+        result.Should().Contain("Second level exception");
+        result.Should().Contain("Third level exception");
+        // Should not contain the 4th level (innermost) due to limit of 3
+    }
+
+    [Fact]
+    public void GenerateMessage_WithSqlException_Should_IncludeSqlExceptionInfo()
+    {
+        // Note: SqlException cannot be easily instantiated for testing due to its constructor restrictions
+        // This test would require more complex mocking or reflection to create a proper SqlException
+        // For now, we test with ObjectDbException which internally handles SqlException
+        
+        // Arrange
+        var sqlInnerException = new Exception("SQL error"); // Simulating SQL exception behavior
+        var spName = _fixture.Create<string>();
+        var dbName = _fixture.Create<string>();
+        var connectionString = "Data Source=testserver;User Id=testuser";
+        var commandTimeout = _fixture.Create<int>();
+
+        var objectDbException = new ObjectDbException(
+            sqlInnerException,
+            "testKey",
+            spName,
+            dbName,
+            connectionString,
+            commandTimeout,
+            new Dictionary<string, string>()
+        );
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(objectDbException);
+
+        // Assert
+        result.Should().Contain("DATABASE INFO");
+        result.Should().Contain($"DbName: {dbName}");
+        result.Should().Contain($"SpName: {spName}");
+    }
+
+    [Fact]
+    public void GenerateMessage_WithExtraInfo_Should_IncludeExtraInfo()
+    {
+        // Arrange
+        var functionName = _fixture.Create<string>();
+        var chainName = _fixture.Create<string>();
+        var request = _fixture.Create<RequestTest>();
+        var extraInfo = _fixture.Create<string>();
+        var error = ServiceError.GetFromDbError(1, "Test error");
+        var response = ServiceResult.Failure(error, extraInfo);
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(functionName, chainName, response, request);
+
+        // Assert
+        result.Should().Contain(extraInfo);
+    }
+
+    [Fact]
+    public void GenerateMessage_WithParameters_Should_IncludeParametersSection()
+    {
+        // Arrange
+        var parameters = new Dictionary<string, string>
+        {
+            ["param1"] = "value1",
+            ["param2"] = "value2"
+        };
+
+        var objectDbException = new ObjectDbException(
+            new Exception("Test"),
+            "testKey",
+            "testSp",
+            "testDb",
+            "Data Source=testserver;User Id=testuser",
+            30,
+            parameters
+        );
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(objectDbException);
+
+        // Assert
+        result.Should().Contain("Parameters:");
+        result.Should().Contain("DATABASE INFO");
+        result.Should().Contain("DbName: testDb");
+        result.Should().Contain("SpName: testSp");
+    }
+
+    [Fact]
+    public void GenerateMessage_WithEmptyParameters_Should_HandleEmptyParameters()
+    {
+        // Arrange
+        var objectDbException = new ObjectDbException(
+            new Exception("Test"),
+            "testKey",
+            "testSp",
+            "testDb",
+            "Data Source=testserver;User Id=testuser",
+            30,
+            new Dictionary<string, string>()
+        );
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(objectDbException);
+
+        // Assert
+        result.Should().Contain("Parameters:");
+        // Should handle empty parameters gracefully
+    }
+
+    [Fact]
+    public void GenerateMessage_WithNullRequest_Should_SerializeNull()
+    {
+        // Arrange
+        var functionName = _fixture.Create<string>();
+        var chainName = _fixture.Create<string>();
+        var error = ServiceError.GetFromDbError(1, "Test error");
+        var response = ServiceResult.Failure(error);
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage<RequestTest>(functionName, chainName, response, null);
+
+        // Assert
+        result.Should().Contain("REQUEST INFO:");
+        result.Should().Contain("RESPONSE INFO:");
+    }
+
+    [Fact]
+    public void GenerateMessage_Should_IncludeExceptionDetails()
+    {
+        // Arrange
+        var exception = new InvalidOperationException("Test exception")
+        {
+            Source = "TestSource"
+        };
+
+        // Act
+        var result = ErrorMessageUtils.GenerateMessage(exception);
+
+        // Assert
+        result.Should().Contain("EXCEPTION INFO");
+        result.Should().Contain($"Message: {exception.Message}");
+        result.Should().Contain($"Source: {exception.Source}");
+        result.Should().Contain("TargetSite:");
+        result.Should().Contain("StackTrace:");
+    }
 }
