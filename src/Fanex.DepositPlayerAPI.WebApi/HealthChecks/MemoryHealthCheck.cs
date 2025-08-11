@@ -27,8 +27,7 @@ public class MemoryHealthCheck(IMemoryCache memoryCache) : IHealthCheck
         var result = new HealthCheckResult(
             allocated < Threshold ? HealthStatus.Healthy : HealthStatus.Degraded,
             $"Reports degraded status if allocated bytes >= {Threshold} mbs.",
-            null,
-            data);
+            data: data);
 
         return Task.FromResult(result);
     }

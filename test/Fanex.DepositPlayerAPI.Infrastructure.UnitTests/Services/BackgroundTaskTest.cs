@@ -15,36 +15,36 @@ using NSubstitute.ExceptionExtensions;
 
 public class BackgroundTaskTest
 {
-    private readonly IAffiliateRepository _affiliateRepository;
+    private readonly BackgroundTaskDependencies _dependencies;
     private readonly IBackgroundTask _backgroundTask;
-    private readonly IBalanceRepository _balanceRepository;
-    private readonly ICommissionRepository _commissionRepository;
     private readonly IFixture _fixture;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogDbRepository _logDbRepository;
     private readonly ILogger _logger;
-    private readonly IRollbackRepository _rollbackRepository;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly IServiceScope _serviceScope;
 
     public BackgroundTaskTest()
     {
         _fixture = new Fixture();
-        _rollbackRepository = Substitute.For<IRollbackRepository>();
-        _logDbRepository = Substitute.For<ILogDbRepository>();
-        _affiliateRepository = Substitute.For<IAffiliateRepository>();
-        _commissionRepository = Substitute.For<ICommissionRepository>();
-        _balanceRepository = Substitute.For<IBalanceRepository>();
+        var rollbackRepository = Substitute.For<IRollbackRepository>();
+        var logDbRepository = Substitute.For<ILogDbRepository>();
+        var affiliateRepository = Substitute.For<IAffiliateRepository>();
+        var commissionRepository = Substitute.For<ICommissionRepository>();
+        var balanceRepository = Substitute.For<IBalanceRepository>();
+        
+        _dependencies = new BackgroundTaskDependencies(
+            rollbackRepository,
+            logDbRepository,
+            affiliateRepository,
+            commissionRepository,
+            balanceRepository);
+            
         _logger = Substitute.For<ILogger>();
         _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
         _scopeFactory = Substitute.For<IServiceScopeFactory>();
         _serviceScope = Substitute.For<IServiceScope>();
         _backgroundTask = new BackgroundTask(
-            _rollbackRepository,
-            _logDbRepository,
-            _affiliateRepository,
-            _commissionRepository,
-            _balanceRepository,
+            _dependencies,
             _logger,
             _scopeFactory,
             _httpContextAccessor);
@@ -76,15 +76,15 @@ public class BackgroundTaskTest
         var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
         var processName = _fixture.Create<string>();
         var logTracking = _fixture.Create<LogTracking>();
-        _balanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(logTracking));
+        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(logTracking));
 
         // Action
         _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _balanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
+        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
+        await _dependencies.LogDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
     }
 
     [Fact]
@@ -93,15 +93,15 @@ public class BackgroundTaskTest
         // Arrange
         var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
         var processName = _fixture.Create<string>();
-        _balanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(null!));
+        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(null!));
 
         // Action
         _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _balanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _logDbRepository.DidNotReceive().WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>());
+        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
+        await _dependencies.LogDbRepository.DidNotReceive().WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>());
     }
 
     [Fact]
@@ -110,15 +110,15 @@ public class BackgroundTaskTest
         // Arrange
         var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
         var processName = _fixture.Create<string>();
-        _balanceRepository.InitializeReactivatePlayerBalanceAsync(param).Throws<Exception>();
+        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Throws<Exception>();
 
         // Action
         _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _balanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _logDbRepository.DidNotReceive().WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>());
+        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
+        await _dependencies.LogDbRepository.DidNotReceive().WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>());
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -130,16 +130,16 @@ public class BackgroundTaskTest
         var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
         var logTracking = _fixture.Create<LogTracking>();
         var processName = _fixture.Create<string>();
-        _balanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(logTracking));
-        _logDbRepository.WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>()).Throws<Exception>();
+        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(logTracking));
+        _dependencies.LogDbRepository.WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>()).Throws<Exception>();
 
         // Action
         _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _balanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
+        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
+        await _dependencies.LogDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -160,7 +160,7 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _affiliateRepository.Received(1).InsertPlayerAffiliateAsync(param);
+        await _dependencies.AffiliateRepository.Received(1).InsertPlayerAffiliateAsync(param);
     }
 
     [Fact]
@@ -169,14 +169,14 @@ public class BackgroundTaskTest
         // Arrange
         var param = _fixture.Create<NewPlayerAffiliateParam>();
         var processName = _fixture.Create<string>();
-        _affiliateRepository.InsertPlayerAffiliateAsync(Arg.Any<NewPlayerAffiliateParam>()).Throws<Exception>();
+        _dependencies.AffiliateRepository.InsertPlayerAffiliateAsync(Arg.Any<NewPlayerAffiliateParam>()).Throws<Exception>();
 
         // Action
         _backgroundTask.InsertNewPlayerAffiliateInfo(processName, param);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _affiliateRepository.Received(1).InsertPlayerAffiliateAsync(param);
+        await _dependencies.AffiliateRepository.Received(1).InsertPlayerAffiliateAsync(param);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -197,7 +197,7 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.DidNotReceive().RollbackNewPlayerAsync(custId);
+        await _dependencies.RollbackRepository.DidNotReceive().RollbackNewPlayerAsync(custId);
     }
 
     [Fact]
@@ -212,7 +212,7 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
     }
 
     [Fact]
@@ -221,14 +221,14 @@ public class BackgroundTaskTest
         // Arrange
         var custId = _fixture.Create<int>();
         var processName = _fixture.Create<string>();
-        _rollbackRepository.RollbackNewPlayerAsync(custId).Throws<Exception>();
+        _dependencies.RollbackRepository.RollbackNewPlayerAsync(custId).Throws<Exception>();
 
         // Action
         _backgroundTask.RollbackFullNewPlayer(processName, custId);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -249,9 +249,9 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.DidNotReceive().RollbackNewPlayerSettingAsync(Arg.Any<int>());
-        await _rollbackRepository.DidNotReceive().RollbackNewPlayerUserInfoAsync(Arg.Any<int>());
-        await _rollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
+        await _dependencies.RollbackRepository.DidNotReceive().RollbackNewPlayerSettingAsync(Arg.Any<int>());
+        await _dependencies.RollbackRepository.DidNotReceive().RollbackNewPlayerUserInfoAsync(Arg.Any<int>());
+        await _dependencies.RollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
     }
 
     [Fact]
@@ -266,9 +266,9 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
-        await _rollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
-        await _rollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
     }
 
     [Fact]
@@ -277,16 +277,16 @@ public class BackgroundTaskTest
         // Arrange
         var custId = _fixture.Create<int>();
         var processName = _fixture.Create<string>();
-        _rollbackRepository.RollbackNewPlayerSettingAsync(custId).Throws<Exception>();
+        _dependencies.RollbackRepository.RollbackNewPlayerSettingAsync(custId).Throws<Exception>();
 
         // Action
         _backgroundTask.RollbackFullNewPlayer(processName, custId);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
-        await _rollbackRepository.DidNotReceive().RollbackNewPlayerUserInfoAsync(Arg.Any<int>());
-        await _rollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
+        await _dependencies.RollbackRepository.DidNotReceive().RollbackNewPlayerUserInfoAsync(Arg.Any<int>());
+        await _dependencies.RollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -297,16 +297,16 @@ public class BackgroundTaskTest
         // Arrange
         var custId = _fixture.Create<int>();
         var processName = _fixture.Create<string>();
-        _rollbackRepository.RollbackNewPlayerUserInfoAsync(custId).Throws<Exception>();
+        _dependencies.RollbackRepository.RollbackNewPlayerUserInfoAsync(custId).Throws<Exception>();
 
         // Action
         _backgroundTask.RollbackFullNewPlayer(processName, custId);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
-        await _rollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
-        await _rollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
+        await _dependencies.RollbackRepository.DidNotReceive().RollbackNewPlayerAsync(Arg.Any<int>());
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -317,16 +317,16 @@ public class BackgroundTaskTest
         // Arrange
         var custId = _fixture.Create<int>();
         var processName = _fixture.Create<string>();
-        _rollbackRepository.RollbackNewPlayerAsync(custId).Throws<Exception>();
+        _dependencies.RollbackRepository.RollbackNewPlayerAsync(custId).Throws<Exception>();
 
         // Action
         _backgroundTask.RollbackFullNewPlayer(processName, custId);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _rollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
-        await _rollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
-        await _rollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerSettingAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerUserInfoAsync(custId);
+        await _dependencies.RollbackRepository.Received(1).RollbackNewPlayerAsync(custId);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -347,8 +347,8 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _logDbRepository.Received(1).WriteLogDataDBLOGAsync(logData);
-        await _logDbRepository.DidNotReceive().WriteLogDataDBCUSTAsync(logData);
+        await _dependencies.LogDbRepository.Received(1).WriteLogDataDBLOGAsync(logData);
+        await _dependencies.LogDbRepository.DidNotReceive().WriteLogDataDBCUSTAsync(logData);
     }
 
     [Fact]
@@ -357,15 +357,15 @@ public class BackgroundTaskTest
         // Arrange
         var logData = _fixture.Create<LogData>();
         var processName = _fixture.Create<string>();
-        _logDbRepository.WriteLogDataDBLOGAsync(Arg.Any<LogData>()).Throws<Exception>();
+        _dependencies.LogDbRepository.WriteLogDataDBLOGAsync(Arg.Any<LogData>()).Throws<Exception>();
 
         // Action
         _backgroundTask.WriteLogData(processName, logData);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _logDbRepository.Received(1).WriteLogDataDBLOGAsync(logData);
-        await _logDbRepository.Received(1).WriteLogDataDBCUSTAsync(logData);
+        await _dependencies.LogDbRepository.Received(1).WriteLogDataDBLOGAsync(logData);
+        await _dependencies.LogDbRepository.Received(1).WriteLogDataDBCUSTAsync(logData);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -386,7 +386,7 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
+        await _dependencies.LogDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
     }
 
     [Fact]
@@ -395,14 +395,14 @@ public class BackgroundTaskTest
         // Arrange
         var logTracking = _fixture.Create<LogTracking>();
         var processName = _fixture.Create<string>();
-        _logDbRepository.WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>()).Throws<Exception>();
+        _dependencies.LogDbRepository.WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>()).Throws<Exception>();
 
         // Action
         _backgroundTask.WriteLogTracking(processName, logTracking);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _logDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
+        await _dependencies.LogDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }
@@ -423,7 +423,7 @@ public class BackgroundTaskTest
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _commissionRepository.Received(1).InsertDefaultCommAsync(param);
+        await _dependencies.CommissionRepository.Received(1).InsertDefaultCommAsync(param);
     }
 
     [Fact]
@@ -432,14 +432,14 @@ public class BackgroundTaskTest
         // Arrange
         var param = _fixture.Create<InsertDefaultCommissionParam>();
         var processName = _fixture.Create<string>();
-        _commissionRepository.InsertDefaultCommAsync(Arg.Any<InsertDefaultCommissionParam>()).Throws<Exception>();
+        _dependencies.CommissionRepository.InsertDefaultCommAsync(Arg.Any<InsertDefaultCommissionParam>()).Throws<Exception>();
 
         // Action
         _backgroundTask.InsertDefaultCommLicenseeDb(processName, param);
         await Task.Delay(100); // Delay 100ms during background execution
 
         // Assert
-        await _commissionRepository.Received(1).InsertDefaultCommAsync(param);
+        await _dependencies.CommissionRepository.Received(1).InsertDefaultCommAsync(param);
         await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
             msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
     }

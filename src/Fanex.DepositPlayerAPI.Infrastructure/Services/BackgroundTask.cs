@@ -10,12 +10,15 @@ using Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
+public record BackgroundTaskDependencies(
+    IRollbackRepository RollbackRepository,
+    ILogDbRepository LogDbRepository,
+    IAffiliateRepository AffiliateRepository,
+    ICommissionRepository CommissionRepository,
+    IBalanceRepository BalanceRepository);
+
 public class BackgroundTask(
-    IRollbackRepository rollbackRepository,
-    ILogDbRepository logDbRepository,
-    IAffiliateRepository affiliateRepository,
-    ICommissionRepository commissionRepository,
-    IBalanceRepository balanceRepository,
+    BackgroundTaskDependencies dependencies,
     ILogger logger,
     IServiceScopeFactory serviceScopeFactory,
     IHttpContextAccessor httpContextAccessor) : IBackgroundTask
@@ -26,13 +29,13 @@ public class BackgroundTask(
     {
         async Task Func()
         {
-            var isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => logDbRepository.WriteLogDataDBLOGAsync(logData),
-                nameof(logDbRepository.WriteLogDataDBLOGAsync), processName, logger, true);
+            var isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.LogDbRepository.WriteLogDataDBLOGAsync(logData),
+                nameof(dependencies.LogDbRepository.WriteLogDataDBLOGAsync), processName, logger, true);
 
             if (!isSuccess)
             {
-                await ProcessUtils.ExecuteWithTryCatchAsync(() => logDbRepository.WriteLogDataDBCUSTAsync(logData),
-                    nameof(logDbRepository.WriteLogDataDBCUSTAsync), processName, logger, true);
+                await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.LogDbRepository.WriteLogDataDBCUSTAsync(logData),
+                    nameof(dependencies.LogDbRepository.WriteLogDataDBCUSTAsync), processName, logger, true);
             }
         }
 
@@ -43,8 +46,8 @@ public class BackgroundTask(
     {
         async Task Func()
         {
-            await ProcessUtils.ExecuteWithTryCatchAsync(() => logDbRepository.WriteLogTrackingDBLOGAsync(logTracking),
-                nameof(logDbRepository.WriteLogTrackingDBLOGAsync), processName, logger, true);
+            await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.LogDbRepository.WriteLogTrackingDBLOGAsync(logTracking),
+                nameof(dependencies.LogDbRepository.WriteLogTrackingDBLOGAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -54,8 +57,8 @@ public class BackgroundTask(
     {
         async Task Func()
         {
-            await ProcessUtils.ExecuteWithTryCatchAsync(() => commissionRepository.InsertDefaultCommAsync(param),
-                nameof(commissionRepository.InsertDefaultCommAsync), processName, logger, true);
+            await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.CommissionRepository.InsertDefaultCommAsync(param),
+                nameof(dependencies.CommissionRepository.InsertDefaultCommAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -70,19 +73,19 @@ public class BackgroundTask(
 
         async Task Func()
         {
-            var isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerSettingAsync(custId),
-                nameof(rollbackRepository.RollbackNewPlayerSettingAsync), processName, logger, true);
+            var isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.RollbackRepository.RollbackNewPlayerSettingAsync(custId),
+                nameof(dependencies.RollbackRepository.RollbackNewPlayerSettingAsync), processName, logger, true);
 
             if (isSuccess)
             {
-                isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerUserInfoAsync(custId),
-                    nameof(rollbackRepository.RollbackNewPlayerUserInfoAsync), processName, logger, true);
+                isSuccess = await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.RollbackRepository.RollbackNewPlayerUserInfoAsync(custId),
+                    nameof(dependencies.RollbackRepository.RollbackNewPlayerUserInfoAsync), processName, logger, true);
             }
 
             if (isSuccess)
             {
-                await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerAsync(custId),
-                    nameof(rollbackRepository.RollbackNewPlayerAsync), processName, logger, true);
+                await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.RollbackRepository.RollbackNewPlayerAsync(custId),
+                    nameof(dependencies.RollbackRepository.RollbackNewPlayerAsync), processName, logger, true);
             }
         }
 
@@ -98,8 +101,8 @@ public class BackgroundTask(
 
         async Task Func()
         {
-            await ProcessUtils.ExecuteWithTryCatchAsync(() => rollbackRepository.RollbackNewPlayerAsync(custId),
-                nameof(rollbackRepository.RollbackNewPlayerAsync), processName, logger, true);
+            await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.RollbackRepository.RollbackNewPlayerAsync(custId),
+                nameof(dependencies.RollbackRepository.RollbackNewPlayerAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -109,8 +112,8 @@ public class BackgroundTask(
     {
         async Task Func()
         {
-            await ProcessUtils.ExecuteWithTryCatchAsync(() => affiliateRepository.InsertPlayerAffiliateAsync(param),
-                nameof(affiliateRepository.InsertPlayerAffiliateAsync), processName, logger, true);
+            await ProcessUtils.ExecuteWithTryCatchAsync(() => dependencies.AffiliateRepository.InsertPlayerAffiliateAsync(param),
+                nameof(dependencies.AffiliateRepository.InsertPlayerAffiliateAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
@@ -122,12 +125,12 @@ public class BackgroundTask(
         {
             await ProcessUtils.ExecuteWithTryCatchAsync(async () =>
             {
-                var result = await balanceRepository.InitializeReactivatePlayerBalanceAsync(param);
+                var result = await dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param);
                 if (result?.Result is not null)
                 {
-                    await logDbRepository.WriteLogTrackingDBLOGAsync(result.Result);
+                    await dependencies.LogDbRepository.WriteLogTrackingDBLOGAsync(result.Result);
                 }
-            }, nameof(balanceRepository.InitializeReactivatePlayerBalanceAsync), processName, logger, true);
+            }, nameof(dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync), processName, logger, true);
         }
 
         DoWork(ServerDbConfig, processName, Func);
