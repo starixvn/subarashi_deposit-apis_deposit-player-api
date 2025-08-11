@@ -29,7 +29,7 @@ public class MapSabaIdHandlerTest : HandlerTestBase
         var expectedResult = ServiceResult.Success();
         var mapSabaIdChainParam = Substitute.For<IChainNonResultHandler<MapSabaIdChainParam>>();
 
-        ChainHandlerFactory.CreateMapSabaIdChainParam().Returns(mapSabaIdChainParam);
+        ChainHandlerFactory.CreateMapSabaIdChainHandler().Returns(mapSabaIdChainParam);
         mapSabaIdChainParam.Handle(Arg.Any<MapSabaIdChainParam>()).Returns(expectedResult);
 
         // Action
@@ -49,7 +49,7 @@ public class MapSabaIdHandlerTest : HandlerTestBase
         var expectedResult = ServiceResult.Failure(ServiceError.SystemError);
         var mapSabaIdChainParam = Substitute.For<IChainNonResultHandler<MapSabaIdChainParam>>();
 
-        ChainHandlerFactory.CreateMapSabaIdChainParam().Returns(mapSabaIdChainParam);
+        ChainHandlerFactory.CreateMapSabaIdChainHandler().Returns(mapSabaIdChainParam);
         mapSabaIdChainParam.Handle(Arg.Any<MapSabaIdChainParam>()).Returns(expectedResult);
 
         // Action
@@ -67,7 +67,7 @@ public class MapSabaIdHandlerTest : HandlerTestBase
         // Arrange
         var command = Fixture.Create<MapSabaIdCommand>();
 
-        ChainHandlerFactory.CreateMapSabaIdChainParam().Returns((IChainNonResultHandler<MapSabaIdChainParam>)null!);
+        ChainHandlerFactory.CreateMapSabaIdChainHandler().Returns((IChainNonResultHandler<MapSabaIdChainParam>)null!);
 
         // Action
         var action = () => _handler.Handle(command, CancellationToken.None);
@@ -87,7 +87,7 @@ public class MapSabaIdHandlerTest : HandlerTestBase
         mapSabaIdHandler.ChainName.Returns(chainName);
         mapSabaIdHandler.HandleInternal(Arg.Any<MapSabaIdChainParam>()).Throws(new Exception("Test Exception"));
 
-        ChainHandlerFactory.CreateMapSabaIdChainParam().Returns(mapSabaIdHandler);
+        ChainHandlerFactory.CreateMapSabaIdChainHandler().Returns(mapSabaIdHandler);
 
         // Action
         var actualResult = await _handler.Handle(command, CancellationToken.None);

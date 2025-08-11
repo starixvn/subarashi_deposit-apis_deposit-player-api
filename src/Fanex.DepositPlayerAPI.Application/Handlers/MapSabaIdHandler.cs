@@ -15,7 +15,7 @@ public class MapSabaIdHandler(
     {
         logAggregate.AppendLog("Started processing...");
 
-        var rootChainHandler = chainHandlerFactory.CreateMapSabaIdChainParam();
+        var rootChainHandler = chainHandlerFactory.CreateMapSabaIdChainHandler();
         var param = ParamMapper.BuildMapSabaIdChainParam(command);
 
         var result = await rootChainHandler.Handle(param);

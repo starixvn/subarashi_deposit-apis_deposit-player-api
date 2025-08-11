@@ -74,7 +74,7 @@ public class ChainHandlerFactory(IServiceProvider serviceProvider) : IChainHandl
         return chainHandler;
     }
 
-    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainParam()
+    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainHandler()
     {
         var chainHandler = GetChainNonResultHandler<MapSabaIdChainParam>(nameof(MapSabaIdGetServerDbConfigChainHandler)); // step 1
 

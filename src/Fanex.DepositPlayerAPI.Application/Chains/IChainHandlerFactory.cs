@@ -11,5 +11,5 @@ public interface IChainHandlerFactory
 
     public IChainHandler<NewShadowAccountChainParam, ShadowAccount> CreateNewShadowAccountChainHandler();
 
-    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainParam();
+    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainHandler();
 }
