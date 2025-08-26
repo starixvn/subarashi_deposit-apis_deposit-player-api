@@ -119,23 +119,6 @@ public class BackgroundTask(
         DoWork(ServerDbConfig, processName, Func);
     }
 
-    public void ReinitBalanceReactivatePlayer(string processName, InitializeReactivatePlayerBalanceParam param)
-    {
-        async Task Func()
-        {
-            await ProcessUtils.ExecuteWithTryCatchAsync(async () =>
-            {
-                var result = await dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param);
-                if (result?.Result is not null)
-                {
-                    await dependencies.LogDbRepository.WriteLogTrackingDBLOGAsync(result.Result);
-                }
-            }, nameof(dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync), processName, logger, true);
-        }
-
-        DoWork(ServerDbConfig, processName, Func);
-    }
-
     private void DoWork(ServerDbConfig serverDbConfig, string processName, Func<Task> func)
     {
         using (ExecutionContext.SuppressFlow())

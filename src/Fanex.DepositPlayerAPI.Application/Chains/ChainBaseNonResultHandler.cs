@@ -39,6 +39,6 @@ public abstract class ChainBaseNonResultHandler<TRequest>(
 
     protected override string GetExtraInfo(ServiceResult result) => result.ExtraInfo;
 
-    protected override Task<ServiceResult> RunNextHandle(TRequest request, ServiceResult result) =>
-        _nextHandler is null ? Task.FromResult(result) : _nextHandler.Handle(request);
+    protected override Task<ServiceResult> RunNextHandle(TRequest request) =>
+        _nextHandler is null ? Task.FromResult(ServiceResult.Success()) : _nextHandler.Handle(request);
 }

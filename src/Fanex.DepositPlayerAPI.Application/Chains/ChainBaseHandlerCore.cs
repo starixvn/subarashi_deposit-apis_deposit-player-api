@@ -25,7 +25,7 @@ public abstract class ChainBaseHandlerCore<TRequest, TResult>(
 
     public virtual async Task<TResult> Handle(TRequest request)
     {
-        var result = CreateSuccessResult();
+        TResult result;
 
         LogAggregate.AppendStepLog($"START PROCESS \"{ChainName}\"");
         LogAggregate.AppendLog($"Request Info: {JsonConvert.SerializeObject(request, Formatting.Indented)}");
@@ -52,7 +52,7 @@ public abstract class ChainBaseHandlerCore<TRequest, TResult>(
                 return CreateFailureResult();
             }
 
-            return await RunNextHandle(request, result);
+            return await RunNextHandle(request);
         }
 
         LogAggregate.AppendLog($"Result Info: {JsonConvert.SerializeObject(result, Formatting.Indented)}");
@@ -75,7 +75,7 @@ public abstract class ChainBaseHandlerCore<TRequest, TResult>(
             return result;
         }
 
-        return IsBreakOnSuccess ? result : await RunNextHandle(request, result);
+        return IsBreakOnSuccess ? result : await RunNextHandle(request);
     }
 
     public abstract void LogErrorIfFailure(TResult response, TRequest request);
@@ -102,5 +102,5 @@ public abstract class ChainBaseHandlerCore<TRequest, TResult>(
 
     protected abstract string GetExtraInfo(TResult result);
 
-    protected abstract Task<TResult> RunNextHandle(TRequest request, TResult result);
+    protected abstract Task<TResult> RunNextHandle(TRequest request);
 }

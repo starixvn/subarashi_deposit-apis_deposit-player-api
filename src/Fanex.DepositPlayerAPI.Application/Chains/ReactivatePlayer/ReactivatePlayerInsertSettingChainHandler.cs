@@ -19,7 +19,7 @@ public class ReactivatePlayerInsertSettingChainHandler(
 
     public override bool IsBreakOnError => true;
 
-    public override bool IsBreakOnSuccess => true;
+    public override bool IsBreakOnSuccess => false;
 
     public override string ChainName => nameof(ReactivatePlayerInsertSettingChainHandler);
 
@@ -67,17 +67,6 @@ public class ReactivatePlayerInsertSettingChainHandler(
         LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.WriteLogData)}");
 
         backgroundTask.WriteLogData(ChainName, request.LogData);
-
-        var reinitBalanceParam = new InitializeReactivatePlayerBalanceParam
-        {
-            CustId = request.CustId,
-            CustIdBalanceDummy = request.CustIdBalanceDummy,
-            ClosingBalance = request.ClosingBalance
-        };
-
-        LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.ReinitBalanceReactivatePlayer)}");
-
-        backgroundTask.ReinitBalanceReactivatePlayer(ChainName, reinitBalanceParam);
 
         if (request?.LogTracking is not null)
         {
