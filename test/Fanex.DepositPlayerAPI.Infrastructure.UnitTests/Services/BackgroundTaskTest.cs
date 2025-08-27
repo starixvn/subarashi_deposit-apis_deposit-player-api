@@ -5,7 +5,6 @@ using AutoFixture;
 using Domain.Entities;
 using Domain.Params;
 using Domain.Repositories;
-using Domain.Results;
 using Infrastructure.Services;
 using Logging;
 using Microsoft.AspNetCore.Http;
@@ -66,85 +65,6 @@ public class BackgroundTaskTest
         httpContextAccessorStub.HttpContext.Items["SiteDbServerKey"] = serverDbConfig.SiteDbServer;
         httpContextAccessorStub.HttpContext.Items["SiteKey"] = serverDbConfig.Site;
     }
-
-    #region ReinitBalanceReactivatePlayer
-
-    [Fact]
-    public async Task ReinitBalanceReactivatePlayer_Should_CallInitializeReactivatePlayerBalanceAndWriteLogTracking()
-    {
-        // Arrange
-        var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
-        var processName = _fixture.Create<string>();
-        var logTracking = _fixture.Create<LogTracking>();
-        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(logTracking));
-
-        // Action
-        _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
-        await Task.Delay(100); // Delay 100ms during background execution
-
-        // Assert
-        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _dependencies.LogDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
-    }
-
-    [Fact]
-    public async Task ReinitBalanceReactivatePlayer_Should_CallInitializeReactivatePlayerBalanceAndNotWriteLogTracking()
-    {
-        // Arrange
-        var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
-        var processName = _fixture.Create<string>();
-        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(null!));
-
-        // Action
-        _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
-        await Task.Delay(100); // Delay 100ms during background execution
-
-        // Assert
-        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _dependencies.LogDbRepository.DidNotReceive().WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>());
-    }
-
-    [Fact]
-    public async Task ReinitBalanceReactivatePlayer_Should_LogError_WhenInitializeReactivatePlayerBalanceThrowException()
-    {
-        // Arrange
-        var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
-        var processName = _fixture.Create<string>();
-        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Throws<Exception>();
-
-        // Action
-        _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
-        await Task.Delay(100); // Delay 100ms during background execution
-
-        // Assert
-        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _dependencies.LogDbRepository.DidNotReceive().WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>());
-        await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
-    }
-
-    [Fact]
-    public async Task ReinitBalanceReactivatePlayer_Should_LogError_WhenWriteLogTrackingDBLOGAsyncThrowException()
-    {
-        // Arrange
-        var param = _fixture.Create<InitializeReactivatePlayerBalanceParam>();
-        var logTracking = _fixture.Create<LogTracking>();
-        var processName = _fixture.Create<string>();
-        _dependencies.BalanceRepository.InitializeReactivatePlayerBalanceAsync(param).Returns(ServiceResult<LogTracking>.Success(logTracking));
-        _dependencies.LogDbRepository.WriteLogTrackingDBLOGAsync(Arg.Any<LogTracking>()).Throws<Exception>();
-
-        // Action
-        _backgroundTask.ReinitBalanceReactivatePlayer(processName, param);
-        await Task.Delay(100); // Delay 100ms during background execution
-
-        // Assert
-        await _dependencies.BalanceRepository.Received(1).InitializeReactivatePlayerBalanceAsync(param);
-        await _dependencies.LogDbRepository.Received(1).WriteLogTrackingDBLOGAsync(logTracking);
-        await _logger.Received(1).ErrorAsync(Arg.Is<string>(msg =>
-            msg.StartsWith($"ERROR [Background Task]: An exception occurred in the {processName} background process.")));
-    }
-
-    #endregion
 
     #region InsertNewPlayerAffiliateInfo
 

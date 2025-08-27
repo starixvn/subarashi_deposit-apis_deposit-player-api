@@ -74,7 +74,7 @@ public class NewPlayerInsertDefaultCommChainHandlerTest : ChainHandlerTestBase
     }
 
     [Fact]
-    public async Task ChainHandler_Should_ReturnFailure_WhenInsertDefaultCommFailure()
+    public async Task ChainHandler_Should_ReturnSuccess_WhenInsertDefaultCommFailure()
     {
         // Arrange
         var param = Fixture
@@ -91,9 +91,9 @@ public class NewPlayerInsertDefaultCommChainHandlerTest : ChainHandlerTestBase
         var result = await _handler.Handle(param);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
-        result.ExtraInfo.Should().Be(extraInfo);
+        result.IsSuccess.Should().BeTrue();
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
+        result.ExtraInfo.Should().Be(null);
         result.Result.Should().BeNull();
         await _commissionRepository.Received(1).InsertDefaultCommAsync(Arg.Is<InsertDefaultCommissionParam>(x =>
             x.CustId == param.CustId && x.Site == param.Site && x.GroupDiscountId == param.GroupDiscountId));

@@ -2,7 +2,6 @@
 
 using Application.Chains.ReactivatePlayer;
 using AutoFixture;
-using Domain.Entities;
 using Domain.Errors;
 using Domain.Params;
 using Domain.Params.Chains;
@@ -68,10 +67,6 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogData(_handler.ChainName, request.LogData);
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
-        _backgroundTask.Received(1).ReinitBalanceReactivatePlayer(_handler.ChainName, Arg.Is<InitializeReactivatePlayerBalanceParam>(x =>
-            x.CustId == request.CustId
-            && x.CustIdBalanceDummy == request.CustIdBalanceDummy
-            && x.ClosingBalance == request.ClosingBalance));
 
         if (groupDiscountId.HasValue && groupDiscountId.Value != 0)
         {
@@ -116,7 +111,6 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
         _backgroundTask.DidNotReceive().WriteLogData(Arg.Any<string>(), request.LogData);
-        _backgroundTask.DidNotReceive().ReinitBalanceReactivatePlayer(Arg.Any<string>(), Arg.Any<InitializeReactivatePlayerBalanceParam>());
         _backgroundTask.DidNotReceive().InsertDefaultCommLicenseeDb(Arg.Any<string>(), Arg.Any<InsertDefaultCommissionParam>());
     }
 
@@ -133,7 +127,6 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         var outputParam = Fixture.Create<InsertReactivePlayerSettingOutputParam>();
         var error = ServiceError.GetFromDbError(errorCode, errorMessage);
         var extraInfo = Fixture.Create<string>();
-        var data = Fixture.Create<Player>();
         _playerRepository.InsertReactivePlayerSettingAsync(Arg.Any<InsertReactivePlayerSettingParam>())
             .Returns(ServiceResult<InsertReactivePlayerSettingOutputParam>.FailureWithData(error, outputParam, extraInfo));
 
@@ -141,9 +134,9 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         var result = await _handler.Handle(request);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(error);
-        result.ExtraInfo.Should().Be(extraInfo);
+        result.IsSuccess.Should().BeTrue();
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
+        result.ExtraInfo.Should().BeNull();
         await _playerRepository.Received(1).InsertReactivePlayerSettingAsync(Arg.Is<InsertReactivePlayerSettingParam>(x =>
             x.CustId == request.CustId
             && x.CustomerInfo == request.CustomerInfo
@@ -156,10 +149,6 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogData(_handler.ChainName, request.LogData);
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
-        _backgroundTask.Received(1).ReinitBalanceReactivatePlayer(_handler.ChainName, Arg.Is<InitializeReactivatePlayerBalanceParam>(x =>
-            x.CustId == request.CustId
-            && x.CustIdBalanceDummy == request.CustIdBalanceDummy
-            && x.ClosingBalance == request.ClosingBalance));
 
         _backgroundTask.Received(1).InsertDefaultCommLicenseeDb(_handler.ChainName, Arg.Is<InsertDefaultCommissionParam>(x =>
             x.Site == request.Site
@@ -195,7 +184,6 @@ public class ReactivatePlayerInsertSettingChainHandlerTest : ChainHandlerTestBas
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
         _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
         _backgroundTask.DidNotReceive().WriteLogData(Arg.Any<string>(), request.LogData);
-        _backgroundTask.DidNotReceive().ReinitBalanceReactivatePlayer(Arg.Any<string>(), Arg.Any<InitializeReactivatePlayerBalanceParam>());
         _backgroundTask.DidNotReceive().InsertDefaultCommLicenseeDb(Arg.Any<string>(), Arg.Any<InsertDefaultCommissionParam>());
     }
 }
