@@ -62,6 +62,9 @@ public static class DependencyInjection
         services
             .TryAddKeyedTransient<IChainNonResultHandler<ReactivatePlayerChainParam>,
                 ReactivatePlayerWriteLogDataChainHandler>(nameof(ReactivatePlayerWriteLogDataChainHandler));
+        services
+            .TryAddKeyedTransient<IChainNonResultHandler<ReactivatePlayerChainParam>,
+                ReactivateBalanceInitializeChainHandler>(nameof(ReactivateBalanceInitializeChainHandler));
 
         // new shadow account chain
         services
