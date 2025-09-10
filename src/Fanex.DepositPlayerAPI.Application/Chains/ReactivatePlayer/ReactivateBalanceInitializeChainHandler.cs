@@ -52,16 +52,6 @@ public class ReactivateBalanceInitializeChainHandler(
         }
     }
 
-    public override void HandleSuccess(ReactivatePlayerChainParam request)
-    {
-        if (request?.LogTracking is not null)
-        {
-            LogAggregate.AppendLog($"Background Task: {nameof(backgroundTask.WriteLogTracking)}");
-
-            backgroundTask.WriteLogTracking(ChainName, request.LogTracking);
-        }
-    }
-
     private static void UpdateRequest(LogTracking logTracking, ReactivatePlayerChainParam request)
     {
         request.LogTracking = logTracking;

@@ -9,7 +9,6 @@ using Domain.Params.Chains;
 using Domain.Repositories;
 using Domain.Results;
 using FluentAssertions;
-using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Services;
@@ -54,7 +53,6 @@ public class ReactivateBalanceInitializeChainHandlerTest : ChainHandlerTestBase
         Logger.DidNotReceive().Error(Arg.Any<string>());
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
-        _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
     }
 
     [Fact]
@@ -82,7 +80,6 @@ public class ReactivateBalanceInitializeChainHandlerTest : ChainHandlerTestBase
         Logger.DidNotReceive().Error(Arg.Any<string>());
         LogAggregate.Received().AppendLog(Arg.Any<string>());
         LogAggregate.Received(1).AppendStepLog(Arg.Any<string>());
-        _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
     }
 
 
@@ -164,20 +161,6 @@ public class ReactivateBalanceInitializeChainHandlerTest : ChainHandlerTestBase
         // Assert
         _backgroundTask.DidNotReceive().WriteLogTracking(Arg.Any<string>(), Arg.Any<LogTracking>());
         LogAggregate.DidNotReceive().AppendLog(Arg.Any<string>());
-    }
-
-    [Fact]
-    public void HandleSuccess_Should_CallWriteLogTracking_WhenLogTrackingIsNotNull()
-    {
-        // Arrange
-        var request = Fixture.Create<ReactivatePlayerChainParam>();
-
-        // Action
-        _handler.HandleSuccess(request);
-
-        // Assert
-        _backgroundTask.Received(1).WriteLogTracking(_handler.ChainName, request.LogTracking);
-        LogAggregate.Received(1).AppendLog($"Background Task: {nameof(_backgroundTask.WriteLogTracking)}");
     }
 
     [Fact]
