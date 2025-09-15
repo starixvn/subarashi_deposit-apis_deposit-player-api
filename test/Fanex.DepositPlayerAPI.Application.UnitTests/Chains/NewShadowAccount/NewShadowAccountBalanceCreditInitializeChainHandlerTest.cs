@@ -92,7 +92,7 @@ public class NewShadowAccountBalanceCreditInitializeChainHandlerTest : ChainHand
         result.IsSuccess.Should().BeTrue();
         result.Error.Should().BeEquivalentTo(ServiceError.None);
         result.Result.Should().BeNull();
-        result.ExtraInfo.Should().Be(extraInfo);
+        result.ExtraInfo.Should().BeNull();
         await _balanceRepository.Received(1).InitializeNewPlayerCreditBalanceAsync(custId);
         Logger.DidNotReceive().Error(Arg.Any<string>());
         LogAggregate.Received().AppendLog(Arg.Any<string>());

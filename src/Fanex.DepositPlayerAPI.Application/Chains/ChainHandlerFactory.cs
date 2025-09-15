@@ -51,7 +51,9 @@ public class ChainHandlerFactory(IServiceProvider serviceProvider) : IChainHandl
             .SetNextHandler(
                 GetChainNonResultHandler<ReactivatePlayerChainParam>(nameof(ReactivatePlayerInsertDefaultGroupCommChainHandler))) // step 5.1 & 5.2
             .SetNextHandler(
-                GetChainNonResultHandler<ReactivatePlayerChainParam>(nameof(ReactivatePlayerInsertSettingChainHandler))); // step 6
+                GetChainNonResultHandler<ReactivatePlayerChainParam>(nameof(ReactivatePlayerInsertSettingChainHandler))) // step 6
+            .SetNextHandler(
+                GetChainNonResultHandler<ReactivatePlayerChainParam>(nameof(ReactivateBalanceInitializeChainHandler))); // step 9
 
         return chainHandler;
     }
@@ -74,7 +76,7 @@ public class ChainHandlerFactory(IServiceProvider serviceProvider) : IChainHandl
         return chainHandler;
     }
 
-    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainParam()
+    public IChainNonResultHandler<MapSabaIdChainParam> CreateMapSabaIdChainHandler()
     {
         var chainHandler = GetChainNonResultHandler<MapSabaIdChainParam>(nameof(MapSabaIdGetServerDbConfigChainHandler)); // step 1
 

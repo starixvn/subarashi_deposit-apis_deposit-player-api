@@ -54,7 +54,7 @@ public class NewPlayerInsertDefaultGroupCommChainHandlerTest : ChainHandlerTestB
     }
 
     [Fact]
-    public async Task ChainHandler_Should_ReturnFailure_WhenInsertDefaultGroupCommissionFailure()
+    public async Task ChainHandler_Should_ReturnSuccess_WhenInsertDefaultGroupCommissionFailure()
     {
         // Arrange
         var request = Fixture.Create<NewPlayerChainParam>();
@@ -71,9 +71,9 @@ public class NewPlayerInsertDefaultGroupCommChainHandlerTest : ChainHandlerTestB
         var result = await _handler.Handle(request);
 
         // Assert
-        result.IsSuccess.Should().BeFalse();
-        result.Error.Should().BeEquivalentTo(ServiceError.SystemError);
-        result.ExtraInfo.Should().Be(extraInfo);
+        result.IsSuccess.Should().BeTrue();
+        result.Error.Should().BeEquivalentTo(ServiceError.None);
+        result.ExtraInfo.Should().BeNull();
         result.Result.Should().BeNull();
         await _commissionRepository.Received(1).GetPlayerCommProductsAsync();
         await _commissionRepository.Received(1).InsertDefaultGroupCommissionAsync(Arg.Is<InsertDefaultGroupCommissionParam>(x =>

@@ -19,6 +19,7 @@ public static class DependencyInjection
         // services
         services.TryAddScoped<ILogAggregate, LogAggregate>();
         services.TryAddScoped<IDateTimeProvider, SystemDateTimeProvider>();
+        services.TryAddScoped<BackgroundTaskDependencies>();
         services.TryAddScoped<IBackgroundTask, BackgroundTask>();
         services.TryAddScoped<ICacheProvider, CacheProvider>();
 

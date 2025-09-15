@@ -16,6 +16,4 @@ public interface IBackgroundTask
     public void RollbackInfoNewPlayer(string processName, int custId);
 
     public void InsertNewPlayerAffiliateInfo(string processName, NewPlayerAffiliateParam param);
-
-    public void ReinitBalanceReactivatePlayer(string processName, InitializeReactivatePlayerBalanceParam param);
 }

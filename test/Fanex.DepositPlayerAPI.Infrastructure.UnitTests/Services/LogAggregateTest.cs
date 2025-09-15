@@ -5,8 +5,9 @@ using Application.Services;
 using AutoFixture;
 using FluentAssertions;
 using Infrastructure.Services;
-using Logging;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
+using ILogger = Logging.ILogger;
 
 public class LogAggregateTest
 {
@@ -74,5 +75,113 @@ public class LogAggregateTest
 
         // Assert
         result.Should().ContainAll(expected);
+    }
+
+    [Fact]
+    public void SendLog_WithCriticalLevel_Should_CallCriticalLogger()
+    {
+        // Arrange
+        var message = _fixture.Create<string>();
+        var logAggregate = new LogAggregate(_logger, _dateTimeProvider);
+        logAggregate.AppendLog(message);
+
+        // Act
+        logAggregate.SendLog(LogLevel.Critical);
+
+        // Assert
+        _logger.Received(1).Critical(Arg.Is<string>(s => s.Contains(message)));
+    }
+
+    [Fact]
+    public void SendLog_WithErrorLevel_Should_CallErrorLogger()
+    {
+        // Arrange
+        var message = _fixture.Create<string>();
+        var logAggregate = new LogAggregate(_logger, _dateTimeProvider);
+        logAggregate.AppendLog(message);
+
+        // Act
+        logAggregate.SendLog(LogLevel.Error);
+
+        // Assert
+        _logger.Received(1).Error(Arg.Is<string>(s => s.Contains(message)));
+    }
+
+    [Fact]
+    public void SendLog_WithInformationLevel_Should_CallInfoLogger()
+    {
+        // Arrange
+        var message = _fixture.Create<string>();
+        var logAggregate = new LogAggregate(_logger, _dateTimeProvider);
+        logAggregate.AppendLog(message);
+
+        // Act
+        logAggregate.SendLog(LogLevel.Information);
+
+        // Assert
+        _logger.Received(1).Info(Arg.Is<string>(s => s.Contains(message)));
+    }
+
+    [Fact]
+    public void SendLog_WithWarningLevel_Should_CallInfoLogger()
+    {
+        // Arrange
+        var message = _fixture.Create<string>();
+        var logAggregate = new LogAggregate(_logger, _dateTimeProvider);
+        logAggregate.AppendLog(message);
+
+        // Act
+        logAggregate.SendLog(LogLevel.Warning);
+
+        // Assert
+        _logger.Received(1).Info(Arg.Is<string>(s => s.Contains(message)));
+    }
+
+    [Fact]
+    public void SendLog_WithEmptyBuilder_Should_NotCallLogger()
+    {
+        // Arrange
+        var logAggregate = new LogAggregate(_logger, _dateTimeProvider);
+
+        // Act
+        logAggregate.SendLog(LogLevel.Information);
+
+        // Assert
+        _logger.DidNotReceive().Info(Arg.Any<string>());
+        _logger.DidNotReceive().Error(Arg.Any<string>());
+        _logger.DidNotReceive().Critical(Arg.Any<string>());
+    }
+
+    [Fact]
+    public void SendLog_Should_ClearBuilderAfterSending()
+    {
+        // Arrange
+        var message = _fixture.Create<string>();
+        var logAggregate = new LogAggregate(_logger, _dateTimeProvider);
+        logAggregate.AppendLog(message);
+
+        // Act
+        logAggregate.SendLog(LogLevel.Information);
+        var result = logAggregate.GetAggregateMsg();
+
+        // Assert
+        result.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SendLog_Should_ResetStepCounterAfterSending()
+    {
+        // Arrange
+        var message = _fixture.Create<string>();
+        var logAggregate = new LogAggregate(_logger, _dateTimeProvider);
+        logAggregate.AppendStepLog(message);
+        logAggregate.SendLog(LogLevel.Information);
+
+        // Act
+        logAggregate.AppendStepLog(message);
+        var result = logAggregate.GetAggregateMsg();
+
+        // Assert
+        result.Should().Contain("- STEP 0:");
     }
 }
